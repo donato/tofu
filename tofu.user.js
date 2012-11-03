@@ -30,7 +30,7 @@
 	var storedNumbers = ['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry', 'spyWeaps', 'sentryWeaps', 'daWeaps', 'saWeaps'];
 
     //version is year, month, day OR yymmdd
-    const version = '0.4.120710';  
+    const version = '0.4.121103';  
     const serverURL = 'luxbot.net/bot/';
     const baseURL = 'http://' + serverURL + 'luxbot.php?';
  
@@ -104,7 +104,7 @@
 
 		
 		var d = new Date();
-		userObject['time'] = d.getTime()+1000*60;
+		userObject['time_loaded'] = d.getTime();
 		userObject['gold'] = getPlayerGold()
 
 		return userObject
@@ -288,7 +288,6 @@
 	
 	User = loadUser(kocid);
    
-    var querying = false;	// for battlefield, "clicking" and expanding
     var coltables = [];
     
     checkForUpdate(1);
@@ -305,8 +304,7 @@
     switch (action) {
         case 'base':
 			basePage();
-			coltables = db.get('coltables' + action, '').split(';');
-			makeCollapsable();
+			makeCollapsable(action);
 			moveRecruitbox();
 			commandCenterStats();
             break;
@@ -331,7 +329,7 @@
         	armoryPage();
 			armory_buyButton();
 			
-			makeCollapsable();	
+			makeCollapsable(action);
 			
 			//next two lines adds the clickable buttons
 			var rows = $("form[name='buyform']").find("table>tbody>tr");
@@ -345,7 +343,7 @@
             showUserInfoS();
 			addStatsPageButtons();
 			statsOnlineCheck();
-			makeCollapsable();
+			makeCollapsable(action);
             break;
 
         case 'security':
@@ -364,7 +362,7 @@
 			//next two lines sets up the clickable buttons
 			var rows = $("form").eq(0).find("table>tbody>tr");
 			btn_init(rows, 3, 1);
-			makeCollapsable();
+			makeCollapsable(action);
 			break;
 			
 		case 'mercs':
@@ -385,7 +383,6 @@
     }
 
 	// These will all be plugins..
-
 	initReconRequest();
 
 	// Turn clock
@@ -401,33 +398,33 @@
     // GENERAL
 	
 	function updateGold() {
-	
-		var newTime = new Date();
-		newTime = newTime.getTime();
+		var offset = 11; // Seconds after minute until turn arrives.
 		
-		if (newTime < User.time) {
-			setTimeout(updateGold, 2000);
-			return;
+		function nextMinute($obj, income, accumulator) {
+			$obj.text("Projection: "+ addCommas(User.gold.int() + income*accumulator));
+			
+			setTimeout(function() {
+				nextMinute($obj, income, accumulator+1);
+			}, 60*1000); // Update again in exactly 1 minute
 		}
 		
-		elapsedMinutes = Math.floor((newTime - User.time)/1000/60);
-		
-		var $temp = $("#gold_projection");
-		if ($temp.size() ==0) {
-			$("tr:contains('Last Attacked:'):last").parent().find("tr:eq(0)")
+		// Add the display to the DOM
+		$("tr:contains('Last Attacked:'):last").parent().find("tr:eq(0)")
 				.after("<tr><td colspan=2 style='color: BLUE; font-size: 6pt;text-align:center' id='gold_projection'></td></tr>");
-			$temp = $("#gold_projection");
-		}
-		
-		
-		var newGold = Math.floor(User.gold.int() + (User.income.int()*elapsedMinutes));
-		$temp.text("Projection: " + addCommas(newGold) );
-	
-		setTimeout(updateGold,2000);
+
+		var date = new Date();
+		var currentSeconds = date.getSeconds();
+		var secsTillTurn =( (60 + offset) - currentSeconds) % 60;
+		setTimeout(
+			function() {
+				nextMinute( $("#gold_projection"), User.income.int(), 1);
+			}
+			, secsTillTurn*1000
+		);
 	}
 		
 	function updateClock() {
-		var turnsoon = 0;
+	
 		var currentTime = new Date ( );
 		var currentHours = currentTime.getHours ( );
 		var currentMinutes = currentTime.getMinutes ( );
@@ -979,11 +976,9 @@
 				$("#targetsFirstRow").after(html);
                 
                
-				//$(".projection").hide();
 				$(".projection").css("color","#B3FFF8");
 				$(".targetTR").hover(
 				  function () {
-					//alert("on");
 					$(this).find(".gold").hide();
 					$(this).find(".projection").show();
 				  }, 
@@ -2126,7 +2121,7 @@
 		var amount = sabtext.between("and destroy ", " of the enemy's");
 		var weapon = sabtext.between("of the enemy's ", " stockpile.");
 		var logid = String(document.location).substr(String(document.location).indexOf('=')+1);
-		getLux('&a=logsab&target=' + targetName + '&weapon=' + targetWeapon + '&amount=' + targetAmount + '&logid=' + logid,
+		getLux('&a=logsab&target=' + player + '&weapon=' + weapon + '&amount=' + amount + '&logid=' + logid,
 			function(responseDetails) {
 				//GM_log(responseDetails.responseText);
 			});
@@ -2773,7 +2768,7 @@
         }
     }
     
-    function makeCollapsable() {
+    function makeCollapsable(action) {
 		coltables = db.get('coltables' + action, '').split(';');
 
 		//var $tables = $("table.table_lines");
