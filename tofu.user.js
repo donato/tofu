@@ -4,15 +4,17 @@
 // @description		KoC LuXBot Script
 // @include			http://*kingsofchaos.com/*
 // @exclude			http://*kingsofchaos.com/chat/*
-// @require			http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js
+// @require			http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js
+// @require			http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js
 // @require			http://bot.luxbot.net/includes/md5.js
 // @require			http://bot.luxbot.net/includes/highstock.js
+// @grant       GM_getValue
+// @grant       GM_setValue
+// @grant       GM_deleteValue
+// @grant       GM_xmlhttpRequest
+// @grant       GM_openInTab
+// @grant       GM_log
 // ==/UserScript==
-
-/* This work is licensed under the Creative Commons Attribution-Noncommercial-No Derivative Works 3.0 Germany License. 
-    To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-nd/3.0/de/ 
-    or send a letter to Creative Commons, 171 Second Street, Suite 300, San Francisco, California, 94105, USA.
-*/	
 
 //
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
@@ -20,182 +22,116 @@
 
 
 
-//todo writemail, autosave
-//todo last attacks on player..
+!function($) {
 
-/*
-	UPDATE LOG:
-	
-*/
+	// Constants
+    var statsdesc = {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'};
+	var storedStrings = ['race',  'kocnick', 'forumName', 'forumPass', 'auth', 'logself']
+	var storedNumbers = ['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry', 'spyWeaps', 'sentryWeaps', 'daWeaps', 'saWeaps'];
 
-	var User = [];
-	var changeLog = [];
-
-	function addChange(date,text) {
-		changeLog.push([date,text]);
+    //version is year, month, day OR yymmdd
+    const version = '0.4.120710';  
+    const serverURL = 'luxbot.net/bot/';
+    const baseURL = 'http://' + serverURL + 'luxbot.php?';
+ 
+ 
+    var widget		// For lux popups
+	  , previd 		// For battlefield, which user is displaying stats of
+ 
+	// These helper functions are slightly modified versions of code taken from isFargy (RL), thanks :)
+	String.prototype.trim = function () {return this.replace(/^\s+|\s+$/g, '');};
+	String.prototype.between = function(first,second) {
+			var x = this.indexOf(first) + first.length;
+			var z = this.substring(x);
+			var y = z.indexOf(second);
+			return z.substring(z,y);
+	};
+	String.prototype.instr = function(strFind){return (this.indexOf(strFind) >= 0);};
+	String.prototype.int = function() {
+		var r = parseInt(this.replace(/,/g,''),10);
+		if (isNaN(r)) r=-1;
+		return r;
+		};
+	String.prototype.float = function() {
+		var r = parseFloat(this.replace(/[^0-9\.]*/g,''),10);
+		if (isNaN(r)) r=-1;
+		return r;
+		};
+	Number.prototype.int = function() {
+		return this;
 	}
 
-
-	addChange("6/26/2012 -Venar", 'Added an "Armory Differences" module, to show changes since last viewing of armory. Also reformatted the armory page a little bit so that if you collapse suggestions or lost weapons log it would look normal. Biggest change was to the Targets implementation, replacing the previous toggled mode system, with a simple auto-fill based based on current stats, with the ability to update.');
-
-	addChange("6/21/2012 -Venar", 'Created this "beta" change log section at the request of Pingu. Also made most of the features of luxbot into options, and created a simple way to make any future option toggle-able as well. Some minor updates to the GUI code as well.');
-
-	addChange("6/14/2012 -Venar", 'Added the "refresh" to stats pages statistics and neatened the code a little for that section.');
-	
-	addChange("6/05/2012 - Dokken", "Invalid id's in statsPage() were no longer removed from the active list (function logStats() : 'invalid' has to be send as 6th parameter since 'chain' was added)");
-	
-	addChange("4/23/2012 -Ven", "* added unheld display in trainpage\
-		* added graphs for TFF and armory value");
-		
-	addChange("4/11/2012 11pm - dokken", "* added FakesabList \
-		* moved the online image on statspage to the left. It's now next to the label and no longer the name. This caused a wrong call for history.php when targetted user was online.");
-
-	addChange("4/10/2012 11am -Ven", "* Re-fixed income calc\
-		* Added clickable \"sabbable weapons\" on sab pages\
-		* Made all tables in armory page expandable, isntead of just a few\
-		* Changed the way that the command center is recorded.\
-		* Added some js prototypes, courtesy isFargy of RL");
-		
-	addChange("4/4/2012 1am - dokken", "Cinch gave us a better version of addIncomeCalc that works for chainheads too");
-	
-    addChange("4/3/2012 3am - dokken", "Fixed addIncomeCalc which took wronf values, due to 2 new table-rows 'Supreme Commander' & 'Chain Name'");
-
-	addChange("4/1/2012 4am", "Rolled back the changes that were made to deal with End of Age counter");
-
-	addChange("3/7/2012 1pm", "Rewrote a lot of the auth stuff to work with 'VBulletin 4' our new forum system. The authsystem will be slower until everyone updates to new lux and I can remove the legacy features. Should speed things up in the end, and be more secure since we're using a salt on the hashing serverside.  - Venar");
-		
-	addChange("1/20/2012 2pm", "Lots of updates, rewrote the 'buttons' for buying things, the armory suggestions, and the sablogs. Also implemented getLux and did tons of bug /security fixes  - Venar");
-		
-	addChange("1/5/2012 400pm", "Wrote the function bf_online, which will display users who used luxbot in the past half hour.\
-		Also added a button linking the stats page of users to the user history, for easier usage of stats.luxbot.net ;)\
-		ALSO small change to the 'Out of date' such that it has a tooltip, and also is a link the the players stats page.  - Venar");
-	
-	addChange("1/4/2012 155am", "Wrote the function bf_needsRecon, and with an icon from Wulfric, and some code in lux_needsRecon.php, enabled one to see\
-		on the battlefield whether or not all of a players stats have been updated in the past 24 hours.  - Venar");
-	
-	addChange("1/3/2012 11:18pm ", "Update to recon request system, storing the name of who initially requested it. Also security upgrade so only forum users can make requests.\
-		Includes changes to lux_reconrequest.php and lux_reconrequestlist.php  - Venar");
-		
-	addChange("3/7/2011 12:35pm", "Added hoverover gold projections in attack targets menu.\
-		Changes involved gettargets() function and on server the lux_targets2.php file - Venar");
-	
-
-
-	/****************************
-	// End of Change Log
-	****************************/
-
-
-	
-
-  
-
-// These helper functions are slightly modified versions of code taken from isFargy (RL), thanks :)
-String.prototype.trim = function () {return this.replace(/^\s+|\s+$/g, '');};
-String.prototype.between = function(first,second) {var x = this.indexOf(first) + first.length;var z = this.substring(x);var y = z.indexOf(second);return z.substring(z,y);};
-String.prototype.instr = function(strFind){return (this.indexOf(strFind) >= 0);};
-String.prototype.int = function() {
-	var r = parseInt(this.replace(/,/g,''),10);
-	if (isNaN(r)) r=-1;
-	return r;
-	};
-String.prototype.float = function() {
-	var r = parseFloat(this.replace(/[^0-9\.]*/g,''),10);
-	if (isNaN(r)) r=-1;
-	return r;
-	};
-Number.prototype.int = function() {
-	return this;
-}
-
-var db = {
-	id : '',
-	init :function(kocid) {
-		if (kocid != null) {
-			GM_setValue("lux_last_user",kocid);
-			this.id = kocid;
-			return;
-		}
-		else 
+	var db = {		
+		// This allows it to store info for different koc ids on same pc
+		init :function(kocid) {
+			if (kocid != null) {
+				GM_setValue("lux_last_user",kocid);
+				this.id = kocid;
+				return;
+			}
 			this.id = GM_getValue("lux_last_user",0);
-	},
-	get : function(option,def) {
-		option += "_"+this.id;
-		var value =GM_getValue(option,def);
-		if (option.indexOf('gold_')>0) 
-			value=parseInt(value);
-		return value;
-	},
-	put: function(option,val) {
-		option += "_"+this.id;
-		GM_setValue(option,val);
-	},
-	del : function(option) {
-		option += "_"+this.id;
-		GM_deleteValue(option);
-	},
-};
+		},
+		get : function(option,def) {
+			option += "_"+this.id;
+			var value = GM_getValue(option,def);
+			if (option.indexOf('gold_')>0) 
+				value = parseInt(value);
+			return value;
+		},
+		put: function(option,val) {
+			option += "_"+this.id;
+			GM_setValue(option,val);
+		},
+		del : function(option) {
+			option += "_"+this.id;
+			GM_deleteValue(option);
+		},
+	};
 
-var loadUser = function(kocid) {
-	db.init(kocid)
-	if (db.id == 0)
-		return false;
+	var loadUser = function(kocid) {
+		db.init(kocid)
+		if (db.id == 0) return false;
+				
+		var userObject = {};
+
+		_.map(storedStrings, function(val) {
+			userObject[val] = db.get(val, '')
+		})
 		
-	userObject = {};
-	//koc info
-	userObject.kocid = db.get('kocid','');
-	userObject.nick = db.get('kocnick','');	//koc nick
-	userObject.race = db.get('race',-1);
-	userObject.tff = db.get('tff',0);
-	userObject.income = db.get('income',-1);
-	
-	//forum info
-	userObject.forumName = db.get('forumName','');
-	userObject.forumPass = db.get('forumPass','');
-	userObject.auth = db.get('auth','');
-	
-	userObject.sa = db.get('sa',0);
-	userObject.da = db.get('da',0);
-	userObject.spy = db.get('spy',0);
-	userObject.sentry = db.get('sentry',0);
-	userObject.spyWeaps = db.get('spyWeaps',0);
-	userObject.sentryWeaps = db.get('sentryWeaps',0);
-	userObject.daWeaps = db.get('daWeaps',0);
-	userObject.saWeaps = db.get('saWeaps',0);
-	
-	//user options
-	userObject.logself = db.get('logself','');
+		_.map(storedNumbers, function (val) {
+			userObject[val] = db.get(val, 0);
+		});
 
-	
-	// floaty gold on teh left side
-	var gold = TextBetween(document.body.innerHTML, 'Gold:<font color="#250202">', '<');
+		
+		var d = new Date();
+		userObject['time'] = d.getTime()+1000*60;
+		userObject['gold'] = getPlayerGold()
 
-	if (gold != '') {
-		gold = gold.replace('B', '000000000');
-		gold = gold.replace('M', '000000');
-		gold = gold.replace('K', '000');
-		gold = to_int(gold);
+		return userObject
+	};
+
+	var getCurrentPage = function() {
+		return document.URL.substring(document.URL.indexOf('.com')+5, document.URL.indexOf('.php'));	
 	}
 	
-	userObject.gold=gold;
-	
-	var d = new Date();
-	userObject.time = d.getTime()+1000*60;
-	
-	return userObject;
-};
+	var getPlayerGold = function() {
+		var gold = TextBetween(document.body.innerHTML, 'Gold:<font color="#250202">', '<');
 
-var page = {
-	which : function() {
-		return document.URL.substring(document.URL.indexOf('.com')+5, document.URL.indexOf('.php'));	
-	},
-}
+		if (gold != '') {
+			gold = gold.replace('B', '000000000');
+			gold = gold.replace('M', '000000');
+			gold = gold.replace('K', '000');
+			gold = to_int(gold);
+		}
+		return (gold || 0)
+	}
 
-//end of prototypes
+
+
+
 
 
 	//GENERAL
-	
 	function to_int(str) {
 		str = str.replace(/[^0-9]/g,'');
 		if (str == '')
@@ -307,16 +243,16 @@ var page = {
 			var ds =  d.getTime();
 			timespan = Math.floor((ds - time) / 1000)
 			var time = "";
-			if ((timespan > 1209600) && (time == "")) time += Math.floor(timespan / 604800) + ' weeks ago';
-			if ((timespan > 604800) && (time == "")) time += '1 week ago';
-			if ((timespan > 172800) && (time == "")) time += Math.floor(timespan / 86400) + ' days ago';
-			if ((timespan > 86400) && (time == "")) time += '1 day ago';
-			if ((timespan > 7200) && (time == "")) time += Math.floor(timespan / 3600) + ' hours ago';
-			if ((timespan > 3600) && (time == "")) time += '1 hour ago';
-			if ((timespan > 120) && (time == "")) time += Math.floor(timespan / 60) + ' minutes ago';
-			if ((timespan > 60) && (time == "")) time += '1 minute ago';
-			if ((timespan > 1) && (time == "")) time += timespan + ' seconds ago';	
-			if (time == "") time += '1 second ago';		
+			if ((timespan > 1209600) && (time == "")) time = Math.floor(timespan / 604800) + ' weeks ago';
+			if ((timespan > 604800) && (time == "")) time = '1 week ago';
+			if ((timespan > 172800) && (time == "")) time = Math.floor(timespan / 86400) + ' days ago';
+			if ((timespan > 86400) && (time == "")) time = '1 day ago';
+			if ((timespan > 7200) && (time == "")) time = Math.floor(timespan / 3600) + ' hours ago';
+			if ((timespan > 3600) && (time == "")) time = '1 hour ago';
+			if ((timespan > 120) && (time == "")) time = Math.floor(timespan / 60) + ' minutes ago';
+			if ((timespan > 60) && (time == "")) time = '1 minute ago';
+			if ((timespan > 1) && (time == "")) time = timespan + ' seconds ago';	
+			if (time == "") time = '1 second ago';		
 		return time;
 	}
 
@@ -327,13 +263,23 @@ var page = {
 			return false;
 	}
 
-(function(){
-
-
-    var action = page.which();
+	function parseResponse(text,key) {
+		tx = text.split("\t\t");
+		for (t in tx) {
+			var s = tx[t].split("\t");
+			if (s[0] == key)
+				return s[1];
+		}
+		return "";
+	}
 	
-	var kocid = null;
 
+
+    var action = getCurrentPage();
+	
+	var kocid;
+
+	// Get kocid, before loading user.
 	if (action =='base') {
 		var html = document.body.innerHTML.split("stats.php?id=");
 		html = html[1];
@@ -341,52 +287,19 @@ var page = {
 	}
 	
 	User = loadUser(kocid);
-
-    //version is year, month, day OR yymmdd
-    const version = '0.4.120710';  
-    const serverURL = 'luxbot.net/bot/';
-    const baseURL = 'http://' + serverURL + 'luxbot.php?';
-    
-	
-    var querying = false;	//for battlefield, "clicking" and expanding
-    var previd; 
-	
-    var c = 0;
-    var c2 = 0;
-    var r;
-    var prevuser;
-    
-    
-    var statsdesc = {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'};
-    
-    var direct;
-    var messages;
-    var darken;
-    var guicontent;
-    var widget;
-    
-    var bfusers;
+   
+    var querying = false;	// for battlefield, "clicking" and expanding
     var coltables = [];
     
     checkForUpdate(1);
     createGUIContainer();
- 	initReconRequest();
    
     if(checkUser() == 0) {
-        return;
+         return;
     }
 
 
-	// Turn clock
-	if (checkOption('option_clock')) {
-		updateClock();
-	}
 
-	if (checkOption('option_goldProjection')) {
-		updateGold();
-	}
-
-	
 
 
     switch (action) {
@@ -456,7 +369,7 @@ var page = {
 			
 		case 'mercs':
 			var rows = $("form").find("table>tbody>tr");
-			btn_init(rows,4,1, 2);
+			btn_init(rows, 4, 1, 2);
 			break;
 			
         case 'detail':
@@ -471,7 +384,18 @@ var page = {
             break;
     }
 
+	// These will all be plugins..
 
+	initReconRequest();
+
+	// Turn clock
+	if (checkOption('option_clock')) {
+		updateClock();
+	}
+
+	if (checkOption('option_goldProjection')) {
+		updateGold();
+	}
 
     
     // GENERAL
@@ -482,28 +406,26 @@ var page = {
 		newTime = newTime.getTime();
 		
 		if (newTime < User.time) {
-			setTimeout(updateGold,100);
+			setTimeout(updateGold, 2000);
 			return;
 		}
 		
 		elapsedMinutes = Math.floor((newTime - User.time)/1000/60);
 		
-		var temp = $("#gold_projection");
-		if (temp.size() ==0) {
-			$("tr:contains('Last Attacked:'):last").parent().find("tr:eq(0)").after("<tr><td colspan=2 style='color: BLUE; font-size: 6pt;text-align:center' id='gold_projection'></td></tr>");
-			temp = $("#gold_projection");
+		var $temp = $("#gold_projection");
+		if ($temp.size() ==0) {
+			$("tr:contains('Last Attacked:'):last").parent().find("tr:eq(0)")
+				.after("<tr><td colspan=2 style='color: BLUE; font-size: 6pt;text-align:center' id='gold_projection'></td></tr>");
+			$temp = $("#gold_projection");
 		}
 		
 		
 		var newGold = Math.floor(User.gold.int() + (User.income.int()*elapsedMinutes));
-		$(temp).text("Projection: "+addCommas(newGold));
+		$temp.text("Projection: " + addCommas(newGold) );
 	
-		// alert(elapsedMinutes + " "+User.gold + " "+ User.income);
 		setTimeout(updateGold,2000);
 	}
-	
-	
-	
+		
 	function updateClock() {
 		var turnsoon = 0;
 		var currentTime = new Date ( );
@@ -513,21 +435,6 @@ var page = {
 		currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
 		currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
 		var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds + " ";
-		/*
-		//This is legacy from when the turns came once every 30 minutes//
-		if (((currentMinutes == "06") || (currentMinutes == 36)) && (currentSeconds > 30)) {
-			currentTimeString = '<span align="center;" style="font-size: 13pt;">Rank soon<br \></span>' +currentTimeString;
-			turnsoon = 1;
-		}
-		
-		if (turnsoon == 0) {
-			$("#_md_clock").css("background","#000000");
-		}
-		else {
-			$("#_md_clock").css("background","#FF0000");
-		}
-
-		*/
 		
 		var clock = document.getElementById("_md_clock");
 
@@ -539,8 +446,9 @@ var page = {
 		setTimeout(updateClock,500);
 	}
 	
+ 
 
-    function createGUIContainer() {
+	function createGUIContainer() {
 
         addCSS('#_luxbot_gui{position:fixed;top:0;right:0;background-color:#000000;padding:15px;border:1px solid #ffffff;}');
         addCSS('#_luxbot_gui ul,#_luxbot_nav{list-style:none;margin:0;padding:0;');
@@ -548,13 +456,6 @@ var page = {
         addCSS('._luxbotago{color:#aaaaaa;font-style:italic}');
 
 		$("body").append("<div id='_luxbot_gui'><ul></ul></div>");
-        // var q = document.createElement('div');
-        // q.id = '_luxbot_gui';
-		// document.body.appendChild(q);
-
-        // var x = document.createElement('ul');
-        // q.appendChild(x);
-        // direct = x;
         
         createGUIBox();
         
@@ -588,7 +489,7 @@ var page = {
             }
         }   
     }
-    
+
     function createGUIBox() {
         if (widget == undefined) {
 			
@@ -782,7 +683,7 @@ var page = {
 
     // INIT
     function showInitBox() {
-		welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
+		var welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
 		showMessage(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
 					'User: <input type="text" id="_forum_username" value="'+User.forumName+'"/> Password: <input type="password" id="_forum_password" /> <input type="button" value="Login"'+
 									'id="_luxbot_login" /><br />');   
@@ -792,13 +693,13 @@ var page = {
 	}
 	
 	function gui_showChangeLog() {
-		welcome ='<div style="text-align:center;"><h2>LuXBoT Change Log</h2><p style="padding-left:30px;width:500px">This is relatively new, and does not include all changes done to previous versions by various awesome coders. For more Information please visit our <a href="http://stats.luxbot.net/about.php">About</a> page.</p><br /><br />';
+		var welcome ='<div style="text-align:center;"><h2>LuXBoT Change Log</h2><p style="padding-left:30px;width:500px">This is relatively new, and does not include all changes done to previous versions by various awesome coders. For more Information please visit our <a href="http://stats.luxbot.net/about.php">About</a> page.</p><br /><br />';
 		
-		var text = "";
-		for (i = 0; i < changeLog.length ; i++) {
-			text += "<tr><td>"+changeLog[i][0]+"</td><td>"+changeLog[i][1]+"</td></tr>";
-		
-		}
+		// var text = "";
+		// for (i = 0; i < changeLog.length ; i++) {
+			// text += "<tr><td>"+changeLog[i][0]+"</td><td>"+changeLog[i][1]+"</td></tr>";
+		// }
+		var text = "We apologize, this service is temporarily unavailable."
 		showMessage(welcome+"<table border=1><tr><th>Date</th><th>Info</th></tr>"+text+"</table></div>");   
 									
     }
@@ -835,7 +736,7 @@ var page = {
     }
 	
 	function initVB() {
-        getLux('&a=vb_login&kocid=' + db.get('kocid')+'&username=' + db.get('forumName','')+"&password="+db.get('forumPass'),
+        getLux('&a=vb_login&kocid=' + db.get('kocid'),
             function(r) {
                 var ret = r.responseText;
 				if (ret.indexOf("Error") == -1) {
@@ -863,11 +764,7 @@ var page = {
 				Show Full Log with Bottom Scroll <input type="radio" name="_luxbot_battlelog" value="2"' + (battlelog == 2 ? ' checked="checked"' : '') + ' /> \
 				Show Full Log with Top Scroll <input type="radio" name="_luxbot_battlelog" value="3"' + (battlelog == 3 ? ' checked="checked"' : '') + ' /> \
 				Show Full Log with Redirect<br />\
-			Always Focus Security Pages: <input type="checkbox" id="_luxbot_securitycheck" ' + (db.get('securityfocus', 0) == 1 ? ' checked="checked"' : '') + '/></fieldset>\
-		<fieldset><legend>Battlefield Options</legend>\
-			Filter Battlefield users: <input type="checkbox" id="_luxbot_bffilterna" ' + (db.get('bffilterna', 0) == 1 ? ' checked="checked"' : '') + ' /><br />\
-			Filter Players with less than <input type="text" value="' + db.get('bffiltergold', 0) + '" id="_luxbot_bffiltergold" /> Gold<br />\
-			Filter Players with less than <input type="text" value="' + db.get('bffiltertff', 0) + '" id="_luxbot_bffiltertff" /> Soldiers</fieldset><br />'
+			Always Focus Security Pages: <input type="checkbox" id="_luxbot_securitycheck" ' + (db.get('securityfocus', 0) == 1 ? ' checked="checked"' : '') + '/></fieldset>'
 			+'<table>'
 			+htmlToggle("Turn Clock","option_clock") 
 			+htmlToggle("Stats In Command Center","option_commandCenterStats","Top","Side") 
@@ -918,9 +815,6 @@ var page = {
         
         db.put('securityfocus', document.getElementById('_luxbot_securitycheck').checked);
         
-        db.put('bffilterna', document.getElementById('_luxbot_bffilterna').checked);
-        db.put('bffiltergold', document.getElementById('_luxbot_bffiltergold').value);
-        db.put('bffiltertff', document.getElementById('_luxbot_bffiltertff').value);
 		
 		db.put('option_clock', $("input[name='option_clock']:checked").val());
 		db.put('option_commandCenterStats', $("input[name='option_commandCenterStats']:checked").val());
@@ -1205,7 +1099,9 @@ var page = {
                     
                     stats = {'tffx':x.shift(), 'dax':x.shift(), 'goldx':x.shift()};
                     
-                    document.getElementById('_luxbot_showMessageBox').innerHTML = 'Show Messages (' + (x.length-1) + ')';
+                    var temp = document.getElementById('_luxbot_showMessageBox');
+					if (!temp) return;
+					temp.innerHTML = 'Show Messages (' + (x.length-1) + ')';
                     messages = x;
                     
                     if (messages.pop() == '1') {
@@ -1242,7 +1138,7 @@ var page = {
         return html.replace(re, " ").replace(/^\s+|\s+$/g, '');
     }
     
-    function addCommas(sValue) { //"addCommas function wrote by Lukas Brueckner..." thanks =) but not really true ^.^
+    function addCommas(sValue) {
 
 	sValue = String(sValue);
     	var sRegExp = new RegExp('(-?[0-9]+)([0-9]{3})');
@@ -1258,7 +1154,7 @@ var page = {
     // LOGGING
     //
 	function getLux(url, callback) {
-		address= baseURL+'&username='+User.nick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+		address= baseURL+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
 		GM_log("Get URL: " +address);
 		GM_xmlhttpRequest({
 			method: 'GET',
@@ -1276,7 +1172,7 @@ var page = {
 	}    
 
 	function postLux(url, data, callback) {
-		address= baseURL+'&username='+User.nick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+		address= baseURL+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
 		GM_log("Post URL: "+ address);
 		GM_xmlhttpRequest({
 			method: "POST",
@@ -1317,7 +1213,22 @@ var page = {
 					});
     }
 	
+    function logRecon(enemy, enemyid, logid, gold, data, weapons) {
+        getLux('&a=logRecon&enemy=' + enemy + 
+								'&enemyid=' + enemyid +
+								'&logid=' + logid +
+								'&gold=' + gold +
+								'&data=' + data + 
+								'&weapons=' + weapons
+					, function(responseDetails) {
+							GM_log("logRecon Response: "+ responseDetails.responseText);
+							// alert(responseDetails.responseText);
+					});
+    }	
 
+    function SendConquestDetails(contype) {
+    	getLux('a=logcon&contype=' + contype);
+    }
 
 	//
 	// Command Center Functions
@@ -1384,6 +1295,7 @@ var page = {
 	function conquestPage() {
 	
 		function doConquest() {
+		  // Need approval from Ta- for this.
 			// var count = 1 + to_int($("#wCount").text());
 			// $("#wCount").text('Wizards (x'+count+')');
 			// post("http://www.kingsofchaos.com/conquest.php",
@@ -1398,9 +1310,7 @@ var page = {
 		}
 	}
 	
-    function SendConquestDetails(contype) {
-    	getLux('a=logcon&contype=' + contype);
-    }
+
 	
 
 
@@ -1908,7 +1818,7 @@ var page = {
 				unheld = '<span style="color:red">'+unheld+'</span>';
 			return unheld;
 		}
-		unheldSpy = describe(unheldSpy);
+		unheldSpy = describe(unheldSpy); 
 		unheldSentry = describe(unheldSentry);
 		unheldStrike = describe(unheldStrike);
 		unheldDefense = describe(unheldDefense);
@@ -2089,7 +1999,7 @@ var page = {
 		else
 			var attack_id = document.URL.substring(document.URL.indexOf('attack_id=')+10,document.URL.indexOf('&'));
 
-		sendAttackLogDetails(User.nick, "attack", enemy_id, enemy_name, your_damage, enemy_damage, your_losses, enemy_losses, gold_stolen, attack_id, 'now');
+		sendAttackLogDetails(User.kocnick, "attack", enemy_id, enemy_name, your_damage, enemy_damage, your_losses, enemy_losses, gold_stolen, attack_id, 'now');
     }
 
 	function attacklogPage() {
@@ -2140,7 +2050,7 @@ var page = {
 					type="attack";
 					
 				//alert('time: ' + time + ' :: enemy: ' + enemy + ' :: gold: ' + gold + ' :: enemy_losses: ' + enemy_losses + ' :: your_losses: ' + your_losses + ' ::  enemy_damage: ' + enemy_damage + ' :: your_damage: ' + your_damage + ' :: logid: ' + logid);
-				sendAttackLogDetails(User.nick, type, enemy_id, enemy, your_damage, enemy_damage, your_losses, enemy_losses, gold, logid, time);
+				sendAttackLogDetails(User.kocnick, type, enemy_id, enemy, your_damage, enemy_damage, your_losses, enemy_losses, gold, logid, time);
 			}
 		}
 	
@@ -2203,169 +2113,85 @@ var page = {
             }
         }
     }
-    
+ 
+	function processSabLog() {
+		var sabtext = $("td.content").text();
+		if (sabtext.indexOf('Your spies successfully enter') == -1) {
+		  //turned illegal
+		  //  history.back();
+			return;
+		}
+		
+		var player = sabtext.between("successfully enter ", "'s armory");
+		var amount = sabtext.between("and destroy ", " of the enemy's");
+		var weapon = sabtext.between("of the enemy's ", " stockpile.");
+		var logid = String(document.location).substr(String(document.location).indexOf('=')+1);
+		getLux('&a=logsab&target=' + targetName + '&weapon=' + targetWeapon + '&amount=' + targetAmount + '&logid=' + logid,
+			function(responseDetails) {
+				//GM_log(responseDetails.responseText);
+			});
+	}
+
+	function getRowValues(searchText) {
+		var $cells = $("tr:contains('"+searchText+"'):last > td")
+		
+		var vals = []
+		$.each($cells, function (index, val) {
+			if (index === 0) return
+			vals.push($(val).text().trim())
+		});
+		
+		return vals
+	}
+	
 	function processIntelLog()  {
 		//proccess recons and sabotages
-		 
-		function processSabLog(sabtext) {
 
-			if (sabtext.indexOf('Your spies successfully enter') == -1) {
-			  //turned illegal
-			  //  history.back();
-				return;
-			}
-			
-			var beforeName, afterName, differenceName, targetName;
-			beforeName = sabtext.indexOf(" enter ");
-			afterName = sabtext.indexOf("'s armory");
-			differenceName = afterName - beforeName - 7;
-			targetName = sabtext.substr(beforeName + 7, differenceName);
-			
-			var beforeAmount, afterAmount, differenceAmount, targetAmount;
-			beforeAmount = sabtext.indexOf(" destroy ");
-			afterAmount = sabtext.indexOf(" of the enemy's");
-			differenceAmount = afterAmount - beforeAmount - 9;
-			targetAmount = sabtext.substr(beforeAmount + 9, differenceAmount);
-			
-			var beforeWeapon, afterWeapon, differenceWeapon, targetWeapon;
-			beforeWeapon = afterAmount;
-			afterWeapon = sabtext.indexOf(" stockpile.");
-			differenceWeapon = afterWeapon - beforeWeapon - 16;
-			targetWeapon = sabtext.substr(beforeWeapon + 16, differenceWeapon);
-			
-			var logid = String(document.location).substr(String(document.location).indexOf('=')+1);
-
-			getLux('&a=logsab&target=' + targetName + '&weapon=' + targetWeapon + '&amount=' + targetAmount + '&logid=' + logid,
-				function(responseDetails) {
-					//GM_log(responseDetails.responseText);
-				});
-		}
-
-	    var q = $("td.content");
-        var tables = q.html().split('<table');
+		var text = $("td.content").text()
 		
-
-        var domGrab = $("td.content > p:first");
-		var infoText = domGrab.html();
-
 		//notice for sabotages it says "your spies" for recon "your spy"
-        if (tables[0].indexOf('Your spy') == -1) {
-            processSabLog(tables[0]);
+        if (text.indexOf('Your spy') == -1) {
+            processSabLog();
             return;
         }
 
-        if (tables[0].indexOf('As he gets closer, one of the sentries spots him and sounds the alarm.') != -1) {
+        if (text.indexOf('As he gets closer, one of the sentries spots him and sounds the alarm.') != -1) {
             //now illegal
 			//history.back();
 			return;
         }
 
-
-        var enemy = TextBetween(tables[0],"your spy sneaks into ","'s camp");
-        var enemyid = TextBetween(tables[5],'value="','"');
-		//GM_log(enemy+" "+enemyid);
-		
-		var units = tables[1].replace(/ align="right"/g, '').split('<td>');
-        var unitstring = 
-            units[2].substr(0, units[2].indexOf('</td>')) + ';' + 
-            units[3].substr(0, units[3].indexOf('</td>')) + ';' + 
-            units[4].substr(0, units[4].indexOf('</td>')) + ';' + 
-            units[6].substr(0, units[6].indexOf('</td>')) + ';' + 
-            units[7].substr(0, units[7].indexOf('</td>')) + ';' + 
-            units[8].substr(0, units[8].indexOf('</td>'));
-        unitstring = unitstring.replace(/\?\?\?/g, '').replace(/,/g, '');  
-		//GM_log(unitstring);
-		
-        var stats = tables[3].replace(/ align="right"/g, '').split('<td>');
-        var actionstring = 
-            stats[2].substr(0, stats[2].indexOf('</td>')) + ';' + 
-            stats[4].substr(0, stats[4].indexOf('</td>')) + ';' + 
-            stats[6].substr(0, stats[6].indexOf('</td>')) + ';' + 
-            stats[8].substr(0, stats[8].indexOf('</td>'));
-        actionstring = actionstring.replace(/\?\?\?/g, '').replace(/,/g, '');
-       // GM_log(actionstring);
-		
-        var statsstring = 
-            stats[10].substr(0, stats[10].indexOf('</td>')) + ';' + 
-            stats[12].substr(0, stats[12].indexOf('</td>')) + ';' + 
-            stats[16].substr(0, stats[16].indexOf('</td>')) + ';' + 
-            stats[18].substr(0, stats[18].indexOf('</td>')) + ';' + 
-            TextBetween(tables[4], '<td align="center">',' Gold');
-        statsstring = statsstring.replace(/\?\?\?/g, '').replace(/,/g, '');
-        //GM_log(statsstring);
-		
-        var siege = stats[14].substr(0, stats[14].indexOf('</td>')).replace(/\?\?\?/g, '');
-        //GM_log(siege);
-		
-        var weapons = tables[5].replace(/ align="right"/g, '').split(/\<td\>/);
-        var i = 1;
-        var weaponstring = '';
-        while (i < weapons.length) {
-            weaponstring += 
-                weapons[i].substr(0, weapons[i].indexOf('</td>')) + ':' + 
-                weapons[i+1].substr(0, weapons[i+1].indexOf('</td>')) + ':' + 
-                weapons[i+2].substr(0, weapons[i+2].indexOf('</td>')) + ':' + 
-                weapons[i+3].substr(0, weapons[i+3].indexOf('</td>')) + ';';
-            i += 4;
-        }
-        weaponstring = weaponstring.replace(/\?\?\?/g, '').replace(/,/g, '').substr(0, weaponstring.length-1);
-        //alert(weaponstring);
-		
-        var data = actionstring + ';' + unitstring + ';' + statsstring;
+        
+		var enemy = text.between("your spy sneaks into ","'s camp");
+		var enemyid = $("input[name='id']").val()
         var logid = String(document.location).substr(String(document.location).indexOf('=')+1);
-        sendLogDetails(User.nick, enemy, enemyid, siege, data, weaponstring,'', logid);
+		
+		var rowsToGrab = ["Mercenaries", "Soldiers",
+						"Strike Action", "Defensive Action", "Spy Rating", "Sentry Rating",
+						"Covert Skill", "Covert Operatives", "Siege Technology", "Attack Turns",
+						"Unit Production"]
+						
+		var data = []
+		_.map(rowsToGrab, function (str) {
+			var temp = getRowValues(str);
+			data = data.concat(temp)
+		});
+		data = data.join(";")
+
+		var stable = $("table:contains('Treasury')").last();
+		var gold = to_int($(stable).find("tr>td").text());
+		
+		
+		stable = $("table:contains('Weapons')").last();
+		var weap_rows = $(stable).find("tbody>tr>td").parent();
+		var weapons = "";
+		$(weap_rows).each(function(i,e) {
+			var r = $(e).text().split("\n");
+			var g = r[1].trim()+":"+r[2].trim()+":"+r[3].trim()+":"+r[4].trim();
+			weapons += g +";";
+		});		
+		logRecon(enemy, enemyid, logid, gold, data, weapons)
     }
-
-	//Not finished yet!
-	// function processRecon() {
-		// var html = document.body.innerHTML;
-	    // if (html.instr('As he gets closer, one of the sentries spots him and sounds the alarm.')) {
-            // //now illegal
-			// //history.back();
-			// return;
-        // }
-
-        // var enemy = html.between("your spy sneaks into ","'s camp");
-        // var enemyid = html.between('value="','"');
-		
-		// var stable = $("table:contains('Army Size:')").last();
-		// var mercs_a = $(stable).find("tr:eq(1)>td:eq(1)").text();
-		// var mercs_d = $(stable).find("tr:eq(1)>td:eq(2)").text();
-		// var mercs_u = $(stable).find("tr:eq(1)>td:eq(3)").text();
-		// var troops_a = $(stable).find("tr:eq(2)>td:eq(1)").text();
-		// var troops_d = $(stable).find("tr:eq(2)>td:eq(2)").text();
-		// var troops_u = $(stable).find("tr:eq(2)>td:eq(3)").text();
-
-		// stable = $("table:contains('Military Stats')").last();
-		// var sa = $(stable).find("tr:contains('Strike Action'):first>td:eq(1)").text();
-		// var da = $(stable).find("tr:contains('Defensive Action'):first>td:eq(1)").text();
-		// var spy = $(stable).find("tr:contains('Spy Rating'):first>td:eq(1)").text();
-		// var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
-		// var covert_skill = $(stable).find("tr:contains('Covert Skill'):first>td:eq(1)").text();
-		// var coverts = $(stable).find("tr:contains('Covert Operatives'):first>td:eq(1)").text();
-		// var siege = $(stable).find("tr:contains('Siege Technology'):first>td:eq(1)").text();
-		// var turns = $(stable).find("tr:contains('Attack Turns'):first>td:eq(1)").text();
-		// var conscription = $(stable).find("tr:contains('Unit Production'):first>td:eq(1)").text();
-
-		// stable = $("table:contains('Treasury')").last();
-		// var gold = to_int($(stable).find("tr>td").text());
-		
-		
-		// stable = $("table:contains('Weapons')").last();
-		// var weap_rows = $(stable).find("tbody>tr>td").parent();
-		// var weapons = "";
-		// $(weap_rows).each(function(i,e) {
-			// var r = $(e).text().split("\n");
-			// var g = r[1].trim()+","+r[2].trim()+","+r[3].trim()+","+r[4].trim();
-			// weapons += g +";";
-		// });
-
-        // var logid = String(document.location).substr(String(document.location).indexOf('=')+1);
-
-		// logRecon(enemy,enemyid, gold, sa.int() + ";"+da.int()+";"+spy.int()+";"+sentry.int()+";"+covert_skill.int()+";"+coverts.int()+";"+siege+";"+turns.int()+";"+conscription.int(), mercs_a.int()+";"+mercs_d.int()+";"+mercs_u.int()+";"+troops_a.int()+";"+troops_d.int()+";"+troops_u.int(), weapons, logid);
-	// }
-    
-
 
     //
     // Stats Page Functions
@@ -2667,60 +2493,19 @@ var page = {
     //
     
     function battlefieldAct() {
-        c2++;
-        var xtables = document.getElementsByTagName('table');
-        var tables;
-        for (i = 0; i < xtables.length;i++) {
-            if (xtables[i].className.indexOf('battlefield') != -1) {
-                tables = xtables[i];
-            }
-        }
-        
-        bfusers = tables.getElementsByTagName('tr');
-        
-        var newuser = bfusers[1].getElementsByTagName('td')[2].getElementsByTagName('a')[0].innerHTML;
-        if (bfusers == undefined || tables == undefined || newuser == prevuser) {
-            if (c2 < 20) {
-                setTimeout(battlefieldAct, 250);
-            } else {
-                //GM_log('x');
-                addGUILink('Reactivate Script', battlefieldAct, "#_luxbot_gui");
-            }
-            return;
-        }
-        if (c2 > 20) {
-            document.getElementById('_luxbot_gui').childNodes[0].removeChild(document.getElementById('_luxbot_gui').childNodes[0].childNodes[1]);
-        }
-        c2 = 0;
-        prevuser = newuser;
-        
-        bfusers[0].childNodes[1].innerHTML = '<input type="checkbox" id="_luxbot_bffiltertoggle" ' + (db.get('bffilterna', 0) == 1 ? 'checked="checked"' : '') + ' />';
-        document.getElementById('_luxbot_bffiltertoggle').addEventListener('click', 
-            function (e)
-            {
-                if (e.target.checked == true) {
-                    db.put('bffilterna', 1);
-                    filterUsers(bfusers);
-                } else {
-                    db.put('bffilterna', 0);
-                    var q = document.getElementsByTagName('tr');
-                    for (i = 0; i < q.length; i++) {
-                        q[i].style.display = 'table-row';
-                    }
-                }
-            }, true);
-        
-        
-        missedGold = bf_logGold(bfusers);
+		var $playerRows = $("tr.player");
+         
+        missedGold = bf_logGold($playerRows);
         bf_showGold(missedGold);
-        filterUsers(bfusers);
-        bf_needsRecon(bfusers);
-        bf_online(bfusers);
-        if (bfusers.length > 21) {
-            var q = bfusers[21].getElementsByTagName('a');
-            q[0].addEventListener('click', battlefieldAct, true);
-            if (q.length > 1) {
-                q[1].addEventListener('click', battlefieldAct, true);
+        bf_needsRecon($playerRows);
+        bf_online($playerRows);
+		
+		$nav = $("tr.nav")
+        if ($nav.size()) {
+            var q = $nav.find('a');
+            q.on("click", battlefieldAct);
+            if (q.size() > 1) {
+                $(q[1]).on('click', battlefieldAct);
                 q[1].accessKey = 'c';
                 q[0].accessKey = 'x';
             } else {
@@ -2754,7 +2539,7 @@ var page = {
 				if(gold =='')
 					unscannedGold += userid + ";";
 					
-				if (name == User.nick && User.logself == 0)
+				if (name == User.kocnick && User.logself == 0)
 					gold = '';
 								
 				var temp = name + ":" + userid + ":" + gold + ":" + rank + ":" + alliance + ":" + tff +";";
@@ -2797,10 +2582,10 @@ var page = {
 		});
 	}
 		
-	function bf_needsRecon(users) {
+	function bf_needsRecon($pRows) {
 	
 		var kocids = '';
-		$(".battlefield>tbody>tr.player").each(function() {
+		$pRows.each(function() {
 			kocids += TextBetween($(this).children('td').eq(2).html(),'id=','">')+",";
 		});
 		kocids = kocids.slice(0,-1);
@@ -2864,119 +2649,52 @@ var page = {
 				}
 			});
 	}	
-	   
-    function filterUsers(users) {
-        if (db.get('bffilterna', 0) == 0) {
-            return;
-        }
-        var gold = db.get('bffiltergold', 0);
-        var tff = db.get('bffiltertff', 0);
-        for (i = 1; i < users.length-1;i++) {
-            var x = users[i].getElementsByTagName('td');
-            if (x[5].innerHTML.indexOf('???') != -1
-                || Number(x[5].innerHTML.substr(0, x[5].innerHTML.indexOf(' ')).replace(/,/g, '')) < gold
-                || Number(x[3].innerHTML.replace(/,/g, '')) < tff) {
-                users[i].style.display = 'none';
-            }
-        }
-    }
+	
     
-    function battlefieldShowInfo() {
-        c++;
-        var q = document.getElementsByTagName('tr');
-        var statstable;
-        var lstatstable;
+    function battlefieldShowInfo(data) {
+		// Hack to get the element to write into
+		$container = $("tr.profile").find("form[action='writemail.php']").closest("tbody");
+        // if (!$container || $container.size() ==0) {
+			// setTimeout( function() {battlefieldShowInfo(data);}, 200)
+			// return
+		// }
         
-        for(var i = 0; i < q.length; i++){
-            if(q[i].className == 'profile')
-            {
-                statstable = q[i].getElementsByTagName('table')[2];
-                lstatstable = q[i].getElementsByTagName('table')[1];
-                break;
-            }
-        }
-        
-        if (statstable == undefined || lstatstable == undefined || lstatstable.rows[1].cells[1].childNodes[0].href.indexOf(previd) == -1) {
-            if (c > 3) {
-                return;
-            }
-            setTimeout(battlefieldShowInfo, 1000);
-            return;
-        }
-        
-        if (lstatstable.rows[ lstatstable.rows.length-2 ].cells[0].innerHTML.indexOf('Alliances') > -1)
-        {
-            lstatstable.rows[ lstatstable.rows.length-2 ].cells[1].innerHTML = '<div id="_luxbot_alliances">' + lstatstable.rows[ lstatstable.rows.length-2 ].cells[1].innerHTML + '</div><a href="javascript:LuXBotShowAlliances();"> + Show</a>';
-            addCSS('#_luxbot_alliances{display:none;visibility:hidden;}');
-            addJS('function LuXBotShowAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'block\';q.style.visibility = \'visible\';q.nextSibling.href = \'javascript:LuXBotHideAlliances();\';q.nextSibling.innerHTML = \' - Hide\'}\
-			function LuXBotHideAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'none\';q.style.visibility = \'hidden\';q.nextSibling.href = \'javascript:LuXBotShowAlliances();\';q.nextSibling.innerHTML = \' + Show\'}');
-        }
-        
-        if (r == '403') {
-            statstable.insertRow(statstable.rows.length-2).innerHTML = '<td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">Access denied</td>';
-        } else if (r == 'N/A') {
-            statstable.insertRow(statstable.rows.length-2).innerHTML = '<td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">No data available</td>';
-
-
+		$("tr.bf_inject").remove();
+		
+        if (data == '403') {
+            $container.prepend('<tr class="bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">Access denied</td>');
+        } else if (data == 'N/A') {
+             $container.prepend('<tr class="bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">No data available</td>');
         } else {
-            var userInfo = r.split(';');
+            var userInfo = data.split(';');
             var x;
 
-			for (i = userInfo.length-1; i >= 0; i-=2) {
-                var x = statstable.insertRow(1);
-				if(typeof statsdesc[(i-1)/2] == "undefined") {
-					x.insertCell(0).innerHTML = userInfo[i-2];
-					x.insertCell(1).innerHTML = userInfo[i-1];
-					if (userInfo[i-1] == '???') {
-						x.cells[1].colSpan = 2;
-					} else {
-						x.insertCell(2).innerHTML = userInfo[i];
-
-						x.cells[2].className = '_luxbotago';
-					}
-					i -= 1;  
-				} else {
-					x.insertCell(0).innerHTML = statsdesc[(i-1)/2];
-					x.insertCell(1).innerHTML = userInfo[i-1];
-					if (userInfo[i-1] == '???') {
-						x.cells[1].colSpan = 2;
-
-					} else {
-						x.insertCell(2).innerHTML = userInfo[i];
-						x.cells[2].className = '_luxbotago';
-
-					}
-				}
+			for (i = 4 ; i >=0; i--) {
+				var stat = userInfo[i*2]
+				var time = userInfo[i*2+1]
+				
+				$container.prepend("<tr class='bf_inject><td style='font-weight:bold'>"+statsdesc[i]+"</td><td>"+stat+"</td><td class='_luxbotago'>"+time+"</td></tr>")
             }
         }
     }
   
     function showUserInfoB() {
-        document.addEventListener('click', function(event) {
+        $("a.player").on('click', function(event) {
+			GM_log("Clicked! " +event.originalEvent.target)
             if (String(event.target).indexOf('stats.php') > -1) {
-                if (querying == true) {
-                    return;
-                }
-                // battlefieldCurTarget = String(event.target);
                 var userid = String(event.target).substr(String(event.target).indexOf('=')+1, 7);
-                if (userid == previd) {
-                    previd = 0;
-                    return;
-                }
-                previd = userid;
-                var user;
-                querying = true;
-                //GM_log('http://' + serverURL + 'userinfo.php?userid=' + userid + '&username=' + username + '&password=' + password);
+				if (previd == userid) {
+					previd=0;
+					return;
+				}
+				previd = userid;
                 getLux('&a=getstats&userid=' + userid,
                     function(responseDetails) {
-                        querying = false;
-                        c = 0;
-                        r = responseDetails.responseText;
-                        //GM_log(r);
-                        battlefieldShowInfo();
+                        var r = responseDetails.responseText;
+                        battlefieldShowInfo(r);
                 });
             }
-        }, true);
+        });
     }
 
  
@@ -2989,12 +2707,11 @@ var page = {
 			$("td.content > table > tbody").eq(0).prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>");//prepend(tab);
 		else
 			$("tr:contains('Recent Attacks'):last").parent().parent().before("<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>");//prepend(tab);
-		getLux("&a=sabstats",
+			getLux("&a=sabstats",
 			 function(r) { $("#ff-load").html(""+r.responseText); 
 		}); 
 	}
 	
-
     function moveRecruitbox() {
 		//if player is blocking adds, this adds some extra space.
 		$("td.content").parent().children("td").eq(2).attr("width","50");
@@ -3057,11 +2774,10 @@ var page = {
     }
     
     function makeCollapsable() {
-			coltables = db.get('coltables' + action, '').split(';');
+		coltables = db.get('coltables' + action, '').split(';');
 
-        // if (action != 'base' && action != 'armory' && action != 'stats') {
-            // return;
-        // }
+		//var $tables = $("table.table_lines");
+
         var x = document.getElementsByTagName('table');
         
         for (j = 0; j < x.length; j++) {
@@ -3101,7 +2817,7 @@ var page = {
     }
     
     function isCollapsedx(x) {
-        for (c = 0; c < coltables.length; c++) {
+        for (var c = 0; c < coltables.length; c++) {
             if (coltables[c] == x) {
                return 1;
             }
@@ -3152,14 +2868,4 @@ var page = {
         db.put('coltables' + action, coltables.join(';'));
     }
     
-
-	function parseResponse(text,key) {
-		tx = text.split("\t\t");
-		for (t in tx) {
-			var s = tx[t].split("\t");
-			if (s[0] == key)
-				return s[1];
-		}
-		return "";
-	}
-})();
+}(window.jQuery);
