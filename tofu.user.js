@@ -276,7 +276,6 @@
 
 
     var action = getCurrentPage();
-	
 	var kocid;
 
 	// Get kocid, before loading user.
@@ -287,8 +286,6 @@
 	}
 	
 	User = loadUser(kocid);
-   
-    var coltables = [];
     
     checkForUpdate(1);
     createGUIContainer();
@@ -323,7 +320,6 @@
             break;
         
         case 'armory':
-		
 			$("table.table_lines:eq(2)").attr("id","military_effectiveness");
 			$("table.table_lines:eq(5)").attr("id","buy_weapons_form");
         	armoryPage();
@@ -878,15 +874,16 @@
 		return "<tr><td>"+col1+"</td><td>"+col2+"</td></tr>";
 	}
     function showFarmList() {
-		searchtype = GM_getValue("searchtype", 0);
-		goldInputType = db.get("goldinput", 0);
-		tffInputType = db.get("tffinput", 0);
-		daInputType = db.get("dainput", 0);
+		var searchtype = GM_getValue("searchtype", 0);
+		var goldInputType = db.get("goldinput", 0);
+		var tffInputType = db.get("tffinput", 0);
+		var daInputType = db.get("dainput", 0);
 		
-		maxDa = db.get("maxDa", 1000);
-		minTff = db.get("minTff", 10);
-		minGold = db.get("minGold", 0);
-		maxSeconds = db.get("maxSeconds", 120);
+		var maxDa = db.get("maxDa", 1000);
+		var minTff = db.get("minTff", 10);
+		var minGold = db.get("minGold", 0);
+		var maxSeconds = db.get("maxSeconds", 120);
+		var byProjection = db.get("byProjection", "");
 		
 		saMultiplier = db.get("saMultiplier", .80);
 		tffAdder = db.get("tffAdder", 50);
@@ -916,6 +913,8 @@
 			form2.append($("<input type=text name=minGold /><br />").val(minGold));
 			form2.append($("<label  class='tLabel' for=maxSeconds>").text("Max Gold Age: "));
 			form2.append($("<input type=text name=maxSeconds /><br />").val(maxSeconds));
+			form2.append($("<label  class='tLabel' for=maxSeconds>").text("Filter by Projection: "));
+			form2.append($("<input type=checkbox name=by_projection value='1' /><br />").attr("checked",byProjection));
 
 		var form3 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Reset / Save</legend></fieldset>");
 			form3.append($("<input type=button id='targets_refresh' value='Refresh' /><br /><br />"));
@@ -943,6 +942,7 @@
 			$("input[name='maxSeconds']").val(120);
 			$("input[name='saMultiplier']").val(0.80);
 			$("input[name='tffAdder']").val(50);
+			$("input[name='by_projection']").attr("checked", "");
 		});
 		$("#targets_save").click(function() {
 			db.put("maxDa", $("input[name='maxDa']").val().int().toString());
@@ -951,6 +951,7 @@
 			db.put("maxSeconds", $("input[name='maxSeconds']").val().int());
 			db.put("saMultiplier", $("input[name='saMultiplier']").val().float().toString());
 			db.put("tffAdder", $("input[name='tffAdder']").val().int());
+			db.put("byProjection", $("input[name='by_projection']").prop('checked'));
 		    getTargets();
 
 		});
@@ -961,7 +962,9 @@
     
     function getTargets() {
 		$(".targetTR").remove();
-        getLux('&a=gettargets&g=' + db.get('minGold',0) + '&t=' + db.get('minTff', 0) + '&d=' + db.get('maxDa', 0) + '&q=' + db.get('maxSeconds', 0),
+        getLux('&a=gettargets&g=' + db.get('minGold',0) + '&t=' + db.get('minTff', 0) 
+			 + '&d=' + db.get('maxDa', 0) + '&q=' + db.get('maxSeconds', 0)
+			 + '&by_projection=' + db.get('byProjection',0),
            function(r) {
                 var x = r.responseText.split(';');
 				var html="";
@@ -1307,8 +1310,6 @@
 	
 
 	
-
-
 	//
 	// Armory Page Functions
 	//
@@ -1377,7 +1378,7 @@
 		db.put('daWeaps',daWeapsQty);
 		db.put('saWeaps',saWeapsQty);
 		
-		postLux('&a=armory', '&data='+tempvar); // pass the info to the db. // DEBUG //		alert(tempvar);
+		postLux('&a=armory', '&data='+tempvar); // pass the info to the db. 
 		
 		if (checkOption('option_armory_graph'))
 			armory_stats();
@@ -2708,11 +2709,8 @@
 	}
 	
     function moveRecruitbox() {
-		//if player is blocking adds, this adds some extra space.
-		$("td.content").parent().children("td").eq(2).attr("width","50");
-	
-
-
+		//if player is blocking ads, this adds some extra space.
+		 $("td.content").parent().children("td").eq(2).attr("width", "50");
 
         var q = document.getElementsByTagName('table');
         var x = q[6];
@@ -2733,7 +2731,7 @@
         
         x.parentNode.insertBefore(x, x.parentNode.childNodes[6]);
         
-        z.childNodes[1].childNodes[0].removeEventListener('click', toggleTable, true);
+        z.childNodes[1].childNodes[0].removeEventListener('click', onTableClick, true);
         z.childNodes[1].childNodes[0].addEventListener('click', function(){
                 var q = this.parentNode.getElementsByTagName('tr');
                 
@@ -2769,98 +2767,55 @@
     }
     
     function makeCollapsable(action) {
-		coltables = db.get('coltables' + action, '').split(';');
+		addCSS(".expando {float:right;}")
+		addCSS(".collapsed_table >tbody> tr:nth-child(n+2) { visibility:hidden; display:none;}");
+		addCSS("table.table_lines > tbody> tr >th {cursor:pointer;}")
+		
+		$("table.table_lines > tbody> tr >th").on('click', onTableClick)
 
-		//var $tables = $("table.table_lines");
+		$tables = $("table").each(function(i,e) {
+			$(e).find("tbody > tr:eq(0) >th").append("<span class='expando'>-</span>");
+		});
+		
+		coltables = db.get('coltables_' + action, '').split(',');
+		coltables = [1,2]
+		_.map(coltables, function (i) {
+			GM_log("tiya? "+i)
+			collapseTable($tables.eq(i));
+		});
+    }
+    
+    
+    function collapseTable(table) {
+		GM_log("addCollapsed ");
 
-        var x = document.getElementsByTagName('table');
-        
-        for (j = 0; j < x.length; j++) {
-            if (x[j].className.indexOf('table_lines') != -1) {
-                var row = x[j].getElementsByTagName('tr')[0];
-                var evt = document.createEvent("MouseEvents");
-                evt.initMouseEvent("click", true, true, window,0, 0, 0, 0, 0, false, false, false, false, 0, null);
-                
-                if (x[j].className.indexOf('personnel') != -1) {
-                    row.getElementsByTagName('span')[0].title = j;
-                    if (row.getElementsByTagName('span')[0].innerHTML == '+') {
-                        row.childNodes[1].dispatchEvent(evt);
-                    }
-                    row.addEventListener('click', function(e){
-                        var span = this.getElementsByTagName('span')[0];
-                        if (span.innerHTML == '+') {
-                            remCollapsed(span.title);
-                        } else {
-                            if (isCollapsedx(span.title) == 0) {
-                                addCollapsed(span.title);
-                            }
-                        }
-                    }, true);
-                    if (isCollapsedx(j) == 1) {
-                        row.childNodes[1].dispatchEvent(evt);
-                    }
-                } else {
-                    x[j].getElementsByTagName('th')[0].innerHTML = '<span style="float: right;" title="' + j + '">-</span>' + x[j].getElementsByTagName('th')[0].innerHTML;
-                    row.addEventListener('click', toggleTable, true);
-                    row.style.cursor = 'pointer';
-                    if (isCollapsedx(j) == 1) {
-                        row.dispatchEvent(evt);
-                    }
-                }
-            }
-        }
+		var $table = $(table)
+		$table.find("expando").text("+")
+		$table.addClass("collapsed_table")
     }
     
-    function isCollapsedx(x) {
-        for (var c = 0; c < coltables.length; c++) {
-            if (coltables[c] == x) {
-               return 1;
-            }
-        }
-        return 0;
-    }
-    
-    function remCollapsed(x) {
-        for (i = 0; i < coltables.length; i++) {
-            if (coltables[i] == x) {
-                coltables.splice(i, 1);
-            }
-        }
-        saveCollapsed();
-    }
-    
-    function addCollapsed(x) {
-        coltables.push(x);
-        saveCollapsed();
-    }
-    
-    function toggleTable(e) {
-        var q = this.parentNode.parentNode.getElementsByTagName('tr');
-        
-        for (a = 1; a < q.length;a++){
-            if (q[a].style.visibility == 'hidden') {
-                q[a].style.visibility = 'visible';
-                q[a].style.display = '';
-                if (a == 1) {
-                    this.parentNode.getElementsByTagName('span')[0].innerHTML = '-';
-                    remCollapsed(this.parentNode.getElementsByTagName('span')[0].title);
-                }
-            } else {
-                q[a].style.visibility = 'hidden';
-                q[a].style.display = 'none';
-                if (a == 1) {
-                    this.parentNode.getElementsByTagName('span')[0].innerHTML = '+';
-                    var id = this.parentNode.getElementsByTagName('span')[0].title;
-                    if (isCollapsedx(id) == 0) {
-                        addCollapsed(id);
-                    }
-                }
-            }
-        }
+    function onTableClick(e) {
+		GM_log("onTableClick ");
+		
+		// Either clicked on the <th> row, or in function makeCollapsable.
+		var $table = $(e.target).closest("table")
+        if ($table.is(".collapsed_table")) {
+			$table.find("expando").text("+");
+		} else {
+			$table.find("expando").text("-");
+		}
+		$table.toggleClass("collapsed_table");
+		
+		saveCollapsed();
     }
     
     function saveCollapsed() {
-        db.put('coltables' + action, coltables.join(';'));
+		var store = [];
+		$("table").each(function(i,e) {
+			if ($(e).is(".collapsed_table"))
+				store.push(i)
+		});
+        db.put('coltables_' + action, coltables.join(','));
     }
     
 }(window.jQuery);
