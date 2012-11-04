@@ -297,13 +297,12 @@
 
 
 
-
     switch (action) {
         case 'base':
 			basePage();
-			makeCollapsable(action);
-			moveRecruitbox();
+			baseLayout();
 			commandCenterStats();
+			makeCollapsable(action);
             break;
        
        	case 'inteldetail':
@@ -2697,115 +2696,103 @@
 	//
     // LAYOUT
     //
+	
+	function getTableByHeading(heading) {
+		var $table = $("table.table_lines > tbody > tr > th:contains('"+heading+"')").last().parents().eq(2);
+		return $table;
+	}
+	
     function commandCenterStats() {
-		
+		var $tbody = $("#tbody");
+
 		if (checkOption('option_commandCenterStats'))
-			$("td.content > table > tbody").eq(0).prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>");//prepend(tab);
+			$tbody.prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>");//prepend(tab);
 		else
 			$("tr:contains('Recent Attacks'):last").parent().parent().before("<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>");//prepend(tab);
 			getLux("&a=sabstats",
 			 function(r) { $("#ff-load").html(""+r.responseText); 
 		}); 
 	}
-	
-    function moveRecruitbox() {
+
+
+    function baseLayout() {
+		var $tbody = $("td.content > table > tbody").last()
+		$tbody.attr("id","tbody");
+		
+		var $cols = $tbody.children("tr").children("td")
+		$cols.children("br").remove()
+		
+		$cols.first().attr("id", "base_left_col")
+		$cols.last().attr("id", "base_right_col")
+		
+		var $military_overview = getTableByHeading("Military Overview")
+						.addClass("military_overview")
+						.remove()
+		var $military_effectiveness = getTableByHeading("Military Effectiveness")
+						.addClass("military_effectiveness")
+						.remove()
+		var $personnel = getTableByHeading("Personnel")
+		var $user_info = getTableByHeading("User Info")
+						.addClass("user_info")
+		var $recent_attacks = getTableByHeading("Recent Attacks on You")
+						.addClass("recent_attacks")
+						.remove()
+		var $commander_notice = getTableByHeading("Notice from Commander")
+						.addClass("commander_notice")
+						.remove()
+		var $grow_army = getTableByHeading("Grow Your Army")
+						.addClass("grow_army")
+						.remove()
+		var $officers = getTableByHeading("Officers")
+						.remove()
+		$("#base_right_col").prepend($military_overview )
+		$("#base_right_col").prepend($officers )
+		$("#base_right_col").prepend($military_effectiveness )
+		$("#base_left_col").append($recent_attacks )
+		// $("#base_left_col").append($grow_army ) // Causes errors?
+		$(".user_info").after($commander_notice)
+		
 		//if player is blocking ads, this adds some extra space.
 		 $("td.content").parent().children("td").eq(2).attr("width", "50");
-
-        var q = document.getElementsByTagName('table');
-        var x = q[6];
-        var y = q[12];
-        var z = q[10];
-        var s = q[14];
-        y.parentNode.removeChild(y.previousSibling);
-        y.parentNode.removeChild(y.previousSibling);
-        y.parentNode.removeChild(y.previousSibling);
-        y.parentNode.removeChild(y.previousSibling);
-        y.parentNode.removeChild(s.previousSibling);
-        y.parentNode.removeChild(s.previousSibling);
-        y.parentNode.insertBefore(s, q[11]);
-        s.style.marginBottom = '20px';
-        
-        y.parentNode.previousSibling.previousSibling.insertBefore(y, y.parentNode.previousSibling.previousSibling.childNodes[3]);
-        y.parentNode.insertBefore(document.createElement('br'), y.parentNode.childNodes[3]);
-        
-        x.parentNode.insertBefore(x, x.parentNode.childNodes[6]);
-        
-        z.childNodes[1].childNodes[0].removeEventListener('click', onTableClick, true);
-        z.childNodes[1].childNodes[0].addEventListener('click', function(){
-                var q = this.parentNode.getElementsByTagName('tr');
-                
-                for (b = 1; b < q.length-1;b++){
-                    if (q[b].style.visibility == 'hidden') {
-                        q[b].style.visibility = 'visible';
-                        q[b].style.display = '';
-                        if (b == 1) {
-                            q[0].childNodes[1].childNodes[0].innerHTML = '-';
-                            remCollapsed(this.parentNode.getElementsByTagName('span')[0].title);
-                        }
-                    } else {
-                        q[b].style.visibility = 'hidden';
-                        q[b].style.display = 'none';
-                        if (b == 1) {
-                            var id = this.parentNode.getElementsByTagName('span')[0].title;
-                            q[0].childNodes[1].childNodes[0].innerHTML = '+';
-                            if (isCollapsedx(id) == 0) {
-                                addCollapsed(id);
-                            }
-                        }
-                    }
-                }
-                q[0].style.cursor = 'pointer';
-            }, true);
-        
-        if (isCollapsedx(z.getElementsByTagName('span')[0].title) == 1) {
-            var evt = document.createEvent("MouseEvents");
-            evt.initMouseEvent("click", true, true, window,0, 0, 0, 0, 0, false, false, false, false, 0, null);
-            z.childNodes[1].childNodes[0].dispatchEvent(evt);
-            z.childNodes[1].childNodes[0].dispatchEvent(evt);
-        }
     }
-    
+  
+  
     function makeCollapsable(action) {
 		addCSS(".expando {float:right;}")
-		addCSS(".collapsed_table >tbody> tr:nth-child(n+2) { visibility:hidden; display:none;}");
-		addCSS("table.table_lines > tbody> tr >th {cursor:pointer;}")
+		addCSS(".collapsed_table > tbody > tr:nth-child(n+2) { visibility:hidden; display:none;}");
+		addCSS("table.table_lines > tbody > tr > th {cursor:pointer;}")
+		addCSS("table.table_lines { margin-top:5px; }")
 		
-		$("table.table_lines > tbody> tr >th").on('click', onTableClick)
+		$(document).on('click', "table.table_lines > tbody > tr > th", onTableClick)
 
 		$tables = $("table").each(function(i,e) {
+			// This is the only table that koc handles for us.
+			if ($(e).is(".personnel"))
+				return;
+				
 			$(e).find("tbody > tr:eq(0) >th").append("<span class='expando'>-</span>");
 		});
 		
 		coltables = db.get('coltables_' + action, '').split(',');
-		coltables = [1,2]
-		_.map(coltables, function (i) {
-			GM_log("tiya? "+i)
-			collapseTable($tables.eq(i));
-		});
+		_.map(coltables, function (i) { collapseTable($tables.eq(i)); });
     }
-    
-    
+       
     function collapseTable(table) {
-		GM_log("addCollapsed ");
-
 		var $table = $(table)
-		$table.find("expando").text("+")
+		$table.find(".expando").text("+")
 		$table.addClass("collapsed_table")
     }
     
-    function onTableClick(e) {
-		GM_log("onTableClick ");
-		
-		// Either clicked on the <th> row, or in function makeCollapsable.
+    function onTableClick(e) {		
 		var $table = $(e.target).closest("table")
+
         if ($table.is(".collapsed_table")) {
-			$table.find("expando").text("+");
+			$table.find(".expando").text("-");
 		} else {
-			$table.find("expando").text("-");
+			$table.find(".expando").text("+");
 		}
 		$table.toggleClass("collapsed_table");
-		
+
 		saveCollapsed();
     }
     
@@ -2815,7 +2802,7 @@
 			if ($(e).is(".collapsed_table"))
 				store.push(i)
 		});
-        db.put('coltables_' + action, coltables.join(','));
+        db.put('coltables_' + action, store.join(','));
     }
     
 }(window.jQuery);
