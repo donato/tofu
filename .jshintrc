@@ -10,5 +10,15 @@
     "asi"      : true,
     "strict"   : true,
     "jquery"   : true,
-    
+    "maxerr"   : 10000,
+    "predef"   : [
+        "GM_getValue",
+        "GM_setValue",
+        "GM_deleteValue",
+        "GM_xmlhttpRequest",
+        "GM_openInTab",
+        "GM_log",
+        "Highcharts",
+        "_"
+    ]
 }
