@@ -11,6 +11,7 @@
     "strict"   : true,
     "jquery"   : true,
     "maxerr"   : 10000,
+    "multistr"   : true,    //will remove later
     "predef"   : [
         "GM_getValue",
         "GM_setValue",
@@ -19,6 +20,7 @@
         "GM_openInTab",
         "GM_log",
         "Highcharts",
-        "_"
+        "_",
+        "hex_md5"   // One of ours
     ]
 }
