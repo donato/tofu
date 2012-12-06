@@ -122,16 +122,16 @@ function displaymsg ( msg, statid, toggle ) {
 
 function duration ( timespan ) {
   time = "";
-  if ((timespan > 1209600) && (time == "")) time += Math.floor(timespan / 604800) + ' weeks ago';
-  if ((timespan > 604800) && (time == "")) time += '1 week ago';
-  if ((timespan > 172800) && (time == "")) time += Math.floor(timespan / 86400) + ' days ago';
-  if ((timespan > 86400) && (time == "")) time += '1 day ago';
-  if ((timespan > 7200) && (time == "")) time += Math.floor(timespan / 3600) + ' hours ago';
-  if ((timespan > 3600) && (time == "")) time += '1 hour ago';
-  if ((timespan > 120) && (time == "")) time += Math.floor(timespan / 60) + ' minutes ago';
-  if ((timespan > 60) && (time == "")) time += '1 minute ago';
-  if ((timespan > 1) && (time == "")) time += timespan + ' seconds ago';
-  if (time == "") time += '1 second ago';
+  if ((timespan > 1209600) && (time === "")) time += Math.floor(timespan / 604800) + ' weeks ago';
+  if ((timespan > 604800) && (time === "")) time += '1 week ago';
+  if ((timespan > 172800) && (time === "")) time += Math.floor(timespan / 86400) + ' days ago';
+  if ((timespan > 86400) && (time === "")) time += '1 day ago';
+  if ((timespan > 7200) && (time === "")) time += Math.floor(timespan / 3600) + ' hours ago';
+  if ((timespan > 3600) && (time === "")) time += '1 hour ago';
+  if ((timespan > 120) && (time === "")) time += Math.floor(timespan / 60) + ' minutes ago';
+  if ((timespan > 60) && (time === "")) time += '1 minute ago';
+  if ((timespan > 1) && (time === "")) time += timespan + ' seconds ago';
+  if (time === "") time += '1 second ago';
   return time;
 }
 

@@ -1,0 +1,286 @@
+
+    //
+    // Stats Page Functions
+    //
+Page.stats = {   
+
+    run: function() {
+        statsPage();
+        collapseAllianceInfoS();
+        showUserInfoS();
+        addStatsPageButtons();
+        statsOnlineCheck();
+    }
+    
+    , statsPage: function() {
+        var enemyid = document.URL.split(/[=&?]/)[2];
+        if (document.body.innerHTML.indexOf('Invalid User ID') != -1) {
+            logStats('', enemyid, '', '','', 'invalid', '');
+        } else {
+            var stable = $("table:contains('User Stats')").last();
+            
+            var name = $(stable).find("tr:contains('Name:'):first>td:last").html().trim();
+            var comid = $(stable).find("tr:contains('Commander:')>td:last").html().trim();
+            comid = textBetween(comid,'id=','"');
+            var race = $(stable).find("tr:contains('Race:')>td:last").html().trim();
+            var rank = $(stable).find("tr:contains('Rank:'):first>td:last").html().trim();
+            var highest_rank = $(stable).find("tr:contains('Highest Rank:')>td:last").html().trim();
+            var tff = to_int($(stable).find("tr:contains('Army Size:')>td:last").html().trim());
+            var morale = $(stable).find("tr:contains('Army Morale:')>td:last").text().trim();
+            var chain = $(stable).find("tr:contains('Chain Name:')>td:last");
+            if ($(chain).size() > 0)
+                chain = $(chain).html().trim();
+            else 
+                chain = "";
+                                 
+            var treasury = $(stable).find("tr:contains('Treasury:')>td:last").html();
+            if (treasury)
+                treasury = to_int(treasury);
+            else
+                treasury = '';
+            var fort = $(stable).find("tr:contains('Fortifications:')>td:last").html().trim();
+            
+            var officers = stats_getOfficers(false);
+            var alliances = stats_getAlliances(stable);
+
+
+
+            addIncomeCalc(race, tff);
+            nav();
+            logStats(name, enemyid, chain, alliances[0],alliances[1], comid + ";"+race+";"+rank+";"+highest_rank+";"+tff+";"+morale+";"+fort+";"+treasury, officers);
+        }
+    }
+  
+    , showUserInfoS: function() {
+        var userid = document.URL.substr(document.URL.indexOf('=')+1, 7);
+
+
+        $("#luxstats_reload").live("click",function() {
+            updateUserInfoS(userid);
+        });
+        
+        var offieTable = $("body").find("table:contains('Officers'):last");
+        offieTable.parent().prepend("<table id='luxstats_info' class='table_lines' width='100%' cellPadding=6 cellSpacing=0><tbody></tbody></table><br />");
+        
+        $("#luxstats_info>tbody").html('<tr><th colspan="3">LuXBot Info<span id="luxstats_reload" style="cursor:pointer;color:pink;font-size:8pt;float:right">(reload)</span></th></tr>');
+        
+        updateUserInfoS(userid);
+    }
+
+    , updateUserInfoS: function(userid) {
+            getLux('&a=getstats&userid=' + userid,
+            function(responseDetails) {
+                var i;
+                var container = $("#luxstats_info");
+                $(container).find(".statsrow").remove();
+                if (responseDetails.responseText == '403') {
+                    container.append('<td colspan="2" style="font-weight:bold;text-align:center;">Access denied</td>');
+                } else if (responseDetails.responseText == 'N/A') {
+                    container.append('<td colspan="2" style="font-weight:bold;text-align:center;">No data available</td>');
+
+                } else {
+                    var userInfo = responseDetails.responseText.split(';');
+
+                    for (i = 0; i < 10; i+=2) {
+                        if (userInfo[i]== '???') {
+                            // alert(i);
+                            container.append("<tr class='statsrow'><td>"+statsdesc[i/2]+"</td><td colspan=2>"+userInfo[i]+"</td></tr>");
+                            // i++;
+                        }
+                        else
+                            container.append("<tr class='statsrow'><td>"+statsdesc[i/2]+"</td><td>"+userInfo[i]+"</td><td class='_luxbotago'>"+userInfo[i+1]+"</td></tr>");
+                    }
+                    if (userInfo.length > 10)
+                        container.append("<tr><td>"+userInfo[11]+"</td></tr>");
+                }
+            });
+    }
+
+    , collapseAllianceInfoS: function() {
+        var nameRE = /User Stats<\/th>/ig;
+        var q = document.getElementsByTagName('table');
+        var statstable;
+        var i;
+        
+        for(i = 0; i < q.length; i++){
+            if(q[i].innerHTML.match(nameRE) && !q[i].innerHTML.match(/<table/)) {
+                statstable = q[i];
+                break;
+            }
+        }
+        
+        if (statstable === undefined) {
+            return;
+        }
+       
+        var allianceindex;
+        for (i = 0; i < statstable.rows.length; i++) {
+            if (statstable.rows[i].cells[0].innerHTML.indexOf('Alliances') > -1) {
+                allianceindex = i;
+                break;
+            }
+        }
+
+        // alliance splitted
+        var alliances = statstable.rows[allianceindex].cells[1].innerHTML.split(',');
+        var pri_alliance = 'None';
+        var sec_alliances = [];
+        for (i = 0; i < alliances.length; i++) {
+            if (alliances[i].indexOf('(Primary)') > -1) {
+                pri_alliance = alliances[i];
+            } else {
+                sec_alliances[sec_alliances.length] = alliances[i];
+            }
+            continue;
+        }
+        statstable.rows[allianceindex].cells[0].innerHTML = '<b>Alliances (' + alliances.length + '):</b>';
+        statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a href="javascript:LuXBotShowAlliances();"> + Show Secondary</a>';
+        addCSS('#_luxbot_alliances{display:none;visibility:hidden;}');
+        addJS('function LuXBotShowAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'block\';q.style.visibility = \'visible\';q.nextSibling.href = \'javascript:LuXBotHideAlliances();\';q.nextSibling.innerHTML = \' - Hide Secondary\'}');
+        addJS('function LuXBotHideAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'none\';q.style.visibility = \'hidden\';q.nextSibling.href = \'javascript:LuXBotShowAlliances();\';q.nextSibling.innerHTML = \' + Show Secondary\'}');
+    }
+    
+    , addRequestRecon: function() {
+        var getopponent = document.getElementsByName('defender_id');
+        var data = getopponent[0].value;
+        document.getElementById("_luxbot_requestRecon").disabled = true;
+        document.getElementById("_luxbot_requestRecon").style.color = "gray";
+        postLux('&a=reconrequest','kocid=' +data, function(r,debug) {
+                if(r.responseText == 'OWK') {
+                    alert('A request has already been sent.');
+                } else if(r.responseText == 'OK') {
+                    alert('Your request has been sent.');
+                } else {
+                    alert('Your request could not be sent, try again later!'+r.responseText);
+                }
+        });
+    }
+    
+    , addIncomeCalc: function(race, tff) {
+    
+        var bonus = 1;        
+        if(race == 'Humans') {
+            bonus = 1.30;
+        }
+        if(race == 'Dwarves') {
+            bonus = 1.15;
+        }
+        
+        // var calBonus = Math.floor(tff*bonus);
+        // var CalBonusInt = parseInt(calBonus);
+        // var tffInt = parseInt(tff);
+        // var calTbgMin = Math.floor(CalBonusInt + tffInt);
+        // var CalHourTbg = Math.floor(calTbgMin * 60);
+        var formattedTbg = addCommas(Math.floor(60* tff *bonus));
+        
+        var nameIC = /<td><b>Name:<\/b>/;
+        var z = document.getElementsByTagName('table');
+        var table;
+        
+         for(var i = 0; i < z.length; i++){
+            if(z[i].innerHTML.match(nameIC) && !z[i].innerHTML.match(/<table/)) {
+                table = z[i];
+                break;
+            }
+        }
+         
+         var x = table.insertRow(10);
+         x.insertCell(0).innerHTML = '<b>Estimated gold per Hour:<b>';
+         x.insertCell(1).innerHTML = '(' + formattedTbg + ')';
+    
+    }
+
+    , addStatsPageButtons: function() {
+        // updated to avoid impact of end-of-age counter - tx Cinch for the assitance -- rolled back
+        $("td.content>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="button" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>');
+        //$("td.content>p>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="submit" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="submit" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>'); 
+    
+        $("#_luxbot_requestRecon").click(addRequestRecon);
+        $("#_luxbot_viewHistory").click(function() {
+            // updated to avoid impact of end-of-age counter - tx Cinch for the assitance
+            var name = $("td.content > table > tbody> tr>td>table.table_lines>tbody>tr").eq(1).children("td").eq(1).text();
+            //var name = $("td.content > p> table > tbody> tr>td>table.table_lines>tbody>tr").eq(1).children("td").eq(1).text(); 
+            openTab("stats.luxbot.net/history.php?playerSearch="+name);
+        });
+    }
+
+    , nav: function() {
+        $("table.officers tr.nav a").click(function() {
+            setTimeout(function() {
+                statsPage();
+            },100);
+            nav();
+        });
+    }
+    
+    , stats_getOfficers: function(tolog) {
+        var officers = "";
+        var rows = $("table.officers>tbody>tr>td>a").parent().parent();
+        $(rows).each(function(i,row) {
+            if ( ! $(row).hasClass('nav')) {
+                var offieInfo = $(row).find("td:eq(0)").html();
+                officers += textBetween(offieInfo,"id=",'"') +";";
+            }
+        });
+        
+        //cut off trailing semicolon
+        officers = officers.slice(0, -1);
+        //alert(officers);
+        // if (tolog==true)
+            // sendLogDetails(username, name, userid, '', gold + ';' + rank + ';' + tff + ';' + chain + ';' + comid + '&morale='  + morale , '',officers, -1);
+
+        return officers;            
+    }
+
+    , stats_getAlliances: function(stable) {
+        var name, a
+        var row = $(stable).find("tr:contains('Alliances:')>td:last").html();
+        var allys = row.split('alliances.php?');
+        
+        var primary = ''
+        var secondary = [];
+        for (a in allys) {
+            name = textBetween(allys[a],'id=','">');
+            if (allys[a].indexOf('(Primary)') == -1) {
+                if (name !== '') 
+                    secondary[secondary.length] = name;
+            }
+            else 
+                primary = name;
+        }    
+        return new Array(primary,secondary);
+    }
+
+    , statsOnlineCheck: function() {
+
+        var userid = document.URL.split(/[=&?]/)[2];
+        addCSS(" ._lux_online {position:absolute;}");
+
+        //response in form of 
+        //key=val\n
+        //key=val\n
+        getLux('&a=stats_online&u=' + userid,
+            function(r) {
+                var stable = $("table:contains('User Stats')").last();
+                var tx = r.responseText;
+            //alert("hello");
+                if (parseResponse(tx, "online") !== '') {
+                    $(stable).find("tr:contains('Name')").first().find("td:eq(1)").append('&nbsp;<img title="Player is online"  class="_lux_online" src="http://www.luxbot.net/bot/img/online2.gif" />');
+                }
+                
+                var msg = parseResponse(tx, "message");
+                if (User.kocid == userid) {
+                    //if it is the users stats page, allow them to update
+                    $(stable).find("tr:contains('Fortifications')").after("<tr><td colspan=2><center><textarea id='aaa' style='width:360px;height:100px;'>"+msg+"</textarea><br /><input type='button' value='Update' id='lux_updateMessage' /></center></td></tr>");
+                    $("#lux_updateMessage").click(function() {
+                        postLux('&a=set_message', '&msg=' + $("#aaa").val());                    
+                    });
+                }
+                else {
+                    if (msg !== '') {
+                        $(stable).find("tr:contains('Fortifications')").after("<tr><td colspan=2><center><textarea style='width:50%'>"+msg+"</textarea></center></td></tr>");
+                    }
+                }
+            });
+    }
+}

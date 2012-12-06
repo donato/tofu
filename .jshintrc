@@ -1,6 +1,7 @@
 {
     "maxdepth" : 4,
     "validthis": true,
+    "globalstrict" : false,
     "laxcomma" : true,
     "laxbreak" : true,
     "browser"  : true,
@@ -8,11 +9,13 @@
     "debug"    : true,
     "devel"    : true,
     "asi"      : true,
-    "strict"   : true,
     "jquery"   : true,
     "maxerr"   : 10000,
     "multistr"   : true,    //will remove later
     "predef"   : [
+        "GM_getResourceText",
+        "GM_getResourceURL",
+        "GM_addStyle",
         "GM_getValue",
         "GM_setValue",
         "GM_deleteValue",
