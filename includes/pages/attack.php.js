@@ -3,8 +3,8 @@ Page.attack = {
 
     run : function() {
     
-            getSabInfo();
-            checkCap();
+            this.getSabInfo();
+            this.checkCap();
     }
     
     , getSabInfo : function () {

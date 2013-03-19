@@ -54,9 +54,10 @@ var Buttons = {
         }
     }
 
-    , btn_init: function(rows, num_rows, cost_col, max_col) {
+    , init: function(rows, num_rows, cost_col, max_col) {
+		var self = this;
         $(rows).find("input").keyup(function() {
-            this.btn_update(rows, num_rows, cost_col, max_col); 
+            self.btn_update(rows, num_rows, cost_col, max_col); 
         });
         rows.each(function(index,element) {
             var cols = $(element).children("td");
@@ -72,7 +73,7 @@ var Buttons = {
         $(".btn_go").click(function(element) {
             var amount = $(element.target).val();
             $(this).parent().parent().find("input").eq(0).val(amount);
-            this.btn_update(rows, num_rows, cost_col, max_col); 
+            self.btn_update(rows, num_rows, cost_col, max_col); 
         });
     }
 

@@ -3,16 +3,16 @@
     var db = {        
         // This allows it to store info for different koc ids on same pc
         init :function(kocid) {
-            if (kocid !== null) {
-                gmSetValue("lux_last_user", kocid);
-                this.id = kocid;
-                return;
+            if (kocid === undefined || kocid === null) {
+				this.id = gmGetValue("lux_last_user",0);
+				return;
             }
-            this.id = gmGetValue("lux_last_user",0);
+			gmSetValue("lux_last_user", kocid);
+			this.id = kocid;
         },
         get : function(option,def) {
             option += "_"+this.id;
-            var value = gmGetValue(option,def);
+            var value = gmGetValue(option, def);
             if (option.indexOf('gold_')>0) 
                 value = parseInt(value, 10);
             return value;

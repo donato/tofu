@@ -14,9 +14,9 @@ var GUI = {
     init: function () {
         // First add the corner box
         this.$popup = $("<div class='tofu' id='popup_box'>  </div>");  
-        this.$controlbox = $("<div class='tofu' id='control_box'> <ul><li>ToFu Version</li><li>Version: xx</li></ul> </div>");  
-		$("body").append(this.$controlbox);
-		$("body").append(this.$popup);
+        this.$controlbox = $("<div class='tofu' id='control_box'> <ul><li>ToFu Version</li><li>Version: "+Tofu.version+"</li></ul> </div>");  
+		$("body").append( this.$controlbox );
+		$("body").append( this.$popup );
     }
 
     , displayText: function(tx) {
@@ -33,6 +33,10 @@ var GUI = {
     , showMessage:function (text) {
         this.displayText(text);
     }
+	
+	, hide: function() {
+		this.$popup.hide();
+	}
 	
     /*
     , showControlPanel() {

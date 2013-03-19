@@ -2,8 +2,10 @@
 require 'fileutils'
 
 includes = Dir["includes/*.js"]
-### `bash ./run.sh`
+pages = Dir["includes/pages/*.js"]
 
+### `bash ./run.sh`
+=begin
 puts "Verifying included modules..."
 includes.each do |f|
     output =  `jshint #{f}`
@@ -15,7 +17,6 @@ includes.each do |f|
 end
 
 
-pages = Dir["includes/pages/*.js"]
 
 puts "\nVerifying page specific files..."
 pages.each do |f|
@@ -26,15 +27,14 @@ pages.each do |f|
         puts "#{f} is OK."
     end
 end
-
+=end
 
 # Now lets throw it all together
 File.open("tofu.user.js", "w") { |tofu|
-    tofu.puts IO.read("lux_header.js")
+    tofu.puts IO.read("greasemonkey_header.js")
     tofu.puts includes.map { |f| IO.read(f) }
     tofu.puts pages.map { |f| IO.read(f) }
-    tofu.puts IO.read("lux_main.js")
-    tofu.puts IO.read("lux_footer.js")
+    tofu.puts IO.read("main.js")
 }
 
 puts "Final script compiled."

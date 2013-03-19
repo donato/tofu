@@ -16,10 +16,12 @@
 
             _.map(Constants.storedStrings, function(val) {
                 userObject[val] = db.get(val, '')
+				// log(val + " : " + db.get(val, ''));
             })
 
             _.map(Constants.storedNumbers, function (val) {
                 userObject[val] = db.get(val, 0);
+				// log(val + " : " + db.get(val, 0));
             });
 
 
@@ -31,20 +33,6 @@
         }    
         
         , showInitBox: function () {
-            function initVB() {
-                getLux('&a=vb_login&kocid=' + db.get('kocid'),
-                    function(r) {
-                        var ret = r.responseText;
-                        if (ret.indexOf("Error") == -1) {
-                            //success
-                            db.put('auth', ret);
-                            alert("Success");
-                            GUI.toggleGUI();
-                        } else {
-                            GUI.showMessage( ret+"<br />", Init.showInitBox,"Try again");
-                        }
-                });    
-            }
             
             function initLogin() {
 
@@ -52,7 +40,6 @@
                 var f_pass = $("#_forum_password").val();
                 if (f_pass === '' || f_user === '')
                     return;
-                alert(f_user + " " + f_pass);
                 // showMessage(welcome+"Verifying...<br />");
                 GUI.showMessage("Verifying...<br />");
                 
@@ -64,7 +51,6 @@
                             
                             db.put('kocnick', user[1]);
                             db.put('kocid', user[0]);
-
                             var password = HEX.hex_md5(f_pass);
                             db.put('forumPass', password);
                             db.put('forumName', f_user);
@@ -72,6 +58,22 @@
                     }
                 );
             }
+			
+            function initVB() {
+                getLux('&a=vb_login&kocid=' + db.get('kocid')+'&forumname='+db.get('forumName'),
+                    function(r) {
+                        var ret = r.responseText;
+                        if (ret.indexOf("Error") == -1) {
+                            //success
+                            db.put('auth', ret);
+                            alert("Success");
+                            GUI.hide();
+                        } else {
+							GUI.displayText("There was an error, try refreshing your command center.");
+                        }
+                });    
+            }
+			
             var welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
             GUI.showMessage(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
                         'User: <input type="text" id="_forum_username" value="'+(User.forumName? User.forumName : '')+'"/> Password: <input type="password" id="_forum_password" /> <input type="button" value="Login"'+
@@ -121,8 +123,8 @@
             }
         }
         
-        , checkUser: function(User) {
-
+        , checkUser: function() {
+			log(User);log(" eh " + User.forumName + User.forumPass + User.forumName + User.auth);
             if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined 
               || User.forumPass === undefined || User.auth === undefined || User.auth === 0 
               || User.auth.length !== 32) {

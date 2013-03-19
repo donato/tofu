@@ -2,8 +2,8 @@
     function log(s)     { GM_log(s); console.log(s);   }
     function openTab(t) { GM_openInTab(t); }
     function gmSetValue(t, t2) { GM_setValue(t, "" + t2 + ""); } // Convert to string for allowing storage of large ints
-    function gmGetValue(t) { GM_getValue(t); }
     function gmDeleteValue(t) { GM_deleteValue(t); }
+    function gmGetValue(t, def) { return GM_getValue(t, def);}
     function gmGetResourceText(t) { return GM_getResourceText(t); }
     function gmGetResourceURL(t) { return GM_getResourceURL(t); }
     function gmAddStyle(t) { GM_addStyle(t); }

@@ -6,6 +6,7 @@
 // @exclude         http://*kingsofchaos.com/chat/*
 // @require            http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js
 // @require            http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js
+// @require			http://bot.luxbot.net/includes/highstock.js
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue
@@ -47,3 +48,7 @@
       , stats
       , rows
       , kocid
+
+	var Tofu = {
+		version : 0.1
+	}

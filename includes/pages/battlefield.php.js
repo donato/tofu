@@ -5,24 +5,24 @@
 Page.battlefield = {
 
     run: function() { 
-        battlefieldAct();
-        showUserInfoB();
+        this.battlefieldAct();
+        this.showUserInfoB();
     }
     
     , battlefieldAct: function () {
         var $playerRows = $("tr.player");
          
-        var missedGold = bf_logGold($playerRows);
-        bf_showGold(missedGold);
-        bf_needsRecon($playerRows);
-        bf_online($playerRows);
+        var missedGold = this.bf_logGold($playerRows);
+        this.bf_showGold(missedGold);
+        this.bf_needsRecon($playerRows);
+        this.bf_online($playerRows);
         
         var $nav = $("tr.nav")
         if ($nav.size()) {
             var q = $nav.find('a');
-            q.on("click", battlefieldAct);
+            q.on("click", this.battlefieldAct);
             if (q.size() > 1) {
-                $(q[1]).on('click', battlefieldAct);
+                $(q[1]).on('click', this.battlefieldAct);
                 q[1].accessKey = 'c';
                 q[0].accessKey = 'x';
             } else {
@@ -208,7 +208,7 @@ Page.battlefield = {
                 getLux('&a=getstats&userid=' + userid,
                     function(responseDetails) {
                         var r = responseDetails.responseText;
-                        battlefieldShowInfo(r);
+                        this.battlefieldShowInfo(r);
                 });
             }
         });

@@ -5,11 +5,11 @@
 Page.stats = {   
 
     run: function() {
-        statsPage();
-        collapseAllianceInfoS();
-        showUserInfoS();
-        addStatsPageButtons();
-        statsOnlineCheck();
+        this.statsPage();
+        this.collapseAllianceInfoS();
+        this.showUserInfoS();
+        this.addStatsPageButtons();
+        this.statsOnlineCheck();
     }
     
     , statsPage: function() {
@@ -40,13 +40,13 @@ Page.stats = {
                 treasury = '';
             var fort = $(stable).find("tr:contains('Fortifications:')>td:last").html().trim();
             
-            var officers = stats_getOfficers(false);
-            var alliances = stats_getAlliances(stable);
+            var officers = this.stats_getOfficers(false);
+            var alliances = this.stats_getAlliances(stable);
 
 
 
-            addIncomeCalc(race, tff);
-            nav();
+            this.addIncomeCalc(race, tff);
+            this.nav();
             logStats(name, enemyid, chain, alliances[0],alliances[1], comid + ";"+race+";"+rank+";"+highest_rank+";"+tff+";"+morale+";"+fort+";"+treasury, officers);
         }
     }
@@ -56,7 +56,7 @@ Page.stats = {
 
 
         $("#luxstats_reload").live("click",function() {
-            updateUserInfoS(userid);
+            this.updateUserInfoS(userid);
         });
         
         var offieTable = $("body").find("table:contains('Officers'):last");
@@ -64,7 +64,7 @@ Page.stats = {
         
         $("#luxstats_info>tbody").html('<tr><th colspan="3">LuXBot Info<span id="luxstats_reload" style="cursor:pointer;color:pink;font-size:8pt;float:right">(reload)</span></th></tr>');
         
-        updateUserInfoS(userid);
+        this.updateUserInfoS(userid);
     }
 
     , updateUserInfoS: function(userid) {
@@ -84,11 +84,11 @@ Page.stats = {
                     for (i = 0; i < 10; i+=2) {
                         if (userInfo[i]== '???') {
                             // alert(i);
-                            container.append("<tr class='statsrow'><td>"+statsdesc[i/2]+"</td><td colspan=2>"+userInfo[i]+"</td></tr>");
+                            container.append("<tr class='statsrow'><td>"+Constants.statsdesc[i/2]+"</td><td colspan=2>"+userInfo[i]+"</td></tr>");
                             // i++;
                         }
                         else
-                            container.append("<tr class='statsrow'><td>"+statsdesc[i/2]+"</td><td>"+userInfo[i]+"</td><td class='_luxbotago'>"+userInfo[i+1]+"</td></tr>");
+                            container.append("<tr class='statsrow'><td>"+Constants.statsdesc[i/2]+"</td><td>"+userInfo[i]+"</td><td class='_luxbotago'>"+userInfo[i+1]+"</td></tr>");
                     }
                     if (userInfo.length > 10)
                         container.append("<tr><td>"+userInfo[11]+"</td></tr>");
@@ -195,7 +195,7 @@ Page.stats = {
         $("td.content>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="button" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>');
         //$("td.content>p>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="submit" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="submit" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>'); 
     
-        $("#_luxbot_requestRecon").click(addRequestRecon);
+        $("#_luxbot_requestRecon").click(this.addRequestRecon);
         $("#_luxbot_viewHistory").click(function() {
             // updated to avoid impact of end-of-age counter - tx Cinch for the assitance
             var name = $("td.content > table > tbody> tr>td>table.table_lines>tbody>tr").eq(1).children("td").eq(1).text();

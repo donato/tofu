@@ -4,9 +4,9 @@
     //
 Page.base = {
     run: function() {
-        basePage();
-        baseLayout();
-        commandCenterStats();
+        this.basePage();
+        this.baseLayout();
+        this.commandCenterStats();
         makeCollapsable(action);
     }
     
@@ -87,11 +87,12 @@ Page.base = {
         var income = $(stable).find("tr:contains('Projected Income'):first>td:eq(1)").text();
         income = income.substr(0,income.indexOf(" Gold")).int();
 
-        var officers = stats_getOfficers(false);
+        var officers = Page.stats.stats_getOfficers(false);
 
         var bonus = textBetween($(".officers>tbody>tr:last").text(), "(x ",")");
         
-        nav();
+		// this will help for paging through officers and recording their info
+       // nav();
         
         db.put('sa',sa);
         db.put('da',da);

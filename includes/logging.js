@@ -39,7 +39,6 @@
                                 '&weapons=' + weapons
                     , function(responseDetails) {
                             log("logRecon Response: "+ responseDetails.responseText);
-                            // alert(responseDetails.responseText);
                     });
     }    
 

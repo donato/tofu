@@ -4,6 +4,7 @@
 	
     // Get kocid, before loading user.
     var action = Page.getCurrentPage();
+	var kocid = undefined;
     if (action == 'base') {
         var html = document.body.innerHTML.split("stats.php?id=");
         html = html[1];
@@ -19,9 +20,8 @@
 	}
 	
     Init.checkForUpdate(1);
-    //GUI.createGUIContainer();
    
-    if( Init.checkUser(User) === 0) {
+    if( Init.checkUser() === 0) {
          return;
     }
 
@@ -32,3 +32,6 @@
 	_.each(Plugins, function(plugin) {
 		plugin();
 	});
+
+//Close of program
+}(window.jQuery, document);

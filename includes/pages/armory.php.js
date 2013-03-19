@@ -25,7 +25,7 @@ Page.armory = {
             var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
             
             if (checkOption('option_armory_diff'))
-                armory_diff(sa,da,spy,sentry);
+                this.armory_diff(sa,da,spy,sentry);
                     
             //Send Armory to Luxbot
             var spyWeapsQty = 0;
@@ -61,11 +61,11 @@ Page.armory = {
                 tempvar+=retrieveWeapons($(this).text());
             });
             
-            sabLogs_update(tempvar);
-            sabLogs_init();
+            this.sabLogs_update(tempvar);
+            this.sabLogs_init();
             
-            armory_upgradeSuggestions(User);
-            armory_aat();
+            this.armory_upgradeSuggestions(User);
+            this.armory_aat();
             db.put('sa',sa);
             db.put('da',da);
             db.put('spy',spy);
@@ -78,7 +78,7 @@ Page.armory = {
             postLux('&a=armory', '&data='+tempvar); // pass the info to the db. 
             
             if (checkOption('option_armory_graph'))
-                showStats();
+                this.showStats();
         }    
   
         , showStats : function () {
@@ -203,7 +203,7 @@ Page.armory = {
         , sabLogs_init: function() {
             $("#military_effectiveness").before('<table id="_lux_sabbed" class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0"></table>');
             $("#buy_weapons_form").before('<table id="_lux_upgrades" class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0"></table>');
-            sabLogs_display();
+            this.sabLogs_display();
         }
         
         , sabLogs_display: function() {
