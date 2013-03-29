@@ -1,0 +1,29 @@
+{
+    "maxdepth" : 4,
+    "validthis": true,
+    "globalstrict" : false,
+    "laxcomma" : true,
+    "laxbreak" : true,
+    "browser"  : true,
+    "eqnull"   : true,
+    "debug"    : true,
+    "devel"    : true,
+    "asi"      : true,
+    "jquery"   : true,
+    "maxerr"   : 10000,
+    "multistr"   : true,    //will remove later
+    "predef"   : [
+        "GM_getResourceText",
+        "GM_getResourceURL",
+        "GM_addStyle",
+        "GM_getValue",
+        "GM_setValue",
+        "GM_deleteValue",
+        "GM_xmlhttpRequest",
+        "GM_openInTab",
+        "GM_log",
+        "Highcharts",
+        "_",
+        "hex_md5"   // One of ours
+    ]
+}
