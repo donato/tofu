@@ -24,3 +24,5 @@
 // Info on GM resources : http://stackoverflow.com/questions/5250187/greasemonkey-image-not-showing
 
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
+
+var Plugins = {};

@@ -1,19 +1,53 @@
-Plugin['recon_request'] = function() {
-   // Recon Request
-    function initReconRequest() {
+Plugins['recon_request'] = {
+	description : "Recon request system"
+	
+	, defaultEnabled : true
+	
+	, run : function() {
+		this.initReconRequest();
+
+		if (action == "stats") {
+			this.addStatsPageButton();
+		}
+	}
+	
+    , initReconRequest : function() {
         //runs on every page, adds box to upper left of page.
         
         var x = $('<div id="_luxbot_ReconRequestPopup" style="display:none; position: absolute; top:0px; margin:15px; padding:20px;background-color: black; border: 1px solid green; font-family: arial; font-size: 10px;  overflow: auto;">');
         $("body").append(x);
         x.css("left",(document.body.clientWidth/2)-100 + "px");
         $("#_luxbot_ReconRequestPopup").click(function () {
-            fillReconRequest(! db.get('reconRequest'));
+            this.toggleReconRequestPopup(! db.get('reconRequest'));
         });
 
-        fillReconRequest(db.get('reconRequest') !== 0);
+        this.toggleReconRequestPopup(db.get('reconRequest') !== 0);
+    }
+	
+	, addStatsPageButton : function() {
+		var $table = getTableByHeading("User Stats");
+
+		$table.parent().find("table").last().append('<tr><td align=center colspan=4><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td></tr>');	
+		
+		$("#_luxbot_requestRecon").click(this.addRequestRecon);
+	}
+    , addRequestRecon: function() {
+        var getopponent = document.getElementsByName('defender_id');
+        var data = getopponent[0].value;
+        document.getElementById("_luxbot_requestRecon").disabled = true;
+        document.getElementById("_luxbot_requestRecon").style.color = "gray";
+        postLux('&a=reconrequest','kocid=' +data, function(r,debug) {
+                if(r.responseText == 'OWK') {
+                    alert('A request has already been sent.');
+                } else if(r.responseText == 'OK') {
+                    alert('Your request has been sent.');
+                } else {
+                    alert('Your request could not be sent, try again later!'+r.responseText);
+                }
+        });
     }
     
-    function fillReconRequest(bool) {
+    , toggleReconRequestPopup: function (bool) {
         //if bool == true, then show info
         //if bool == false then hide and show number
         
@@ -38,6 +72,6 @@ Plugin['recon_request'] = function() {
                     }
                     q.html(stringBuilder);
                 }
-            });
+        });
     }
 }

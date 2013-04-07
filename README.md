@@ -3,12 +3,14 @@ tofu
 
 Script for the game KingsOfChaos, improving gameplay, tracking player statistics and connecting users with each other.
 
-## Short Intro
+## How to Contribute
 
-Anyone can download this source, but if you want to share it back with us, you will need to install GIT
+Anyone can download this source, but if you want to share it back with us, you will need to install GIT.
+
 
 Code Structure
-We will put all styles into CSS files, and cache all images browserside using GM resources. 
+Although the User Script environment does not give us the luxury of AMD and other cool tools, we still want to program as modularly as possible.
+
 Before submitting to the depo, ensure that every included file passes jshint with our .jshintrc configuration.
 
 ### Understanding the Directory Structure

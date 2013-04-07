@@ -5,6 +5,8 @@
 Page.stats = {   
 
     run: function() {
+        this.enemyid = document.URL.split(/[=&?]/)[2];
+
         this.statsPage();
         this.collapseAllianceInfoS();
         this.showUserInfoS();
@@ -13,9 +15,8 @@ Page.stats = {
     }
     
     , statsPage: function() {
-        var enemyid = document.URL.split(/[=&?]/)[2];
         if (document.body.innerHTML.indexOf('Invalid User ID') != -1) {
-            logStats('', enemyid, '', '','', 'invalid', '');
+            logStats('', this.enemyid, '', '','', 'invalid', '');
         } else {
             var stable = $("table:contains('User Stats')").last();
             
@@ -47,7 +48,7 @@ Page.stats = {
 
             this.addIncomeCalc(race, tff);
             this.nav();
-            logStats(name, enemyid, chain, alliances[0],alliances[1], comid + ";"+race+";"+rank+";"+highest_rank+";"+tff+";"+morale+";"+fort+";"+treasury, officers);
+            logStats(name, this.enemyid, chain, alliances[0],alliances[1], comid + ";"+race+";"+rank+";"+highest_rank+";"+tff+";"+morale+";"+fort+";"+treasury, officers);
         }
     }
   
@@ -140,21 +141,7 @@ Page.stats = {
         addJS('function LuXBotHideAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'none\';q.style.visibility = \'hidden\';q.nextSibling.href = \'javascript:LuXBotShowAlliances();\';q.nextSibling.innerHTML = \' + Show Secondary\'}');
     }
     
-    , addRequestRecon: function() {
-        var getopponent = document.getElementsByName('defender_id');
-        var data = getopponent[0].value;
-        document.getElementById("_luxbot_requestRecon").disabled = true;
-        document.getElementById("_luxbot_requestRecon").style.color = "gray";
-        postLux('&a=reconrequest','kocid=' +data, function(r,debug) {
-                if(r.responseText == 'OWK') {
-                    alert('A request has already been sent.');
-                } else if(r.responseText == 'OK') {
-                    alert('Your request has been sent.');
-                } else {
-                    alert('Your request could not be sent, try again later!'+r.responseText);
-                }
-        });
-    }
+
     
     , addIncomeCalc: function(race, tff) {
     
@@ -191,17 +178,10 @@ Page.stats = {
     }
 
     , addStatsPageButtons: function() {
-        // updated to avoid impact of end-of-age counter - tx Cinch for the assitance -- rolled back
-        $("td.content>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="button" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>');
-        //$("td.content>p>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="submit" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="submit" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>'); 
-    
-        $("#_luxbot_requestRecon").click(this.addRequestRecon);
-        $("#_luxbot_viewHistory").click(function() {
-            // updated to avoid impact of end-of-age counter - tx Cinch for the assitance
-            var name = $("td.content > table > tbody> tr>td>table.table_lines>tbody>tr").eq(1).children("td").eq(1).text();
-            //var name = $("td.content > p> table > tbody> tr>td>table.table_lines>tbody>tr").eq(1).children("td").eq(1).text(); 
-            openTab("stats.luxbot.net/history.php?playerSearch="+name);
-        });
+        var $table = getTableByHeading("User Stats");
+        
+        var $nameTd = $table.find('tr:contains("Name:")').first().find("td").last();
+        $nameTd.append(' <a href="http://www.stats.luxbot.net/history.php?playerSearch='+ this.enemyid +'" target="_blank" class="tofu viewHistory">View history</a>');
     }
 
     , nav: function() {

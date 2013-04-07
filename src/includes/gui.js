@@ -1,19 +1,25 @@
 var GUI = {
 	
     init: function () {
-        // First add the corner box
-        this.$popup = $("<div class='tofu' id='popup_box'>  </div>");  
-        this.$controlbox = $("<div class='tofu' id='control_box'> <ul><li>ToFu Version</li><li>Version: "+Tofu.version+"</li></ul> </div>");  
-		$("body").append( this.$controlbox );
-		$("body").append( this.$popup );
+        this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
+		
+		// the variable version is a global created by the build script
+        this.$controlbox = $("<div>", {
+			'id': 'tofu_control_box',
+			'content' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
+		});  
+		
+		$('body')
+			.append( this.$controlbox )
+			.append( this.$popup );
     }
 
     , displayText: function(tx) {
         this.displayHtml("<div>"+tx+"</div>");
     }
 
-    , displayHtml: function (html) {
-		GM_log("Displaying HTML: " + html);
+    , displayHtml: function(html) {
+		log("Displaying HTML: " + html);
         this.$popup.html(html);
         this.$popup.show();  
     }

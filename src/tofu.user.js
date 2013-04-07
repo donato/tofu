@@ -23,32 +23,10 @@
 
 // Info on GM resources : http://stackoverflow.com/questions/5250187/greasemonkey-image-not-showing
 
-//
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
-// 
 
-
-!function($, document) {
-
-    "use strict";
-    
-    //version is year, month, day OR yymmdd
-	
- 
-    // GLOBALS - Remove ASAP
-	var Plugins = {}
-    var widget        // For lux popups
-      , previd         // For battlefield, which user is displaying stats of
-      , guicontent
-      , messages
-      , stats
-      , rows
-      , kocid
-
-	var Tofu = {
-		version : 0.1
-	}
-var version = 0.2.130324;
+var Plugins = {};
+var version = '0.2.130407';
 
 	
     //
@@ -195,33 +173,28 @@ var Constants = {
             }
         });
     }
-
-//
-// GUI
-//
-
-/* 
-GUI.init();
-
-GUI.displayHtml( xx)
-GUI.displayText(xx)
-*/
 var GUI = {
 	
     init: function () {
-        // First add the corner box
-        this.$popup = $("<div class='tofu' id='popup_box'>  </div>");  
-        this.$controlbox = $("<div class='tofu' id='control_box'> <ul><li>ToFu Version</li><li>Version: "+Tofu.version+"</li></ul> </div>");  
-		$("body").append( this.$controlbox );
-		$("body").append( this.$popup );
+        this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
+		
+		// the variable version is a global created by the build script
+        this.$controlbox = $("<div>", {
+			'id': 'tofu_control_box',
+			'content' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
+		});  
+		
+		$('body')
+			.append( this.$controlbox )
+			.append( this.$popup );
     }
 
     , displayText: function(tx) {
         this.displayHtml("<div>"+tx+"</div>");
     }
 
-    , displayHtml: function (html) {
-		GM_log("Displaying HTML: " + html);
+    , displayHtml: function(html) {
+		log("Displaying HTML: " + html);
         this.$popup.html(html);
         this.$popup.show();  
     }
@@ -371,166 +344,156 @@ var HEX = {
 		return hex_md5(dothis);
 	}
 }
-    // INIT
-    var Init = {
+var Init = {
 
-        init: function() {
-            var newCSS = gmGetResourceText ("styles");
-            gmAddStyle (newCSS);
-            
-            GUI.init();
+    loadUser : function(kocid) {
+        db.init(kocid);
+        if (db.id === 0) return false;
+                
+        var userObject = {};
+
+        _.map(Constants.storedStrings, function(val) {
+            userObject[val] = db.get(val, '')
+            // log(val + " : " + db.get(val, ''));
+        })
+
+        _.map(Constants.storedNumbers, function (val) {
+            userObject[val] = db.get(val, 0);
+            // log(val + " : " + db.get(val, 0));
+        });
+
+        var d = new Date();
+        userObject.time_loaded = d.getTime();
+        userObject.gold = Page.getPlayerGold()
+
+        return userObject
+    }    
+ 
+    , checkForUpdate: function(startup) {
+        if (db.get("luxbot_version",0) != Constants.version) {
+            //if the version changes
+            db.put("luxbot_version", Constants.version);
+            db.put("luxbot_needsUpdate",0);
         }
+        if (startup === 1 && db.get("luxbot_needsUpdate",0) === 1) {
+            setTimeout(function() {
+                $("#_luxbot_gui>ul").append("<li id='getUpdate' style='padding-top:5px;color:yellow'>Get Update!</li>");
+                $("#getUpdate").click(function() {
+                    openTab(Constants.downloadUrl); 
+                });
+            },1000);
+            return;
+        }
+        
+        var now = new Date(); 
+        var lastCheck = db.get('luxbot_lastcheck', 0);
 
-      , loadUser : function(kocid) {
-            db.init(kocid)
-            if (db.id === 0) return false;
+        if (startup != 1 || (now - new Date(lastCheck)) > (60*1000)) {
+            get( Constants.versionUrl,
+                function(responseDetails) {
+                    var latestVersion = Number(responseDetails.responseText.replace(/\./, ''));
+                    var thisVersion = Number(version.replace(/\./, ''));
+                    if (latestVersion > thisVersion) {
+                        db.put("luxbot_needsUpdate",1);
+                        db.put("luxbot_version",Constants.version);
+                        if (startup != 1) {
+                            alert("There is an update!");
+                            openTab(Constants.downloadUrl); 
+                        }
+                    } else if (startup !== 1) {
+                        alert("You are up to date!");
+                    }
+                }
+            );
+            db.put('luxbot_lastcheck', now.toString());
+        }
+    }
+    
+    , checkUser: function() {
+        if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined 
+          || User.forumPass === undefined || User.auth === undefined || User.auth === 0 
+          || User.auth.length !== 32) {
+                Init.showInitBox();
+                return 0;
+        } else {
+            getLux('&a=vb_auth',
+                function(r) {
+                    if (r.responseText == '403') {
+                        Init.showInitBox();
+                        return 0;
+                    }
                     
-            var userObject = {};
-
-            _.map(Constants.storedStrings, function(val) {
-                userObject[val] = db.get(val, '')
-				// log(val + " : " + db.get(val, ''));
-            })
-
-            _.map(Constants.storedNumbers, function (val) {
-                userObject[val] = db.get(val, 0);
-				// log(val + " : " + db.get(val, 0));
-            });
-
-
-            var d = new Date();
-            userObject.time_loaded = d.getTime();
-            userObject.gold = Page.getPlayerGold()
-
-            return userObject
-        }    
-        
-        , showInitBox: function () {
-            
-            function initLogin() {
-
-                var f_user = $("#_forum_username").val();
-                var f_pass = $("#_forum_password").val();
-                if (f_pass === '' || f_user === '')
-                    return;
-                GUI.showMessage("Verifying...<br />");
-                
-                get('http://www.kingsofchaos.com/base.php',
-                    function(responseDetails) {
-                            var html = responseDetails.responseText;
-                            var user = textBetween(html,'<a href="stats.php?id=', '</a>');
-                            user = user.split('">');
-                            
-                            db.put('kocnick', user[1]);
-                            db.put('kocid', user[0]);
-                            var password = HEX.hex_md5(f_pass);
-                            db.put('forumPass', password);
-                            db.put('forumName', f_user);
-                            initVB();
+                    var x = r.responseText.split(';');
+                    var logself = x.shift();
+                    
+                    stats = {'tffx':x.shift(), 'dax':x.shift(), 'goldx':x.shift()};
+                    
+                    var temp = document.getElementById('_luxbot_showMessageBox');
+                    if (!temp) return;
+                    temp.innerHTML = 'Show Messages (' + (x.length-1) + ')';
+                    
+                    // messages is a global var
+                    if ((Tofu.messages = x.pop()) === '1') {
+                        GUI.showMessageBox();
                     }
-                );
-            }
-			
-            function initVB() {
-                getLux('&a=vb_login&kocid=' + db.get('kocid')+'&forumname='+db.get('forumName'),
-                    function(r) {
-                        var ret = r.responseText;
-                        if (ret.indexOf("Error") == -1) {
-                            //success
-                            db.put('auth', ret);
-                            alert("Success");
-                            GUI.hide();
-                        } else {
-							GUI.displayText("There was an error, try refreshing your command center.");
-                        }
-                });    
-            }
-			
-            var welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
-            GUI.showMessage(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
-                        'User: <input type="text" id="_forum_username" value="'+(User.forumName? User.forumName : '')+'"/> Password: <input type="password" id="_forum_password" /> <input type="button" value="Login"'+
-                                        'id="_luxbot_login" /><br />');   
-                                        
-            $("#_luxbot_login").click(initLogin);
-        
-        }
-     
-        , checkForUpdate: function(startup) {
-            if (db.get("luxbot_version",0) != Constants.version) {
-                //if the version changes
-                db.put("luxbot_version", Constants.version);
-                db.put("luxbot_needsUpdate",0);
-            }
-            if (startup == 1 && db.get("luxbot_needsUpdate",0) == 1) {
-                setTimeout(function() {
-                    $("#_luxbot_gui>ul").append("<li id='getUpdate' style='padding-top:5px;color:yellow'>Get Update!</li>");
-                    $("#getUpdate").click(function() {
-                        openTab(Constants.downloadUrl); 
-                    });
-                },1000);
-                return;
-            }
-            
-            var now = new Date(); 
-            var lastCheck = db.get('luxbot_lastcheck', 0);
-
-            if (startup != 1 || (now - new Date(lastCheck)) > (60*1000)) {
-                get( Constants.versionUrl,
-                    function(responseDetails) {
-                            var latestVersion = Number(responseDetails.responseText.replace(/\./, ''));
-                            var thisVersion = Number(version.replace(/\./, ''));
-                            if (latestVersion > thisVersion){
-                                db.put("luxbot_needsUpdate",1);
-                                db.put("luxbot_version",Constants.version);
-                                if (startup != 1) {
-                                    alert("There is an update!");
-									openTab(Constants.downloadUrl); 
-                                }
-                            } else if (startup != 1) {
-                                alert("You are up to date!");
-                            }
-                    }
-                );
-                db.put('luxbot_lastcheck', now.toString());
-            }
-        }
-        
-        , checkUser: function() {
-			log(User);log(" eh " + User.forumName + User.forumPass + User.forumName + User.auth);
-            if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined 
-              || User.forumPass === undefined || User.auth === undefined || User.auth === 0 
-              || User.auth.length !== 32) {
-                    Init.showInitBox();
-                    return 0;
-            } else {
-                getLux('&a=vb_auth',
-                    function(r) {
-                        if (r.responseText == '403') {
-                            Init.showInitBox();
-                            return 0;
-                        }
-                        
-                        var x = r.responseText.split(';');
-                        var logself = x.shift();
-                        
-                        stats = {'tffx':x.shift(), 'dax':x.shift(), 'goldx':x.shift()};
-                        
-                        var temp = document.getElementById('_luxbot_showMessageBox');
-                        if (!temp) return;
-                        temp.innerHTML = 'Show Messages (' + (x.length-1) + ')';
-                        
-                        // messages is a global var
-                        if ((messages = x.pop()) === '1') {
-                            GUI.showMessageBox();
-                        }
-                    });
-                
-                return 1;
-            }
+                });
             return 1;
         }
-
+        return 1;
     }
+    
+    , showInitBox: function () {
+        
+        function initLogin() {
+
+            var f_user = $("#_forum_username").val();
+            var f_pass = $("#_forum_password").val();
+            if (f_pass === '' || f_user === '')
+                return;
+            GUI.showMessage("Verifying...<br />");
+            
+            get('http://www.kingsofchaos.com/base.php',
+                function(responseDetails) {
+                        var html = responseDetails.responseText;
+                        var user = textBetween(html,'<a href="stats.php?id=', '</a>');
+                        user = user.split('">');
+                        
+                        db.put('kocnick', user[1]);
+                        db.put('kocid', user[0]);
+                        var password = HEX.hex_md5(f_pass);
+                        db.put('forumPass', password);
+                        db.put('forumName', f_user);
+                        initVB();
+                }
+            );
+        }
+        
+        function initVB() {
+            getLux('&a=vb_login&kocid=' + db.get('kocid')+'&forumname='+db.get('forumName'),
+                function(r) {
+                    var ret = r.responseText;
+                    if (ret.indexOf("Error") == -1) {
+                        //success
+                        db.put('auth', ret);
+                        alert("Success");
+                        GUI.hide();
+                    } else {
+                        GUI.displayText("There was an error, try refreshing your command center.");
+                    }
+            });    
+        }
+        
+        var welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
+        GUI.showMessage(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
+                    'User: <input type="text" id="_forum_username" value="'+(User.forumName? User.forumName : '')+'"/> Password: <input type="password" id="_forum_password" /> <input type="button" value="Login"'+
+                                    'id="_luxbot_login" /><br />');   
+                                    
+        $("#_luxbot_login").click(initLogin);
+    
+    }
+
+
+}
 
     
     //
@@ -623,8 +586,7 @@ var HEX = {
         return sValue;
     }
     
-
-    // KoC Shortcuts
+    // KoC Utils
     var db = {        
         // This allows it to store info for different koc ids on same pc
         init :function(kocid) {
@@ -682,20 +644,20 @@ var HEX = {
     }
     
     function timeElapsed(time) {
-            var d = new Date()
-            var ds =  d.getTime();
-            var timespan = Math.floor((ds - time) / 1000)
-            time = "";
-            if ((timespan > 1209600) && (time === "")) time = Math.floor(timespan / 604800) + ' weeks ago';
-            if ((timespan > 604800) && (time === "")) time = '1 week ago';
-            if ((timespan > 172800) && (time === "")) time = Math.floor(timespan / 86400) + ' days ago';
-            if ((timespan > 86400) && (time === "")) time = '1 day ago';
-            if ((timespan > 7200) && (time === "")) time = Math.floor(timespan / 3600) + ' hours ago';
-            if ((timespan > 3600) && (time === "")) time = '1 hour ago';
-            if ((timespan > 120) && (time === "")) time = Math.floor(timespan / 60) + ' minutes ago';
-            if ((timespan > 60) && (time === "")) time = '1 minute ago';
-            if ((timespan > 1) && (time === "")) time = timespan + ' seconds ago';    
-            if (time === "") time = '1 second ago';        
+		var d = new Date()
+		var ds =  d.getTime();
+		var timespan = Math.floor((ds - time) / 1000)
+		time = "";
+		if ((timespan > 1209600) && (time === "")) time = Math.floor(timespan / 604800) + ' weeks ago';
+		if ((timespan > 604800) && (time === "")) time = '1 week ago';
+		if ((timespan > 172800) && (time === "")) time = Math.floor(timespan / 86400) + ' days ago';
+		if ((timespan > 86400) && (time === "")) time = '1 day ago';
+		if ((timespan > 7200) && (time === "")) time = Math.floor(timespan / 3600) + ' hours ago';
+		if ((timespan > 3600) && (time === "")) time = '1 hour ago';
+		if ((timespan > 120) && (time === "")) time = Math.floor(timespan / 60) + ' minutes ago';
+		if ((timespan > 60) && (time === "")) time = '1 minute ago';
+		if ((timespan > 1) && (time === "")) time = timespan + ' seconds ago';    
+		if (time === "") time = '1 second ago';        
         return time;
     }
 
@@ -718,8 +680,9 @@ var HEX = {
     }
         
     function getTableByHeading(heading) {
-        var $table = $("table.table_lines > tbody > tr > th:contains('"+heading+"')").last().parents().eq(2);
-        return $table;
+        var $table = $("table.table_lines > tbody > tr > th:contains('"+heading+"')");
+		
+		return $table.last().parents().eq(2);
     }
 
     function getRowValues(searchText) {
@@ -735,14 +698,14 @@ var HEX = {
     }
 
 	function getLux(url, callback) {
-        var address= baseURL+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+        var address= Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
         
         log("Get URL: " +address);
         get(address,callback);
     }  
     
     function postLux(url, data, callback) {
-        var address = Constants.baseURL+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+        var address = Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
         
         log("Post URL: "+ address);
         post(address, data, callback);
@@ -871,64 +834,65 @@ var HEX = {
                 });
     }
  
+var Options = {
+	// Goal of this is to make the plugins toggle-able.
 
-var Options = {         
-       showUserOptions: function() {
-            var htmlToggle = function(name,value,opt1,opt2) {
-				var current = db.get(value, "true");
-				var html;
-				
-				if (!opt1)
-					opt1 = "Enabled";
-				if (!opt2)
-					opt2 = "Disabled";
-				if (current == "true") {
-					html = "<tr><td> "+name+"</td><td><input type='radio' name='"+value+"' checked='checked' value='true'>"+opt1+"</input>"
-							+"<input type='radio' name='"+value+"' value='false'>"+opt2+"</input></tr>";
-				} else {
-					html = "<tr><td> "+name+"</td><td><input type='radio' name='"+value+"' value='true'>"+opt1+"</input>"
-					+"<input type='radio' name='"+value+"' checked='checked' value='false'>"+opt2+"</input></tr>";
-				}
-				return html;
-            }
-            var c = (User.logself === 1) ?  ' checked="checked"' : '';
-            
-            var battlelog = db.get('battlelog', 0);
-            
-            GUI.showMessage('<h3>LuXBOT User Options</h3> <br />\
-            <fieldset><legend>User Options</legend>\
-                Log own details and gold from base: <input type="checkbox" id="_luxbot_logself"' + c + ' /><br />\
-                Battle Log: <input type="radio" name="_luxbot_battlelog" value="0"' + (battlelog === 0 ? ' checked="checked"' : '') + ' />\
-                    No Action <input type="radio" name="_luxbot_battlelog" value="1"' + (battlelog === 1 ? ' checked="checked"' : '') + ' /> \
-                    Show Full Log with Bottom Scroll <input type="radio" name="_luxbot_battlelog" value="2"' + (battlelog === 2 ? ' checked="checked"' : '') + ' /> \
-                    Show Full Log with Top Scroll <input type="radio" name="_luxbot_battlelog" value="3"' + (battlelog === 3 ? ' checked="checked"' : '') + ' /> \
-                    Show Full Log with Redirect<br />\
-                Always Focus Security Pages: <input type="checkbox" id="_luxbot_securitycheck" ' + (db.get('securityfocus', 0) === 1 ? ' checked="checked"' : '') + '/></fieldset>'
-                +'<table>'
-                +htmlToggle("Turn Clock","option_clock") 
-                +htmlToggle("Stats In Command Center","option_commandCenterStats","Top","Side") 
-                +htmlToggle("Attack Targets","option_Targets") 
-                // +htmlToggle("Show Enemy Sab List","option_sabTargets") 
-                +htmlToggle("Show Fake Sab Targets","option_fakeSabTargets") 
-                +htmlToggle("Show Personal Gold Projections","option_goldProjection") 
-                +htmlToggle("Show Stats Changes in Armory","option_armory_diff") 
-                +htmlToggle("Show Armory Value Graph in Armory","option_armory_graph") 
-                +"</table>"
-                
-                + '<br /><br /><input type="button" value="Save!" id="_luxbot_save" /> <br />');
-                
-            document.getElementById("_luxbot_save").addEventListener('click', GUI.saveUserOptions, true);
-        }
-     
-      , saveUserOptions: function() {
+   showUserOptions: function() {
+		var makeToggle = function(name,value,opt1,opt2) {
+			var current = db.get(value, "true");
+			var html;
+			
+			if (!opt1)
+				opt1 = "Enabled";
+			if (!opt2)
+				opt2 = "Disabled";
+			if (current == "true") {
+				html = "<tr><td> "+name+"</td><td><input type='radio' name='"+value+"' checked='checked' value='true'>"+opt1+"</input>"
+						+"<input type='radio' name='"+value+"' value='false'>"+opt2+"</input></tr>";
+			} else {
+				html = "<tr><td> "+name+"</td><td><input type='radio' name='"+value+"' value='true'>"+opt1+"</input>"
+				+"<input type='radio' name='"+value+"' checked='checked' value='false'>"+opt2+"</input></tr>";
+			}
+			return html;
+		}
+		var c = (User.logself === 1) ?  ' checked="checked"' : '';
+		
+		var battlelog = db.get('battlelog', 0);
+		
+		GUI.showMessage('<h3>LuXBOT User Options</h3> <br />\
+		<fieldset><legend>User Options</legend>\
+			Log own details and gold from base: <input type="checkbox" id="_luxbot_logself"' + c + ' /><br />\
+			Battle Log: <input type="radio" name="_luxbot_battlelog" value="0"' + (battlelog === 0 ? ' checked="checked"' : '') + ' />\
+				No Action <input type="radio" name="_luxbot_battlelog" value="1"' + (battlelog === 1 ? ' checked="checked"' : '') + ' /> \
+				Show Full Log with Bottom Scroll <input type="radio" name="_luxbot_battlelog" value="2"' + (battlelog === 2 ? ' checked="checked"' : '') + ' /> \
+				Show Full Log with Top Scroll <input type="radio" name="_luxbot_battlelog" value="3"' + (battlelog === 3 ? ' checked="checked"' : '') + ' /> \
+				Show Full Log with Redirect<br />\
+			Always Focus Security Pages: <input type="checkbox" id="_luxbot_securitycheck" ' + (db.get('securityfocus', 0) === 1 ? ' checked="checked"' : '') + '/></fieldset>'
+			+'<table>'
+			+makeToggle("Turn Clock","option_clock") 
+			+makeToggle("Stats In Command Center","option_commandCenterStats","Top","Side") 
+			+makeToggle("Attack Targets","option_Targets") 
+			// +makeToggle("Show Enemy Sab List","option_sabTargets") 
+			+makeToggle("Show Fake Sab Targets","option_fakeSabTargets") 
+			+makeToggle("Show Personal Gold Projections","option_goldProjection") 
+			+makeToggle("Show Stats Changes in Armory","option_armory_diff") 
+			+makeToggle("Show Armory Value Graph in Armory","option_armory_graph") 
+			+"</table>"
+			
+			+ '<br /><br /><input type="button" value="Save!" id="_luxbot_save" /> <br />');
+			
+		document.getElementById("_luxbot_save").addEventListener('click', GUI.saveUserOptions, true);
+	}
+ 
+	, saveUserOptions: function() {
 
-			_.each(Constants.options, function (option) {
-				db.put("option_"+option, $("input[name='option_"+option+"']:checked").val());
-			});
-            
-            GUI.toggleGUI();
-        }
- }
+		_.each(Constants.options, function (option) {
+			db.put("option_"+option, $("input[name='option_"+option+"']:checked").val());
+		});
+		
+		GUI.toggleGUI();
+	}
+}
 
     // 
     // Sab Targets Button
@@ -976,165 +940,154 @@ var Options = {
             });
     }
  
+// Attack Targets Button
 
-    // 
-    // Attack Targets Button
-    //
-
-    function showFarmList() {
-        var goldInputType = db.get("goldinput", 0);
-        var tffInputType = db.get("tffinput", 0);
-        var daInputType = db.get("dainput", 0);
-        
-        var maxDa = db.get("maxDa", 1000);
-        var minTff = db.get("minTff", 10);
-        var minGold = db.get("minGold", 0);
-        var maxSeconds = db.get("maxSeconds", 120);
-        var byProjection = db.get("byProjection", "");
-        
-        var saMultiplier = db.get("saMultiplier", 0.80);
-        var tffAdder = db.get("tffAdder", 50);
-        
-         var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
-        +'<tr><th colspan="7">Master Targets (Loading)</th></tr>'
-        +'<tr id="targetsFirstRow"><td><b>Name</b></td><td colspan="2" align="center"><b>Defensive Action</b></td><td align="center"><b>Total Fighting Force</b></td><td width=200 align="right"><b>Gold</b></td><td>&nbsp;</td><td>&nbsp;</td></tr>'
-        +'<tr><th colspan="7">Settings</th></tr>'
-        +'<tr><td colspan=7 id="targets_settings"> </td></tr>'
-        +'</table>';
-        
-         
-        var form1 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Autofill</legend></fieldset>");
-            form1.append($("<label for=saMultiplier />").text("SA x "));
-            form1.append($("<input type=text name=saMultiplier size=5/><br />").val(saMultiplier));
-
-            form1.append($("<label for=tffAdder>").text("TFF + "));
-            form1.append($("<input type=text name=tffAdder size=4/><br />").val(tffAdder));
-            form1.append($("<input type=button id='targets_autofill' value='Autofill' /><br />"));
-        
-        var form2 = $("<fieldset style='width: 30%; padding:10px; float: left;' id='values'><legend>Filter Settings</legend></fieldset>");
-            form2.append($("<label  class='tLabel' for=maxDa />").text("Max Defense: "));
-            form2.append($("<input type=text name=maxDa /><br />").val(maxDa));
-            form2.append($("<label class='tLabel' for=minTff>").text("Min TFF: "));
-            form2.append($("<input type=text name=minTff /><br />").val(minTff));
-            form2.append($("<label  class='tLabel' for=minGold>").text("Min Gold: "));
-            form2.append($("<input type=text name=minGold /><br />").val(minGold));
-            form2.append($("<label  class='tLabel' for=maxSeconds>").text("Max Gold Age: "));
-            form2.append($("<input type=text name=maxSeconds /><br />").val(maxSeconds));
-            form2.append($("<label  class='tLabel' for=maxSeconds>").text("Filter by Projection: "));
-            form2.append($("<input type=checkbox name=by_projection value='1' /><br />").attr("checked",byProjection));
-
-        var form3 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Reset / Save</legend></fieldset>");
-            form3.append($("<input type=button id='targets_refresh' value='Refresh' /><br /><br />"));
-            form3.append($("<input type=button id='targets_save' value='Save' /><br />"));
-            form3.append($("<input type=button id='targets_reset' value='Reset' /> "));
-
-        GUI.showMessage(html);
-        $("#targets_settings").append(form1);    
-        $("#targets_settings").append(form2);    
-        $("#targets_settings").append(form3);    
-            
-        $("#targets_refresh").click(function() {
-            getTargets();
-        });            
-        $("#targets_autofill").click(function() {
-            var tffAdd = $("input[name='tffAdder']").val();
-            var saMult = $("input[name='saMultiplier']").val();
-            $("input[name='minTff']").val(Math.floor(User.tff.int()+tffAdd.int()));
-            $("input[name='maxDa']").val(Math.floor(User.sa.int() * saMult ));
-        });
-        $("#targets_reset").click(function() {
-            $("input[name='minTff']").val(10);
-            $("input[name='maxDa']").val(1000);
-            $("input[name='minGold']").val(0);
-            $("input[name='maxSeconds']").val(120);
-            $("input[name='saMultiplier']").val(0.80);
-            $("input[name='tffAdder']").val(50);
-            $("input[name='by_projection']").attr("checked", "");
-        });
-        $("#targets_save").click(function() {
-            db.put("maxDa", $("input[name='maxDa']").val().int().toString());
-            db.put("minTff", $("input[name='minTff']").val().int());
-            db.put("minGold", $("input[name='minGold']").val().int());
-            db.put("maxSeconds", $("input[name='maxSeconds']").val().int());
-            db.put("saMultiplier", $("input[name='saMultiplier']").val().float().toString());
-            db.put("tffAdder", $("input[name='tffAdder']").val().int());
-            db.put("byProjection", $("input[name='by_projection']").prop('checked'));
-            getTargets();
-
-        });
-         
-        getTargets(); 
-        
-    }
+function showFarmList() {
+    var goldInputType = db.get("goldinput", 0);
+    var tffInputType = db.get("tffinput", 0);
+    var daInputType = db.get("dainput", 0);
     
-    function getTargets() {
-        $(".targetTR").remove();
-        getLux('&a=gettargets&g=' + db.get('minGold',0) + '&t=' + db.get('minTff', 0) 
-             + '&d=' + db.get('maxDa', 0) + '&q=' + db.get('maxSeconds', 0)
-             + '&by_projection=' + db.get('byProjection',0),
-           function(r) {
-                var row, i;
-                var x = r.responseText.split(';');
-                var html="";
-                for(i = 0; i < x.length-1; i++) {
-                    row = x[i].split(':');
-                    html += '<tr class="targetTR"><td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a></td><td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td><td align="center">' + row[2] + '</td>'
-                    +'<td align="right">'
-                        +'<span class="gold">' + row[5] + '</span>'
-                        +'<span class="projection" style="display:none;">Projected: '+row[7] + '</span>' +
-                    '</td><td align="left">(' +row[6] + ')</td><td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"></td></tr>';
-                }
-                $("#targetsFirstRow").after(html);
-                
-               
-                $(".projection").css("color","#B3FFF8");
-                $(".targetTR").hover(
-                  function () {
+    var maxDa = db.get("maxDa", 1000);
+    var minTff = db.get("minTff", 10);
+    var minGold = db.get("minGold", 0);
+    var maxSeconds = db.get("maxSeconds", 120);
+    var byProjection = db.get("byProjection", "");
+    
+    var saMultiplier = db.get("saMultiplier", 0.80);
+    var tffAdder = db.get("tffAdder", 50);
+    
+     var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
+    +'<tr><th colspan="7">Master Targets (Loading)<    h><    r>'
+    +'<tr id="targetsFirstRow"><td><b>Name</b><    d><td colspan="2" align="center"><b>Defensive Action</b><    d><td align="center"><b>Total Fighting Force</b><    d><td width=200 align="right"><b>Gold</b><    d><td>&nbsp;<    d><td>&nbsp;<    d><    r>'
+    +'<tr><th colspan="7">Settings<    h><    r>'
+    +'<tr><td colspan=7 id="targets_settings"> <    d><    r>'
+    +'<    able>';
+    
+     
+    var form1 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Autofill</legend></fieldset>");
+        form1.append($("<label for=saMultiplier />").text("SA x "));
+        form1.append($("<input type=text name=saMultiplier size=5/><br />").val(saMultiplier));
+
+        form1.append($("<label for=tffAdder>").text("TFF + "));
+        form1.append($("<input type=text name=tffAdder size=4/><br />").val(tffAdder));
+        form1.append($("<input type=button id='targets_autofill' value='Autofill' /><br />"));
+    
+    var form2 = $("<fieldset style='width: 30%; padding:10px; float: left;' id='values'><legend>Filter Settings</legend></fieldset>");
+        form2.append($("<label  class='tLabel' for=maxDa />").text("Max Defense: "));
+        form2.append($("<input type=text name=maxDa /><br />").val(maxDa));
+        form2.append($("<label class='tLabel' for=minTff>").text("Min TFF: "));
+        form2.append($("<input type=text name=minTff /><br />").val(minTff));
+        form2.append($("<label  class='tLabel' for=minGold>").text("Min Gold: "));
+        form2.append($("<input type=text name=minGold /><br />").val(minGold));
+        form2.append($("<label  class='tLabel' for=maxSeconds>").text("Max Gold Age: "));
+        form2.append($("<input type=text name=maxSeconds /><br />").val(maxSeconds));
+        form2.append($("<label  class='tLabel' for=maxSeconds>").text("Filter by Projection: "));
+        form2.append($("<input type=checkbox name=by_projection value='1' /><br />").attr("checked",byProjection));
+
+    var form3 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Reset / Save</legend></fieldset>");
+        form3.append($("<input type=button id='targets_refresh' value='Refresh' /><br /><br />"));
+        form3.append($("<input type=button id='targets_save' value='Save' /><br />"));
+        form3.append($("<input type=button id='targets_reset' value='Reset' /> "));
+
+    GUI.showMessage(html);
+    $("#targets_settings").append(form1);    
+    $("#targets_settings").append(form2);    
+    $("#targets_settings").append(form3);    
+        
+    $("#targets_refresh").click(function() {
+        getTargets();
+    });            
+    $("#targets_autofill").click(function() {
+        var tffAdd = $("input[name='tffAdder']").val();
+        var saMult = $("input[name='saMultiplier']").val();
+        $("input[name='minTff']").val(Math.floor(User.tff.int()+tffAdd.int()));
+        $("input[name='maxDa']").val(Math.floor(User.sa.int() * saMult ));
+    });
+    $("#targets_reset").click(function() {
+        $("input[name='minTff']").val(10);
+        $("input[name='maxDa']").val(1000);
+        $("input[name='minGold']").val(0);
+        $("input[name='maxSeconds']").val(120);
+        $("input[name='saMultiplier']").val(0.80);
+        $("input[name='tffAdder']").val(50);
+        $("input[name='by_projection']").attr("checked", "");
+    });
+    $("#targets_save").click(function() {
+        db.put("maxDa", $("input[name='maxDa']").val().int().toString());
+        db.put("minTff", $("input[name='minTff']").val().int());
+        db.put("minGold", $("input[name='minGold']").val().int());
+        db.put("maxSeconds", $("input[name='maxSeconds']").val().int());
+        db.put("saMultiplier", $("input[name='saMultiplier']").val().float().toString());
+        db.put("tffAdder", $("input[name='tffAdder']").val().int());
+        db.put("byProjection", $("input[name='by_projection']").prop('checked'));
+        getTargets();
+    });
+
+    getTargets(); 
+}
+
+function getTargets() {
+    $(".targetTR").remove();
+    getLux('&a=gettargets&g=' + db.get('minGold',0) + '&t=' + db.get('minTff', 0) 
+         + '&d=' + db.get('maxDa', 0) + '&q=' + db.get('maxSeconds', 0)
+         + '&by_projection=' + db.get('byProjection',0),
+       function(r) {
+            var row, i;
+            var x = r.responseText.split(';');
+            var html="";
+            for(i = 0; i < x.length-1; i++) {
+                row = x[i].split(':');
+                html += '<tr class="targetTR"><td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a><    d><td align="right">' + (row[3]) + '<    d><td>(' + row[4] + ')<    d><td align="center">' + row[2] + '<    d>'
+                +'<td align="right">'
+                    +'<span class="gold">' + row[5] + '</span>'
+                    +'<span class="projection" style="display:none;">Projected: '+row[7] + '</span>' +
+                '<    d><td align="left">(' +row[6] + ')<    d><td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"><    d><    r>';
+            }
+            $("#targetsFirstRow").after(html);
+            
+           
+            $(".projection").css("color","#B3FFF8");
+            $(".targetTR").hover(
+                function () {
                     $(this).find(".gold").hide();
                     $(this).find(".projection").show();
-                  }, 
-                  function () {
-                  //alert("off");
+                }, function () {
                     $(this).find(".gold").show();
                     $(this).find(".projection").hide();                  
-                });
-
-            });    
-    }
-   
-    function showFakeSabList() {
-    
-        var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
-        html += '<tr><td id="_sab_content">Loading... Please wait...</td></tr> </table>';
-        GUI.showMessage(html);
-        getFakeSabTargets();
-   }
-
-    function getFakeSabTargets() {
-        //log('http://' + serverURL + 'targets.php?username=' + username + '&password=' + password + '&g=' + GM_getValue('mingold', stats['goldx']) + '&t=' + GM_getValue('mintff', stats['tffx']) + '&d=' + GM_getValue('minda', stats['dax']) + '&a=' + GM_getValue('minage', 120));
-        
-        function clickHelper(e) {
-            openTab('http://www.kingsofchaos.com/attack.php?id=' + String(e.target.id).replace(/__/, ''));
-        }
-        getLux('&a=getfakesabtargets',
-            function(r) {
-                var i;
-                if ( r.responseText != '403' ) {
-                    document.getElementById('_sab_content').innerHTML = r.responseText;
-                }
-               
-                var q = document.getElementsByName('_luxbot_targets_t');
-                for (i = 0; i < q.length; i++) {
-                    q[i].addEventListener('click', clickHelper, true);
-                }
-                
-                document.getElementById('getTodaysSabs').value="View Your Sabs";
-                document.getElementById('getTodaysSabs').addEventListener('click',getTodaysSabs,true);
-                document.getElementById('getTodaysSabs').removeEventListener('click',getSabTargets,false);
- 
             });
-    }
+        });    
+}
 
+function showFakeSabList() {
+    var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
+
+    $table.append('<tr><td id="_sab_content">Loading... Please wait...<    d><    r>');
+    GUI.showMessage($table);
+    getFakeSabTargets();
+}
+
+function getFakeSabTargets() {
+    function clickHelper(e) {
+        openTab('http://www.kingsofchaos.com/attack.php?id=' + String(e.target.id).replace(/__/, ''));
+    }
+    getLux('&a=getfakesabtargets',
+        function(r) {
+            var i;
+            if ( r.responseText != '403' ) {
+                document.getElementById('_sab_content').innerHTML = r.responseText;
+            }
+           
+            var q = document.getElementsByName('_luxbot_targets_t');
+            for (i = 0; i < q.length; i++) {
+                q[i].addEventListener('click', clickHelper, true);
+            }
+            // $("#getTodaysSabs")
+            
+            document.getElementById('getTodaysSabs').value="View Your Sabs";
+            document.getElementById('getTodaysSabs').addEventListener('click',getTodaysSabs,true);
+            document.getElementById('getTodaysSabs').removeEventListener('click',getSabTargets,false);
+    });
+}
 
 Page.armory = {
     
@@ -2307,6 +2260,8 @@ Page.mercs = {
 Page.stats = {   
 
     run: function() {
+        this.enemyid = document.URL.split(/[=&?]/)[2];
+
         this.statsPage();
         this.collapseAllianceInfoS();
         this.showUserInfoS();
@@ -2315,9 +2270,8 @@ Page.stats = {
     }
     
     , statsPage: function() {
-        var enemyid = document.URL.split(/[=&?]/)[2];
         if (document.body.innerHTML.indexOf('Invalid User ID') != -1) {
-            logStats('', enemyid, '', '','', 'invalid', '');
+            logStats('', this.enemyid, '', '','', 'invalid', '');
         } else {
             var stable = $("table:contains('User Stats')").last();
             
@@ -2349,7 +2303,7 @@ Page.stats = {
 
             this.addIncomeCalc(race, tff);
             this.nav();
-            logStats(name, enemyid, chain, alliances[0],alliances[1], comid + ";"+race+";"+rank+";"+highest_rank+";"+tff+";"+morale+";"+fort+";"+treasury, officers);
+            logStats(name, this.enemyid, chain, alliances[0],alliances[1], comid + ";"+race+";"+rank+";"+highest_rank+";"+tff+";"+morale+";"+fort+";"+treasury, officers);
         }
     }
   
@@ -2442,21 +2396,7 @@ Page.stats = {
         addJS('function LuXBotHideAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'none\';q.style.visibility = \'hidden\';q.nextSibling.href = \'javascript:LuXBotShowAlliances();\';q.nextSibling.innerHTML = \' + Show Secondary\'}');
     }
     
-    , addRequestRecon: function() {
-        var getopponent = document.getElementsByName('defender_id');
-        var data = getopponent[0].value;
-        document.getElementById("_luxbot_requestRecon").disabled = true;
-        document.getElementById("_luxbot_requestRecon").style.color = "gray";
-        postLux('&a=reconrequest','kocid=' +data, function(r,debug) {
-                if(r.responseText == 'OWK') {
-                    alert('A request has already been sent.');
-                } else if(r.responseText == 'OK') {
-                    alert('Your request has been sent.');
-                } else {
-                    alert('Your request could not be sent, try again later!'+r.responseText);
-                }
-        });
-    }
+
     
     , addIncomeCalc: function(race, tff) {
     
@@ -2493,17 +2433,10 @@ Page.stats = {
     }
 
     , addStatsPageButtons: function() {
-        // updated to avoid impact of end-of-age counter - tx Cinch for the assitance -- rolled back
-        $("td.content>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="button" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>');
-        //$("td.content>p>table>tbody>tr>td").children("table").eq(1).children("tbody").append('<tr><td align=center colspan=2><input style="width:100%;" type="submit" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="submit" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>'); 
-    
-        $("#_luxbot_requestRecon").click(this.addRequestRecon);
-        $("#_luxbot_viewHistory").click(function() {
-            // updated to avoid impact of end-of-age counter - tx Cinch for the assitance
-            var name = $("td.content > table > tbody> tr>td>table.table_lines>tbody>tr").eq(1).children("td").eq(1).text();
-            //var name = $("td.content > p> table > tbody> tr>td>table.table_lines>tbody>tr").eq(1).children("td").eq(1).text(); 
-            openTab("stats.luxbot.net/history.php?playerSearch="+name);
-        });
+        var $table = getTableByHeading("User Stats");
+        
+        var $nameTd = $table.find('tr:contains("Name:")').first().find("td").last();
+        $nameTd.append(' <a href="http://www.stats.luxbot.net/history.php?playerSearch='+ this.enemyid +'" target="_blank" class="tofu viewHistory">View history</a>');
     }
 
     , nav: function() {
@@ -2691,40 +2624,155 @@ Page.train = {
     }
 
 }
-	//
-    // lux_main.js
-	//
+Plugins['gold_projection'] = {
+	description : "Show projected gold beneath current gold",
 	
-    // Get kocid, before loading user.
-    var action = Page.getCurrentPage();
-	var kocid = undefined;
+	defaultEnabled : true,
+	
+	run : function() {
+		var offset = 11; // Seconds after minute until turn arrives.
+		
+		function nextMinute($obj, income, accumulator) {
+			$obj.text("Projection: "+ addCommas(User.gold.int() + income*accumulator));
+			
+			setTimeout(function() {
+				nextMinute($obj, income, accumulator+1);
+			}, 60*1000); // Update again in exactly 1 minute
+		}
+		
+		// Add the display to the DOM
+		$("tr:contains('Last Attacked:'):last").parent().find("tr:eq(0)")
+				.after("<tr><td colspan=2 style='color: BLUE; font-size: 6pt;text-align:center' id='gold_projection'></td></tr>");
+
+		var date = new Date();
+		var currentSeconds = date.getSeconds();
+		var secsTillTurn =( (60 + offset) - currentSeconds) % 60;
+		setTimeout(
+			function() {
+				nextMinute( $("#gold_projection"), User.income.int(), 1);
+			}
+			, secsTillTurn*1000
+		);
+	}
+}
+Plugins['recon_request'] = {
+	description : "Recon request system"
+	
+	, defaultEnabled : true
+	
+	, run : function() {
+		this.initReconRequest();
+
+		if (action == "stats") {
+			this.addStatsPageButton();
+		}
+	}
+	
+    , initReconRequest : function() {
+        //runs on every page, adds box to upper left of page.
+        
+        var x = $('<div id="_luxbot_ReconRequestPopup" style="display:none; position: absolute; top:0px; margin:15px; padding:20px;background-color: black; border: 1px solid green; font-family: arial; font-size: 10px;  overflow: auto;">');
+        $("body").append(x);
+        x.css("left",(document.body.clientWidth/2)-100 + "px");
+        $("#_luxbot_ReconRequestPopup").click(function () {
+            this.toggleReconRequestPopup(! db.get('reconRequest'));
+        });
+
+        this.toggleReconRequestPopup(db.get('reconRequest') !== 0);
+    }
+	
+	, addStatsPageButton : function() {
+		var $table = getTableByHeading("User Stats");
+
+		$table.parent().find("table").last().append('<tr><td align=center colspan=4><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td></tr>');	
+		
+		$("#_luxbot_requestRecon").click(this.addRequestRecon);
+	}
+    , addRequestRecon: function() {
+        var getopponent = document.getElementsByName('defender_id');
+        var data = getopponent[0].value;
+        document.getElementById("_luxbot_requestRecon").disabled = true;
+        document.getElementById("_luxbot_requestRecon").style.color = "gray";
+        postLux('&a=reconrequest','kocid=' +data, function(r,debug) {
+                if(r.responseText == 'OWK') {
+                    alert('A request has already been sent.');
+                } else if(r.responseText == 'OK') {
+                    alert('Your request has been sent.');
+                } else {
+                    alert('Your request could not be sent, try again later!'+r.responseText);
+                }
+        });
+    }
+    
+    , toggleReconRequestPopup: function (bool) {
+        //if bool == true, then show info
+        //if bool == false then hide and show number
+        
+        getLux('&a=reconrequestlist',
+            function(r, debug) {
+                var i;
+                var q = $('#_luxbot_ReconRequestPopup');
+                var incoming = r.responseText.split(';');
+                var numberRequests = r.responseText.split('(s)').length - 1;
+                
+                if (numberRequests > 0) {
+                    q.slideDown();
+                    var stringBuilder = "<span style=\"color: red;\">("+numberRequests+") Recon Requests</span><br />";
+                    if (bool) {
+                        for (i = 0; i < incoming.length; i++) {
+                            var info = incoming[i].split(':');
+                            stringBuilder+= info[0]+" | <a href='stats.php?id="+info[1]+"'>"+info[2]+"</a> by "+info[3]+ "<br />";
+                        }
+                        db.put('reconRequest', 1);        
+                    } else {
+                        db.put('reconRequest', 0);
+                    }
+                    q.html(stringBuilder);
+                }
+        });
+    }
+}
+// Note: The version is added here by the build script as a global string.
+
+var User;
+var action;
+
+!function($, document) {
+    "use strict";
+
+	var newCSS = gmGetResourceText ("styles");
+	gmAddStyle (newCSS);
+
+    action = Page.getCurrentPage();
+
+	var kocid;
     if (action == 'base') {
         var html = document.body.innerHTML.split("stats.php?id=");
         html = html[1];
-        kocid = html.slice(0,html.indexOf('"'));
+        kocid = html.slice(0, html.indexOf('"'));
     }
     
-    // TODO: what happens if first user does not have kocid?
-	Init.init();
-    var User = Init.loadUser(kocid);
+	// This is a global
+    User = Init.loadUser(kocid);
 	if (!User) {
 		alert ("Please go to your Command Center for initialization");
 		return false;
 	}
-	
+
+	GUI.init();
     Init.checkForUpdate(1);
-   
+
     if( Init.checkUser() === 0) {
          return;
     }
 
-	
-	// Every page has its own init.
+	// Every page has its own init. Look at /includes/pages/...
 	Page[action].run();
-	
+
+	// Plugins want to be run on all pages. Look at /includes/plugins/...
 	_.each(Plugins, function(plugin) {
-		plugin();
+		log("running plugin " + plugin);
+		plugin.run();
 	});
 
-//Close of program
 }(window.jQuery, document);

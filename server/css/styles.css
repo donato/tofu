@@ -1,3 +1,31 @@
-* > * {
-    color:blue;
+
+#tofu_control_box {
+    border: 1px solid white;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 200px;
+}
+
+#tofu_popup_box {
+    display:none;
+    position: absolute;
+    top:0;
+    left:0;
+    width:100%;
+    
+
+}
+
+#tofu_popup_box >div {
+    padding:25px;
+    margin:25px;
+    border: 1px solid blue;
+    background-color:gray;
+    text-align:center;
+    color:black;
+}
+
+#tofu_control_box  > ul {
+    list-style:none;
 }

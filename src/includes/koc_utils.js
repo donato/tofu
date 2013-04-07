@@ -1,5 +1,4 @@
-
-    // KoC Shortcuts
+    // KoC Utils
     var db = {        
         // This allows it to store info for different koc ids on same pc
         init :function(kocid) {
@@ -57,20 +56,20 @@
     }
     
     function timeElapsed(time) {
-            var d = new Date()
-            var ds =  d.getTime();
-            var timespan = Math.floor((ds - time) / 1000)
-            time = "";
-            if ((timespan > 1209600) && (time === "")) time = Math.floor(timespan / 604800) + ' weeks ago';
-            if ((timespan > 604800) && (time === "")) time = '1 week ago';
-            if ((timespan > 172800) && (time === "")) time = Math.floor(timespan / 86400) + ' days ago';
-            if ((timespan > 86400) && (time === "")) time = '1 day ago';
-            if ((timespan > 7200) && (time === "")) time = Math.floor(timespan / 3600) + ' hours ago';
-            if ((timespan > 3600) && (time === "")) time = '1 hour ago';
-            if ((timespan > 120) && (time === "")) time = Math.floor(timespan / 60) + ' minutes ago';
-            if ((timespan > 60) && (time === "")) time = '1 minute ago';
-            if ((timespan > 1) && (time === "")) time = timespan + ' seconds ago';    
-            if (time === "") time = '1 second ago';        
+		var d = new Date()
+		var ds =  d.getTime();
+		var timespan = Math.floor((ds - time) / 1000)
+		time = "";
+		if ((timespan > 1209600) && (time === "")) time = Math.floor(timespan / 604800) + ' weeks ago';
+		if ((timespan > 604800) && (time === "")) time = '1 week ago';
+		if ((timespan > 172800) && (time === "")) time = Math.floor(timespan / 86400) + ' days ago';
+		if ((timespan > 86400) && (time === "")) time = '1 day ago';
+		if ((timespan > 7200) && (time === "")) time = Math.floor(timespan / 3600) + ' hours ago';
+		if ((timespan > 3600) && (time === "")) time = '1 hour ago';
+		if ((timespan > 120) && (time === "")) time = Math.floor(timespan / 60) + ' minutes ago';
+		if ((timespan > 60) && (time === "")) time = '1 minute ago';
+		if ((timespan > 1) && (time === "")) time = timespan + ' seconds ago';    
+		if (time === "") time = '1 second ago';        
         return time;
     }
 
@@ -93,8 +92,9 @@
     }
         
     function getTableByHeading(heading) {
-        var $table = $("table.table_lines > tbody > tr > th:contains('"+heading+"')").last().parents().eq(2);
-        return $table;
+        var $table = $("table.table_lines > tbody > tr > th:contains('"+heading+"')");
+		
+		return $table.last().parents().eq(2);
     }
 
     function getRowValues(searchText) {
@@ -110,14 +110,14 @@
     }
 
 	function getLux(url, callback) {
-        var address= baseURL+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+        var address= Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
         
         log("Get URL: " +address);
         get(address,callback);
     }  
     
     function postLux(url, data, callback) {
-        var address = Constants.baseURL+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+        var address = Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
         
         log("Post URL: "+ address);
         post(address, data, callback);
