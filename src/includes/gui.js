@@ -6,7 +6,7 @@ var GUI = {
 		// the variable version is a global created by the build script
         this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'content' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
+			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
 		});  
 		
 		$('body')
@@ -20,7 +20,7 @@ var GUI = {
 
     , displayHtml: function(html) {
 		log("Displaying HTML: " + html);
-        this.$popup.html(html);
+        this.$popup.append($("<div>").append(html));
         this.$popup.show();  
     }
 
