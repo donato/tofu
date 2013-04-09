@@ -1,0 +1,3 @@
+Page.intelfile = {   
+    run: function() { }
+}

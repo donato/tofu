@@ -33,8 +33,9 @@ var action;
     }
 
 	// Every page has its own init. Look at /includes/pages/...
-	Page[action].run();
-
+	if (Page[action]) {
+		Page[action].run();
+	}
 	// Plugins want to be run on all pages. Look at /includes/plugins/...
 	_.each(Plugins, function(plugin) {
 		log("running plugin " + plugin.description);
