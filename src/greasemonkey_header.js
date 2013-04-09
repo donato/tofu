@@ -17,7 +17,7 @@
 // @grant       GM_getResourceText
 // @grant       GM_getResourceURL
 // @resource    sidebar_targets      http://www.luxbot.net/download/img/sidebar_targets.gif
-// @resource    sidebar_sabargets    http://www.luxbot.net/download/img/sidebar_sabtargets.gif
+// @resource    sidebar_sabtargets    http://www.luxbot.net/download/img/sidebar_sabtargets.gif
 // @resource    styles    http://www.luxbot.net/download/css/styles.css
 // ==/UserScript==
 

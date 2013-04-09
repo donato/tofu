@@ -37,7 +37,7 @@ var action;
 
 	// Plugins want to be run on all pages. Look at /includes/plugins/...
 	_.each(Plugins, function(plugin) {
-		log("running plugin " + plugin);
+		log("running plugin " + plugin.description);
 		plugin.run();
 	});
 
