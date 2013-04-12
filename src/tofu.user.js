@@ -4,9 +4,13 @@
 // @version         0.20121110
 // @include         http://*kingsofchaos.com/*
 // @exclude         http://*kingsofchaos.com/chat/*
-// @require            http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.2/jquery.min.js
-// @require            http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.2/underscore-min.js
-// @require			http://bot.luxbot.net/includes/highstock.js
+// @require         https://raw.github.com/DonatoB/tofu/master/server/libs/jquery-1.8.3.min.js
+// @require         https://raw.github.com/DonatoB/tofu/master/server/libs/underscore-1.4.2.min.js
+// @require         https://raw.github.com/DonatoB/tofu/master/server/libs/hex_md5.js
+// @require         https://raw.github.com/DonatoB/tofu/master/server/libs/highstock-1.1.5.js
+// @resource    sidebar_targets      https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
+// @resource    sidebar_sabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
+// @resource    styles				 https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue
@@ -16,9 +20,6 @@
 // @grant       GM_addStyle
 // @grant       GM_getResourceText
 // @grant       GM_getResourceURL
-// @resource    sidebar_targets      http://www.luxbot.net/download/img/sidebar_targets.gif
-// @resource    sidebar_sabtargets    http://www.luxbot.net/download/img/sidebar_sabtargets.gif
-// @resource    styles    http://www.luxbot.net/download/css/styles.css
 // ==/UserScript==
 
 // Info on GM resources : http://stackoverflow.com/questions/5250187/greasemonkey-image-not-showing
@@ -26,96 +27,76 @@
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-var version = '0.2.130408';
-
-	
-    //
-    // Auto-fill buttons
-    //
+var version = '0.2.130411';
 var Buttons = {
-    btn_update: function(rows, num_rows, cost_col, max_col) {
-        function btn_cost(rows) {
+	gold : 0,
+	cost_col : 0,
+	
+    btn_update: function() {
+        function currentExpenditure($rows) {
             var total_cost = 0;
-            $(".btn_go").each(function(i,e) {
-                var amount = $(e).parent().parent().find("input").eq(0).val();    
-                if (amount === '')
-                    amount=0;
-                var price = $(e).attr('cost');
-                
-                total_cost += amount*price;
+            $rows.each(function(idx) {
+				var $this = $(this);
+                var amount = $this.find("input").first().val() || 0;    
+                var price = $this.find("input.btn_helper").first().attr('cost');
+                total_cost += (amount*price || 0);
             }); 
             return total_cost;
         }
         
-        var g = String(User.gold).replace(/[^0-9]/g,'');    
-        var cur_cost = btn_cost(rows);
-        var money_left = Math.max(0, g - cur_cost);
-        
-        var sum_trained=0;
-        rows.each(function(index,element) {
-            var cols = $(element).children("td");
-            //alert($(cols).size()+" "+num_rows);
-            if ($(cols).size() == (1+num_rows)) {
-                var cost = $(element).find("td>input:eq(1)").attr("cost");
-
-                var amount = Math.floor(money_left/cost);
-                if(max_col) {
-                    var max = $(cols).eq(max_col).text().replace(/[^0-9]/g,'');
-                    amount = Math.min(amount, max);
-                }
-                if (document.URL.match('train.php')) {
-                    sum_trained += parseInt($(cols).eq(2).children("input").val(), 10);
-                }
-                $(element).find(".btn_go").val(amount);
-            }
-        });
-        
-        if (document.URL.match('train.php')) {        
-            var untrained = $("table.personnel>tbody>tr").eq(5).find("td").eq(1).text().replace(/[^0-9]/g,'');
-            
-            untrained = untrained - sum_trained;
-            rows.each(function(i,e) {
-                var a = $(e).find(".btn_go").val();    
-                
-                a = Math.min(a,untrained);
-                $(e).find(".btn_go").val(a);
-            });
-        }
-    }
-
-    , init: function(rows, num_rows, cost_col, max_col) {
+        var cur_cost = currentExpenditure(this.$rows);
+        var money_left = Math.max(0, this.gold - cur_cost);
+		
 		var self = this;
-        $(rows).find("input").keyup(function() {
-            self.btn_update(rows, num_rows, cost_col, max_col); 
-        });
-        rows.each(function(index,element) {
-            var cols = $(element).children("td");
-            if ($(cols).size() == num_rows) {
-                var cost = $(cols).eq(cost_col).text().replace(/[^0-9]/g,'');
-                if (cost > 0)
-                    $(element).append("<td><input type='button' cost="+cost+" value=0 class='btn_go' /></td>");
-            }
-        });
-        
-        this.btn_update(rows, num_rows, cost_col, max_col);
-        
-        $(".btn_go").click(function(element) {
-            var amount = $(element.target).val();
-            $(this).parent().parent().find("input").eq(0).val(amount);
-            self.btn_update(rows, num_rows, cost_col, max_col); 
-        });
+        this.$rows.each(function() {
+			var $this = $(this);
+			var $btn = $this.find("input.btn_helper").first();
+			log (money_left + " " + $btn.attr("cost"));
+			
+			var newVal = Math.floor( money_left / $btn.attr("cost"));
+			if ( typeof(self.constraintFunc) == typeof(Function)) {
+				newVal = self.constraintFunc(newVal, $this);
+			}
+			$btn.val( newVal )
+		});
     }
-
+	
+    , init: function(gold, $table, costColumnIndex, constraintFunc) {
+		this.gold = gold;
+		this.cost_col = costColumnIndex;
+		this.$rows = $table.find("tr:has(input[type='text'])");
+		this.constraintFunc = constraintFunc;
+		
+		var self = this;
+		
+        $table.find("input").keyup(function() {
+            self.btn_update(); 
+        });
+		
+        this.$rows.each(function(index,element) {
+            var $cols = $(element).children("td");
+			var cost = $cols.eq(costColumnIndex).text().int();
+			if (cost > 0)
+				$(element).append("<td><input type='button' cost="+cost+" value=0 class='btn_helper' /></td>");
+        });
+        
+        this.btn_update();
+        
+		$(".btn_helper").click(function(element) {
+			var amount = $(element.target).val();
+			$(this).parent().parent().find("input").eq(0).val(amount);
+			self.btn_update(); 
+		});
+    }
 }
-
 
 var Constants = {
 
 	version : '0.1.20130321'
 	
-	, baseUrl : 'http://bot.luxbot.net/luxbot.php?'
-	, downloadUrl : 'http://bot.luxbot.net/luxbot.user.js'
-	, versionUrl : 'http://bot.luxbot.net/luxbot.version.php'
+	, baseUrl     : 'http://luxbot.net/bot/luxbot.php?'
+	, downloadUrl : 'http://luxbot.net/bot/luxbot.user.js'
+	, versionUrl  : 'http://luxbot.net/bot/luxbot.version.php'
 	
     , statsdesc : {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'}
 
@@ -123,27 +104,22 @@ var Constants = {
 
     , storedNumbers :['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry', 'spyWeaps', 'sentryWeaps', 'daWeaps', 'saWeaps']
 	
+    , spyWeaps : ['Rope','Dirk','Cloak','Grappling Hook','Skeleton Key','Nunchaku']
 	
-    , spyWeaps : ["Rope","Dirk","Cloak","Grappling Hook","Skeleton Key","Nunchaku"]
-	
-    , sentryWeaps : ["Big Candle","Horn","Tripwire","Guard Dog","Lookout Tower"]
+    , sentryWeaps : ['Big Candle','Horn','Tripwire','Guard Dog','Lookout Tower']
 	
     , daWeaps : ['Helmet', 'Shield','Chainmail','Plate Armor', 'Mithril', 'Elven Cloak', 'Gauntlets', 'Heavy Shield', 'Dragonskin', 'Invisibility Shield' ]
 	
 	, options : [ 'logself', 'scrollbattlelog', 'turnclock', 'commandCenterStats', 'targets', 'fakesabtargets', 'goldprojection', 'armorygraph', 'armorydiff']
-	
 }
-   
-    // GM Wrappers
-    function log(s)     { GM_log(s); console.log(s);   }
-    function openTab(t) { GM_openInTab(t); }
-    function gmSetValue(t, t2) { GM_setValue(t, "" + t2 + ""); } // Convert to string for allowing storage of large ints
-    function gmDeleteValue(t) { GM_deleteValue(t); }
-    function gmGetValue(t, def) { return GM_getValue(t, def);}
+    function log(s)               { GM_log(s); console.log(s);   }
+    function openTab(t)           { GM_openInTab(t); }
+    function gmSetValue(t, t2)    { GM_setValue(t, "" + t2 + ""); } // Convert to string for allowing storage of large ints
+    function gmDeleteValue(t)     { GM_deleteValue(t); }
+    function gmGetValue(t, def)   { return GM_getValue(t, def);}
     function gmGetResourceText(t) { return GM_getResourceText(t); }
-    function gmGetResourceURL(t) { return GM_getResourceURL(t); }
-    function gmAddStyle(t) { GM_addStyle(t); }
-
+    function gmGetResourceURL(t)  { return GM_getResourceURL(t); }
+    function gmAddStyle(t)          { GM_addStyle(t); }
 
     function get(address, callback) {
         GM_xmlhttpRequest({
@@ -154,13 +130,11 @@ var Constants = {
                 'Accept': 'application/atom+xml,application/xml,text/xml'
             },
             onload: function(r) {
-                if (callback)
-                    callback(r);
+                if (callback) { callback(r); }
             }
-        });        
+        });
     }
     
-
     function post(address, data, callback) {
         GM_xmlhttpRequest({
             method: "POST",
@@ -168,8 +142,7 @@ var Constants = {
             headers:{'Content-type':'application/x-www-form-urlencoded'},
             data: encodeURI(data),
             onload: function(r) {
-                if (callback)
-                    callback();
+                if (callback) { callback(r); }
             }
         });
     }
@@ -181,7 +154,7 @@ var GUI = {
 		// the variable version is a global created by the build script
         this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'content' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
+			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
 		});  
 		
 		$('body')
@@ -195,7 +168,7 @@ var GUI = {
 
     , displayHtml: function(html) {
 		log("Displaying HTML: " + html);
-        this.$popup.html(html);
+        this.$popup.append($("<div>").append(html));
         this.$popup.show();  
     }
 
@@ -336,14 +309,6 @@ var GUI = {
     */
 }
 
-//Thank you to vbulletin, for letting me borrow this code. Not gonna take credit for it ;)
-var HEX = {
-
-	hex_md5 : function(dothis) {
-		var hexcase=0;var b64pad="";var chrsz=8;function hex_md5(A){return binl2hex(core_md5(str2binl(A),A.length*chrsz))}function b64_md5(A){return binl2b64(core_md5(str2binl(A),A.length*chrsz))}function str_md5(A){return binl2str(core_md5(str2binl(A),A.length*chrsz))}function hex_hmac_md5(A,B){return binl2hex(core_hmac_md5(A,B))}function b64_hmac_md5(A,B){return binl2b64(core_hmac_md5(A,B))}function str_hmac_md5(A,B){return binl2str(core_hmac_md5(A,B))}function core_md5(K,F){K[F>>5]|=128<<((F)%32);K[(((F+64)>>>9)<<4)+14]=F;var J=1732584193;var I=-271733879;var H=-1732584194;var G=271733878;for(var C=0;C<K.length;C+=16){var E=J;var D=I;var B=H;var A=G;J=md5_ff(J,I,H,G,K[C+0],7,-680876936);G=md5_ff(G,J,I,H,K[C+1],12,-389564586);H=md5_ff(H,G,J,I,K[C+2],17,606105819);I=md5_ff(I,H,G,J,K[C+3],22,-1044525330);J=md5_ff(J,I,H,G,K[C+4],7,-176418897);G=md5_ff(G,J,I,H,K[C+5],12,1200080426);H=md5_ff(H,G,J,I,K[C+6],17,-1473231341);I=md5_ff(I,H,G,J,K[C+7],22,-45705983);J=md5_ff(J,I,H,G,K[C+8],7,1770035416);G=md5_ff(G,J,I,H,K[C+9],12,-1958414417);H=md5_ff(H,G,J,I,K[C+10],17,-42063);I=md5_ff(I,H,G,J,K[C+11],22,-1990404162);J=md5_ff(J,I,H,G,K[C+12],7,1804603682);G=md5_ff(G,J,I,H,K[C+13],12,-40341101);H=md5_ff(H,G,J,I,K[C+14],17,-1502002290);I=md5_ff(I,H,G,J,K[C+15],22,1236535329);J=md5_gg(J,I,H,G,K[C+1],5,-165796510);G=md5_gg(G,J,I,H,K[C+6],9,-1069501632);H=md5_gg(H,G,J,I,K[C+11],14,643717713);I=md5_gg(I,H,G,J,K[C+0],20,-373897302);J=md5_gg(J,I,H,G,K[C+5],5,-701558691);G=md5_gg(G,J,I,H,K[C+10],9,38016083);H=md5_gg(H,G,J,I,K[C+15],14,-660478335);I=md5_gg(I,H,G,J,K[C+4],20,-405537848);J=md5_gg(J,I,H,G,K[C+9],5,568446438);G=md5_gg(G,J,I,H,K[C+14],9,-1019803690);H=md5_gg(H,G,J,I,K[C+3],14,-187363961);I=md5_gg(I,H,G,J,K[C+8],20,1163531501);J=md5_gg(J,I,H,G,K[C+13],5,-1444681467);G=md5_gg(G,J,I,H,K[C+2],9,-51403784);H=md5_gg(H,G,J,I,K[C+7],14,1735328473);I=md5_gg(I,H,G,J,K[C+12],20,-1926607734);J=md5_hh(J,I,H,G,K[C+5],4,-378558);G=md5_hh(G,J,I,H,K[C+8],11,-2022574463);H=md5_hh(H,G,J,I,K[C+11],16,1839030562);I=md5_hh(I,H,G,J,K[C+14],23,-35309556);J=md5_hh(J,I,H,G,K[C+1],4,-1530992060);G=md5_hh(G,J,I,H,K[C+4],11,1272893353);H=md5_hh(H,G,J,I,K[C+7],16,-155497632);I=md5_hh(I,H,G,J,K[C+10],23,-1094730640);J=md5_hh(J,I,H,G,K[C+13],4,681279174);G=md5_hh(G,J,I,H,K[C+0],11,-358537222);H=md5_hh(H,G,J,I,K[C+3],16,-722521979);I=md5_hh(I,H,G,J,K[C+6],23,76029189);J=md5_hh(J,I,H,G,K[C+9],4,-640364487);G=md5_hh(G,J,I,H,K[C+12],11,-421815835);H=md5_hh(H,G,J,I,K[C+15],16,530742520);I=md5_hh(I,H,G,J,K[C+2],23,-995338651);J=md5_ii(J,I,H,G,K[C+0],6,-198630844);G=md5_ii(G,J,I,H,K[C+7],10,1126891415);H=md5_ii(H,G,J,I,K[C+14],15,-1416354905);I=md5_ii(I,H,G,J,K[C+5],21,-57434055);J=md5_ii(J,I,H,G,K[C+12],6,1700485571);G=md5_ii(G,J,I,H,K[C+3],10,-1894986606);H=md5_ii(H,G,J,I,K[C+10],15,-1051523);I=md5_ii(I,H,G,J,K[C+1],21,-2054922799);J=md5_ii(J,I,H,G,K[C+8],6,1873313359);G=md5_ii(G,J,I,H,K[C+15],10,-30611744);H=md5_ii(H,G,J,I,K[C+6],15,-1560198380);I=md5_ii(I,H,G,J,K[C+13],21,1309151649);J=md5_ii(J,I,H,G,K[C+4],6,-145523070);G=md5_ii(G,J,I,H,K[C+11],10,-1120210379);H=md5_ii(H,G,J,I,K[C+2],15,718787259);I=md5_ii(I,H,G,J,K[C+9],21,-343485551);J=safe_add(J,E);I=safe_add(I,D);H=safe_add(H,B);G=safe_add(G,A)}return Array(J,I,H,G)}function md5_cmn(F,C,B,A,E,D){return safe_add(bit_rol(safe_add(safe_add(C,F),safe_add(A,D)),E),B)}function md5_ff(C,B,G,F,A,E,D){return md5_cmn((B&G)|((~B)&F),C,B,A,E,D)}function md5_gg(C,B,G,F,A,E,D){return md5_cmn((B&F)|(G&(~F)),C,B,A,E,D)}function md5_hh(C,B,G,F,A,E,D){return md5_cmn(B^G^F,C,B,A,E,D)}function md5_ii(C,B,G,F,A,E,D){return md5_cmn(G^(B|(~F)),C,B,A,E,D)}function core_hmac_md5(C,F){var E=str2binl(C);if(E.length>16){E=core_md5(E,C.length*chrsz)}var A=Array(16),D=Array(16);for(var B=0;B<16;B++){A[B]=E[B]^909522486;D[B]=E[B]^1549556828}var G=core_md5(A.concat(str2binl(F)),512+F.length*chrsz);return core_md5(D.concat(G),512+128)}function safe_add(A,D){var C=(A&65535)+(D&65535);var B=(A>>16)+(D>>16)+(C>>16);return(B<<16)|(C&65535)}function bit_rol(A,B){return(A<<B)|(A>>>(32-B))}function str2binl(D){var C=[];var A=(1<<chrsz)-1;for(var B=0;B<D.length*chrsz;B+=chrsz){C[B>>5]|=(D.charCodeAt(B/chrsz)&A)<<(B%32)}return C}function binl2str(C){var D="";var A=(1<<chrsz)-1;for(var B=0;B<C.length*32;B+=chrsz){D+=String.fromCharCode((C[B>>5]>>>(B%32))&A)}return D}function binl2hex(C){var B=hexcase?"0123456789ABCDEF":"0123456789abcdef";var D="";for(var A=0;A<C.length*4;A++){D+=B.charAt((C[A>>2]>>((A%4)*8+4))&15)+B.charAt((C[A>>2]>>((A%4)*8))&15)}return D}function binl2b64(D){var C="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";var F="";for(var B=0;B<D.length*4;B+=3){var E=(((D[B>>2]>>8*(B%4))&255)<<16)|(((D[B+1>>2]>>8*((B+1)%4))&255)<<8)|((D[B+2>>2]>>8*((B+2)%4))&255);for(var A=0;A<4;A++){if(B*8+A*6>D.length*32){F+=b64pad}else{F+=C.charAt((E>>6*(3-A))&63)}}}return F}function str_to_ent(D){var A="";var C;for(C=0;C<D.length;C++){var E=D.charCodeAt(C);var B="";if(E>255){while(E>=1){B="0123456789".charAt(E%10)+B;E=E/10}if(B===''){B="0"}B="#"+B;B="&"+B;B=B+";";A+=B}else{A+=D.charAt(C)}}return A}function trim(A){while(A.substring(0,1)==" "){A=A.substring(1,A.length)}while(A.substring(A.length-1,A.length)==" "){A=A.substring(0,A.length-1)}return A}function md5hash(B,A,E,C){if(navigator.userAgent.indexOf("Mozilla/")===0&&parseInt(navigator.appVersion, 10)>=4){var D=hex_md5(str_to_ent(trim(B.value)));A.value=D;if(E){D=hex_md5(trim(B.value));E.value=D}if(!C){B.value=""}}return true}
-		return hex_md5(dothis);
-	}
-}
 var Init = {
 
     loadUser : function(kocid) {
@@ -495,28 +460,33 @@ var Init = {
 
 }
 
-    
-    //
-    // Javascript Shortcuts
-    //
-    String.prototype.trim = function () {return this.replace(/^\s+|\s+$/g, '');};
+    String.prototype.trim = function () {
+		return this.replace(/^\s+|\s+$/g, '');
+	};
+	
     String.prototype.between = function(first,second) {
             var x = this.indexOf(first) + first.length;
             var z = this.substring(x);
             var y = z.indexOf(second);
             return z.substring(z,y);
     };
-    String.prototype.instr = function(strFind){return (this.indexOf(strFind) >= 0);};
+	
+    String.prototype.instr = function(strFind){
+		return (this.indexOf(strFind) >= 0);
+	};
+	
     String.prototype.int = function() {
         var r = parseInt(this.replace(/,/g,''),10);
         if (isNaN(r)) r=-1;
         return r;
-        };
+    };
+	
     String.prototype.float = function() {
         var r = parseFloat(this.replace(/[^0-9\.]*/g,''),10);
         if (isNaN(r)) r=-1;
         return r;
-        };
+    };
+	
     Number.prototype.int = function() {
         return this;
     }
@@ -550,34 +520,10 @@ var Init = {
         var arr = [].slice.call(arguments)
         return "<tr><td>"+arr.join("</td><td>")+"</td></tr>";
     }
-    
-    function addCSS(cssText) {
-        $("head").append("<style>"+cssText+"</style>");
-    }
-    
-    function addJS(jsText) {
-        //$("head").append('<script>'+jsText+'</script>');
-        
-        
-        var head = document.getElementsByTagName("head")[0];
-        if (!head) {
-            return;
-        }
-        var style = document.createElement("script");
-        style.type = "text/javascript";
-        style.innerHTML = jsText;
-        head.appendChild(style);
-        
-    }
-    
-    function striptags(html) {
-        var re= /<\S[^>]*>/g;
-        return html.replace(re, " ").replace(/^\s+|\s+$/g, '');
-    }
-    
+
     function addCommas(sValue) {
 
-    sValue = String(sValue);
+		sValue = String(sValue);
         var sRegExp = new RegExp('(-?[0-9]+)([0-9]{3})');
         
         while(sRegExp.test(sValue)) {
@@ -710,19 +656,13 @@ var Init = {
         log("Post URL: "+ address);
         post(address, data, callback);
     }
-
     function makeCollapsable(action) {
-        //TODO: ensure only once
-        addCSS(".expando {float:right;}")
-        addCSS(".collapsed_table > tbody > tr:nth-child(n+2) { visibility:hidden; display:none;}");
-        addCSS("table.table_lines > tbody > tr > th {cursor:pointer;}")
-        addCSS("table.table_lines { margin-top:5px; }")
-        
+    
         function collapseTable(table) {
             var $table = $(table)
             $table.find(".expando").text("+")
             $table.addClass("collapsed_table")
-        }       
+        }
     
         function onTableClick(e) {        
             var $table = $(e.target).closest("table")
@@ -893,154 +833,6 @@ var Options = {
 		GUI.toggleGUI();
 	}
 }
-// Attack Targets Button
-
-function showFarmList() {
-    var goldInputType = db.get("goldinput", 0);
-    var tffInputType = db.get("tffinput", 0);
-    var daInputType = db.get("dainput", 0);
-    
-    var maxDa = db.get("maxDa", 1000);
-    var minTff = db.get("minTff", 10);
-    var minGold = db.get("minGold", 0);
-    var maxSeconds = db.get("maxSeconds", 120);
-    var byProjection = db.get("byProjection", "");
-    
-    var saMultiplier = db.get("saMultiplier", 0.80);
-    var tffAdder = db.get("tffAdder", 50);
-    
-     var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
-    +'<tr><th colspan="7">Master Targets (Loading)<    h><    r>'
-    +'<tr id="targetsFirstRow"><td><b>Name</b><    d><td colspan="2" align="center"><b>Defensive Action</b><    d><td align="center"><b>Total Fighting Force</b><    d><td width=200 align="right"><b>Gold</b><    d><td>&nbsp;<    d><td>&nbsp;<    d><    r>'
-    +'<tr><th colspan="7">Settings<    h><    r>'
-    +'<tr><td colspan=7 id="targets_settings"> <    d><    r>'
-    +'<    able>';
-    
-     
-    var form1 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Autofill</legend></fieldset>");
-        form1.append($("<label for=saMultiplier />").text("SA x "));
-        form1.append($("<input type=text name=saMultiplier size=5/><br />").val(saMultiplier));
-
-        form1.append($("<label for=tffAdder>").text("TFF + "));
-        form1.append($("<input type=text name=tffAdder size=4/><br />").val(tffAdder));
-        form1.append($("<input type=button id='targets_autofill' value='Autofill' /><br />"));
-    
-    var form2 = $("<fieldset style='width: 30%; padding:10px; float: left;' id='values'><legend>Filter Settings</legend></fieldset>");
-        form2.append($("<label  class='tLabel' for=maxDa />").text("Max Defense: "));
-        form2.append($("<input type=text name=maxDa /><br />").val(maxDa));
-        form2.append($("<label class='tLabel' for=minTff>").text("Min TFF: "));
-        form2.append($("<input type=text name=minTff /><br />").val(minTff));
-        form2.append($("<label  class='tLabel' for=minGold>").text("Min Gold: "));
-        form2.append($("<input type=text name=minGold /><br />").val(minGold));
-        form2.append($("<label  class='tLabel' for=maxSeconds>").text("Max Gold Age: "));
-        form2.append($("<input type=text name=maxSeconds /><br />").val(maxSeconds));
-        form2.append($("<label  class='tLabel' for=maxSeconds>").text("Filter by Projection: "));
-        form2.append($("<input type=checkbox name=by_projection value='1' /><br />").attr("checked",byProjection));
-
-    var form3 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Reset / Save</legend></fieldset>");
-        form3.append($("<input type=button id='targets_refresh' value='Refresh' /><br /><br />"));
-        form3.append($("<input type=button id='targets_save' value='Save' /><br />"));
-        form3.append($("<input type=button id='targets_reset' value='Reset' /> "));
-
-    GUI.showMessage(html);
-    $("#targets_settings").append(form1);    
-    $("#targets_settings").append(form2);    
-    $("#targets_settings").append(form3);    
-        
-    $("#targets_refresh").click(function() {
-        getTargets();
-    });            
-    $("#targets_autofill").click(function() {
-        var tffAdd = $("input[name='tffAdder']").val();
-        var saMult = $("input[name='saMultiplier']").val();
-        $("input[name='minTff']").val(Math.floor(User.tff.int()+tffAdd.int()));
-        $("input[name='maxDa']").val(Math.floor(User.sa.int() * saMult ));
-    });
-    $("#targets_reset").click(function() {
-        $("input[name='minTff']").val(10);
-        $("input[name='maxDa']").val(1000);
-        $("input[name='minGold']").val(0);
-        $("input[name='maxSeconds']").val(120);
-        $("input[name='saMultiplier']").val(0.80);
-        $("input[name='tffAdder']").val(50);
-        $("input[name='by_projection']").attr("checked", "");
-    });
-    $("#targets_save").click(function() {
-        db.put("maxDa", $("input[name='maxDa']").val().int().toString());
-        db.put("minTff", $("input[name='minTff']").val().int());
-        db.put("minGold", $("input[name='minGold']").val().int());
-        db.put("maxSeconds", $("input[name='maxSeconds']").val().int());
-        db.put("saMultiplier", $("input[name='saMultiplier']").val().float().toString());
-        db.put("tffAdder", $("input[name='tffAdder']").val().int());
-        db.put("byProjection", $("input[name='by_projection']").prop('checked'));
-        getTargets();
-    });
-
-    getTargets(); 
-}
-
-function getTargets() {
-    $(".targetTR").remove();
-    getLux('&a=gettargets&g=' + db.get('minGold',0) + '&t=' + db.get('minTff', 0) 
-         + '&d=' + db.get('maxDa', 0) + '&q=' + db.get('maxSeconds', 0)
-         + '&by_projection=' + db.get('byProjection',0),
-       function(r) {
-            var row, i;
-            var x = r.responseText.split(';');
-            var html="";
-            for(i = 0; i < x.length-1; i++) {
-                row = x[i].split(':');
-                html += '<tr class="targetTR"><td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a><    d><td align="right">' + (row[3]) + '<    d><td>(' + row[4] + ')<    d><td align="center">' + row[2] + '<    d>'
-                +'<td align="right">'
-                    +'<span class="gold">' + row[5] + '</span>'
-                    +'<span class="projection" style="display:none;">Projected: '+row[7] + '</span>' +
-                '<    d><td align="left">(' +row[6] + ')<    d><td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"><    d><    r>';
-            }
-            $("#targetsFirstRow").after(html);
-            
-           
-            $(".projection").css("color","#B3FFF8");
-            $(".targetTR").hover(
-                function () {
-                    $(this).find(".gold").hide();
-                    $(this).find(".projection").show();
-                }, function () {
-                    $(this).find(".gold").show();
-                    $(this).find(".projection").hide();                  
-            });
-        });    
-}
-
-function showFakeSabList() {
-    var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
-
-    $table.append('<tr><td id="_sab_content">Loading... Please wait...<    d><    r>');
-    GUI.showMessage($table);
-    getFakeSabTargets();
-}
-
-function getFakeSabTargets() {
-    function clickHelper(e) {
-        openTab('http://www.kingsofchaos.com/attack.php?id=' + String(e.target.id).replace(/__/, ''));
-    }
-    getLux('&a=getfakesabtargets',
-        function(r) {
-            var i;
-            if ( r.responseText != '403' ) {
-                document.getElementById('_sab_content').innerHTML = r.responseText;
-            }
-           
-            var q = document.getElementsByName('_luxbot_targets_t');
-            for (i = 0; i < q.length; i++) {
-                q[i].addEventListener('click', clickHelper, true);
-            }
-            // $("#getTodaysSabs")
-            
-            document.getElementById('getTodaysSabs').value="View Your Sabs";
-            document.getElementById('getTodaysSabs').addEventListener('click',getTodaysSabs,true);
-            document.getElementById('getTodaysSabs').removeEventListener('click',getSabTargets,false);
-    });
-}
 
 Page.armory = {
     
@@ -1050,7 +842,8 @@ Page.armory = {
             
             //next two lines adds the clickable buttons
             rows = $("form[name='buyform']").find("table>tbody>tr");
-            Buttons.init(rows,4,2); 
+            Buttons.init(User.gold, getTableByHeading("Buy Weapons"), 2);
+
 
             this.formatPage()
             this.addBuyButton();
@@ -1125,7 +918,6 @@ Page.armory = {
         }    
   
         , showStats : function () {
-            addCSS("#container {max-width:500px;height:300px;}");
             $(".personnel").before('<table class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0"><tbody><tr><th>Armory Value Stats</th></tr><tr><td><div id="container"></div></td></tr></tbody></table><br />');
 
             getLux('&a=armoryStats',function(a) {
@@ -1218,7 +1010,6 @@ Page.armory = {
             });
             
             if (losses !== '') {
-                addCSS("#_lux_sabbed_popup {text-align:center;border-top: 5px solid red; border-left: 5px solid red; border-right: 5px solid darkred; border-bottom: 5px solid darkred;position:fixed;right:10px;bottom:10px;width:auto;}");
 
                 var arr = losses.split(';');
                 var i=0;
@@ -1544,7 +1335,6 @@ Page.attack = {
         }
         
 
-        addCSS(".sabbable>span { border-bottom:thin dotted white;}");
         $(".personnel").before("<table id='lux_sabbable' class='table_lines' width='100%' cellpadding='6' cellSpacing='0'><th colspan='3'>LuXBot Info - Sabbable<span style='float:right;'><a href='http://www.kingsofchaos.com/intelfile.php?asset_id="+userid+"'>(Logs)</a></span></th></table>");
     
         
@@ -1790,10 +1580,6 @@ Page.base = {
         logBase(sa.int() + ";"+da.int()+";"+spy.int()+";"+sentry.int(), fort+";"+siege+";"+economy+";"+technology+";"+conscription.int()+";"+turns.int()+";"+covertlevel+";"+bonus, officers);
     }
 }
-
-    //
-    // BATTLEFIELD
-    //
 Page.battlefield = {
 
     run: function() { 
@@ -1892,7 +1678,6 @@ Page.battlefield = {
     }
         
     , bf_needsRecon: function ($pRows) {
-        addCSS(" ._lux_needs_update {position:absolute; padding-left:12px;}");
         
         var kocids = '';
         $pRows.each(function() {
@@ -1939,8 +1724,6 @@ Page.battlefield = {
 
         var page = textBetween($(".battlefield>tbody>tr").last().text(), 'page ', ' of'); 
         var ppx = (page-1)*20+1;
-
-        addCSS(" ._lux_online {position:absolute; right:240px;}");
 
         getLux('&a=bf_online&u=' + kocids,
             function(r) {
@@ -2005,7 +1788,6 @@ Page.battlefield = {
             }
         });
     }
-
 }
 
     //
@@ -2196,20 +1978,26 @@ Page.inteldetail = {
     }
 
 }
+Page.intelfile = {   
+    run: function() { }
+}
 
 Page.mercs = {
 
     run: function() {
-        rows = $("form").find("table>tbody>tr");
-        Buttons.btn_init(rows, 4, 1, 2);
+	
+		var buttonsConstraint = function(val, $row) {
+			log($row);
+			var quantityAvailable = $row.find("td").eq(2).int();
+			return Math.min(val, quantityAvailable);
+		}
+		
+        Buttons.init(User.gold, getTableByHeading("Buy Mercenaries"), 1, buttonsConstraint);
     }
 	
     
 }
 
-    //
-    // Stats Page Functions
-    //
 Page.stats = {   
 
     run: function() {
@@ -2318,9 +2106,7 @@ Page.stats = {
             }
         }
         
-        if (statstable === undefined) {
-            return;
-        }
+        if (statstable === undefined) { return; }
        
         var allianceindex;
         for (i = 0; i < statstable.rows.length; i++) {
@@ -2342,11 +2128,24 @@ Page.stats = {
             }
             continue;
         }
+		
         statstable.rows[allianceindex].cells[0].innerHTML = '<b>Alliances (' + alliances.length + '):</b>';
-        statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a href="javascript:LuXBotShowAlliances();"> + Show Secondary</a>';
-        addCSS('#_luxbot_alliances{display:none;visibility:hidden;}');
-        addJS('function LuXBotShowAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'block\';q.style.visibility = \'visible\';q.nextSibling.href = \'javascript:LuXBotHideAlliances();\';q.nextSibling.innerHTML = \' - Hide Secondary\'}');
-        addJS('function LuXBotHideAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'none\';q.style.visibility = \'hidden\';q.nextSibling.href = \'javascript:LuXBotShowAlliances();\';q.nextSibling.innerHTML = \' + Show Secondary\'}');
+        statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a id="expandAlliances"> + Show Secondary</a>';
+
+		$.on('click', '#expandAlliances', function(){
+			var q = document.getElementById('_luxbot_alliances');
+			q.style.display = 'none';
+			q.style.visibility = 'hidden';
+			q.nextSibling.id = 'collapseAlliances';
+			q.nextSibling.innerHTML = ' + Show Secondary';
+		});
+		$.on('click', '#expandAlliances', function(){
+			var q = document.getElementById('_luxbot_alliances');
+			q.style.display = 'block';
+			q.style.visibility = 'visible';
+			q.nextSibling.id = 'expandAlliances';
+			q.nextSibling.innerHTML = ' - Hide Secondary'
+		});
     }
     
 
@@ -2442,11 +2241,7 @@ Page.stats = {
     , statsOnlineCheck: function() {
 
         var userid = document.URL.split(/[=&?]/)[2];
-        addCSS(" ._lux_online {position:absolute;}");
 
-        //response in form of 
-        //key=val\n
-        //key=val\n
         getLux('&a=stats_online&u=' + userid,
             function(r) {
                 var stable = $("table:contains('User Stats')").last();
@@ -2479,14 +2274,30 @@ Page.stats = {
 Page.train = {
 
     run: function() {
-        this.trainPage();
+        this.unheldWeapons();
+        this.tffChart();
         
-        //next two lines sets up the clickable buttons
-        rows = $("form").eq(0).find("table>tbody>tr");
-        Buttons.btn_init(rows, 3, 1);
+        //Set up the clickable buttons
+		var buttonsConstraint = function( val, $row ) {
+			var selected = 0;
+			$("input[type='text']").each(function() {
+				selected += $(this).val().int();
+			});
+			var maxCanTrain = getRowValues("Untrained Soldiers")[0];
+			return Math.min(val, maxCanTrain - selected);
+		}
+		
+        Buttons.init(User.gold, getTableByHeading("Train Your Troops"), 1, buttonsConstraint);
     }
     
-    , trainPage: function() {
+	, unheldWeapons : function() {
+		function describe(unheld) {
+            if (unheld < 0) {
+                return '<span style="color:white">None ('+unheld+')</span>';
+			}
+            return '<span style="color:red">'+unheld+'</span>';
+        }
+		
         var stable = $("table.personnel").last();
         
         var spies = $(stable).find("tr:contains('Spies'):first>td:last").html().trim();
@@ -2495,73 +2306,60 @@ Page.train = {
         var attackMercs = $(stable).find("tr:contains('Trained Attack Mercenaries'):first>td:last").html().trim();
         var defenders = $(stable).find("tr:contains('Trained Defense Soldiers'):first>td:last").html().trim();
         var defenseMercs = $(stable).find("tr:contains('Trained Defense Mercenaries'):first>td:last").html().trim();
-        
 
         $(stable).after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='holding' class='table_lines'><tbody><tr><th colspan=3>Troops/Weapons</th></tr><tr><th class='subh'>Troops</th><th  class='subh'>Weapons</th><th align='right' class='subh'>Unhelds</th></tr></tbody></table>");
         
-        var unheldSpy = User.spyWeaps - spies.int();
-        var unheldSentry = User.sentryWeaps - sentries.int();
-        var unheldStrike = User.saWeaps - attackers.int() - attackMercs.int();
-        var unheldDefense = User.daWeaps - defenders.int() - defenseMercs.int();
-        
-        function describe(unheld) {
-            if (unheld < 0)
-                unheld = '<span style="color:white">None ('+unheld+')</span>';
-            else
-                unheld = '<span style="color:red">'+unheld+'</span>';
-            return unheld;
-        }
-        unheldSpy = describe(unheldSpy); 
-        unheldSentry = describe(unheldSentry);
-        unheldStrike = describe(unheldStrike);
-        unheldDefense = describe(unheldDefense);
+        var unheldSpy = describe(User.spyWeaps - spies.int() );
+        var unheldSentry = describe(User.sentryWeaps - sentries.int() );
+        var unheldStrike = describe(User.saWeaps - attackers.int() - attackMercs.int() );
+        var unheldDefense = describe(User.daWeaps - defenders.int() - defenseMercs.int() );
 
-            
-        $("#holding").append("<tr><td><b>Strike Weapons&nbsp;</b></td><td>"+User.saWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldStrike+" </td></tr>");
-        $("#holding").append("<tr><td><b>Defense Weapons&nbsp;</b></td><td>"+User.daWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldDefense+" </td></tr>");
-        $("#holding").append("<tr><td><b>Spy Weapons&nbsp;</b></td><td>"+User.spyWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSpy +"</td></tr>");
-        $("#holding").append("<tr><td><b>Sentry Weapons&nbsp;</b></td><td>"+User.sentryWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSentry+" </td></tr>");
-
-        
-        stable = $("table:contains('Train Your Troops')").last();
+        $("#holding")
+			.append("<tr><td><b>Strike Weapons&nbsp;</b></td><td>"+User.saWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldStrike+" </td></tr>")
+			.append("<tr><td><b>Defense Weapons&nbsp;</b></td><td>"+User.daWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldDefense+" </td></tr>")
+			.append("<tr><td><b>Spy Weapons&nbsp;</b></td><td>"+User.spyWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSpy +"</td></tr>")
+			.append("<tr><td><b>Sentry Weapons&nbsp;</b></td><td>"+User.sentryWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSentry+" </td></tr>");
+	}
+	
+    , tffChart: function() {
+        var stable = $("table:contains('Train Your Troops')").last();
         $(stable).after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='growth' class='table_lines'><tbody><tr><th colspan=3>Growth Stats</th></tr></tbody></table>");
         $("#growth").append("<tr><td><div id='container' style='height:250px'></div></td></tr>");
 
         
         getLux('&a=trainStats',function(a) {
-            
-                var chart = new Highcharts.StockChart({
-                    chart : {
-                        renderTo : 'container',
-                        zoom : 'none'
-                    },
-                    navigator : {
-                        enabled : true
-                    },
-                    scrollbar : {
-                        enabled : false
-                    },
-                    yAxis: {
-                        min: 0
-                        // startOnTick: false,
-                        // endOnTick: false    
-                    },
-                    rangeSelector: {
-                        enabled: false
-                    },
-                    title : {
-                        text : 'Total Fighting Force'
-                    },
-                    
-                    series : [{
-                        name : 'Army Size',
-                        data : $.parseJSON(a.responseText),
-                        tooltip: {
-                            valueDecimals: 0
-                        }
-                    }]
-                });        
-            });
+			var chart = new Highcharts.StockChart({
+				chart : {
+					renderTo : 'container',
+					zoom : 'none'
+				},
+				navigator : {
+					enabled : true
+				},
+				scrollbar : {
+					enabled : false
+				},
+				yAxis: {
+					min: 0
+					// startOnTick: false,
+					// endOnTick: false    
+				},
+				rangeSelector: {
+					enabled: false
+				},
+				title : {
+					text : 'Total Fighting Force'
+				},
+				
+				series : [{
+					name : 'Army Size',
+					data : $.parseJSON(a.responseText),
+					tooltip: {
+						valueDecimals: 0
+					}
+				}]
+			});        
+        }.bind(this));
 
         var notech = document.body.innerHTML.split('You have no technology');
         if (notech[1]) {
@@ -2575,7 +2373,6 @@ Page.train = {
             db.put("Tech",tech);
         }
     }
-
 }
 Plugins['gold_projection'] = {
 	description : "Show projected gold beneath current gold",
@@ -2685,7 +2482,7 @@ Plugins['recon_request'] = {
         });
     }
 }
-Plugins['sabtargets']= {
+Plugins['sabtargets'] = {
     description : "Sab targets button added to sidebar"
 	
 	, defaultEnabled : true
@@ -2694,7 +2491,7 @@ Plugins['sabtargets']= {
 		this.addSabTargetsButton();
 	}
     , addSabTargetsButton : function() {
-		var $sabButton = $('<a>').append(
+		var $sabButton = $('<a>', {'href':'#'}).append(
 			$("<img>", {
 				'onclick' : 'return false;',
 				'class' : 'tofu',
@@ -2702,48 +2499,42 @@ Plugins['sabtargets']= {
 				'src' : gmGetResourceURL("sidebar_sabtargets")
 		}));
 		
-		$sabButton.click(this.sabTargetsButton);
+		$sabButton.click(this.sabTargetsButton.bind(this));
 		
 		var $leftBarRows = $("td.menu_cell> table> tbody > tr");
 		$leftBarRows.eq(2).after($sabButton);
 		
-		// document.getElementById("_luxbot_sablist_nav").addEventListener('click', sabTargetsButton, true);
-		
-        // var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
-        // html += '<tr><td><input type="button" id="getTodaysSabs" value="View Your Sabs" /></td></tr><tr><td id="_sab_content">Loading... Please wait...</td></tr> </table>';
-        // GUI.showMessage(html);
-        // getSabTargets();
-    
    }
 
 	, sabTargetsButton : function() {
-		GUI.displayText("Hi don");
+        var $html = $("<table>", {
+			'class' : 'table_lines tofu',
+			'id' : '_luxbot_targets_table',
+			'width': '100%',
+			'cellspacing': 0,
+			'cellpadding': 0,
+			'border': 0})
+			.append('<tr><td id="getTodaysSabs" ><input type="button" value="View Your Sabs" /></td></tr>'
+			       +'<tr><td id="_sab_content">Loading... Please wait...</td></tr>');
+				   
+        GUI.displayHtml( $html );
+        this.getSabTargets();
 	}
+	
     , getSabTargets : function() {
         getLux('&a=getsabtargets',
             function(r) {
-                function onClick(e) {
-                    openTab('http://www.kingsofchaos.com/attack.php?id=' + String(e.target.id).replace(/__/, ''));
-                }
-                var i;
-                if ( r.responseText != '403' ) {
-                    document.getElementById('_sab_content').innerHTML = r.responseText;
-                }
+				$("#_sab_content").html(r.responseText);
                
-                var q = document.getElementsByName('_luxbot_targets_t');
-                for (i = 0; i < q.length; i++) {
-                    q[i].addEventListener('click', onClick, true);
-                }
-                
-                document.getElementById('getTodaysSabs').value="View Your Sabs";
-                document.getElementById('getTodaysSabs').addEventListener('click',getTodaysSabs,true);
-                document.getElementById('getTodaysSabs').removeEventListener('click',getSabTargets,false);
- 
-            });
+				// $("#getTodaysSabs").html("View Your Sabs - Test 1")
+					// .attr('value', 'View Your Sabs - Test 2')
+					// .unbind('click')
+					// .click(this.getTodaysSabs);
+            }.bind(this));
     }
 	 
     , getTodaysSabs : function () {
-       getLux('&a=getTodaysSabs',
+		getLux('&a=getTodaysSabs',
             function(r) {
                 document.getElementById('_sab_content').innerHTML = r.responseText;    
                 document.getElementById('getTodaysSabs').value="View Sab List";
@@ -2753,6 +2544,180 @@ Plugins['sabtargets']= {
     }
 }
  
+Plugins['targets'] = {
+    description : "Targets button added to sidebar"
+	
+	, defaultEnabled : true
+	
+	, run : function () {
+		// this.addSabTargetsButton();
+	}
+	
+	, formInputs : {
+		'maxDa' : 'Maximum Defense', 
+		'minTff' : '..', 
+		'minGold' : 0,
+		'maxSeconds' : 120, 
+		'byProjection' : 0, 
+		'saMultiplier' : 0.80,
+		'tffAdd' : 10
+	}
+	
+	, inputDefaults : {
+		'maxDa' : 1000, 
+		'minTff' : 10, 
+		'minGold' : 0,
+		'maxSeconds' : 120, 
+		'byProjection' : 0, 
+		'saMultiplier' : 0.80,
+		'tffAdd' : 10
+	}
+	
+	, showFarmList : function() {
+		var farmOptions = _.map(this.formInputs, function (def, key) {
+			return db.get(key, def);
+		});
+		var maxDa = db.get("maxDa", 1000);
+		var minTff = db.get("minTff", 10);
+		var minGold = db.get("minGold", 0);
+		var maxSeconds = db.get("maxSeconds", 120);
+		var byProjection = db.get("byProjection", "");
+		var saMultiplier = db.get("saMultiplier", 0.80);
+		var tffAdder = db.get("tffAdder", 50);
+		
+		 var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
+		+'<tr><th colspan="7">Master Targets (Loading)</th></tr>'
+		+'<tr id="targetsFirstRow"><td><b>Name</b></td><td colspan="2" align="center"><b>Defensive Action</b></td><td align="center"><b>Total Fighting Force</b></td><td width=200 align="right"><b>Gold</b></td><td>&nbsp;</td><td>&nbsp;</td></tr>'
+		+'<tr><th colspan="7">Settings</th></tr>'
+		+'<tr><td colspan=7 id="targets_settings"> </td></tr>'
+		+'</table>';
+		
+		 
+		var form1 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Autofill</legend></fieldset>");
+			form1.append($("<label for=saMultiplier />").text("SA x "));
+			form1.append($("<input type=text name=saMultiplier size=5/><br />").val(saMultiplier));
+
+			form1.append($("<label for=tffAdder>").text("TFF + "));
+			form1.append($("<input type=text name=tffAdder size=4/><br />").val(tffAdder));
+			form1.append($("<input type=button id='targets_autofill' value='Autofill' /><br />"));
+		
+		var form2 = $("<fieldset style='width: 30%; padding:10px; float: left;' id='values'><legend>Filter Settings</legend></fieldset>");
+			form2.append($("<label  class='tLabel' for=maxDa />").text("Max Defense: "));
+			form2.append($("<input type=text name=maxDa /><br />").val(maxDa));
+			form2.append($("<label class='tLabel' for=minTff>").text("Min TFF: "));
+			form2.append($("<input type=text name=minTff /><br />").val(minTff));
+			form2.append($("<label  class='tLabel' for=minGold>").text("Min Gold: "));
+			form2.append($("<input type=text name=minGold /><br />").val(minGold));
+			form2.append($("<label  class='tLabel' for=maxSeconds>").text("Max Gold Age: "));
+			form2.append($("<input type=text name=maxSeconds /><br />").val(maxSeconds));
+			form2.append($("<label  class='tLabel' for=maxSeconds>").text("Filter by Projection: "));
+			form2.append($("<input type=checkbox name=by_projection value='1' /><br />").attr("checked",byProjection));
+
+		var form3 = $("<fieldset style='width: 20%; padding:10px 0 5px 10%; float: left;' id='autofill'><legend>Reset / Save</legend></fieldset>");
+			form3.append($("<input type=button id='targets_refresh' value='Refresh' /><br /><br />"));
+			form3.append($("<input type=button id='targets_save' value='Save' /><br />"));
+			form3.append($("<input type=button id='targets_reset' value='Reset' /> "));
+
+		GUI.showMessage(html);
+		$("#targets_settings").append(form1);    
+		$("#targets_settings").append(form2);    
+		$("#targets_settings").append(form3);    
+			
+		$("#targets_refresh").click(function() {
+			this.getTargets();
+		});            
+		$("#targets_autofill").click(function() {
+			var tffAdd = $("input[name='tffAdder']").val();
+			var saMult = $("input[name='saMultiplier']").val();
+			$("input[name='minTff']").val(Math.floor(User.tff.int()+tffAdd.int()));
+			$("input[name='maxDa']").val(Math.floor(User.sa.int() * saMult ));
+		});
+		$("#targets_reset").click(function() {
+			$("input[name='minTff']").val(10);
+			$("input[name='maxDa']").val(1000);
+			$("input[name='minGold']").val(0);
+			$("input[name='maxSeconds']").val(120);
+			$("input[name='saMultiplier']").val(0.80);
+			$("input[name='tffAdder']").val(50);
+			$("input[name='by_projection']").attr("checked", "");
+		});
+		$("#targets_save").click(function() {
+			db.put("maxDa", $("input[name='maxDa']").val().int().toString());
+			db.put("minTff", $("input[name='minTff']").val().int());
+			db.put("minGold", $("input[name='minGold']").val().int());
+			db.put("maxSeconds", $("input[name='maxSeconds']").val().int());
+			db.put("saMultiplier", $("input[name='saMultiplier']").val().float().toString());
+			db.put("tffAdder", $("input[name='tffAdder']").val().int());
+			db.put("byProjection", $("input[name='by_projection']").prop('checked'));
+			this.getTargets();
+		});
+
+		this.getTargets(); 
+	}
+
+	, getTargets : function() {
+		$(".targetTR").remove();
+		getLux('&a=gettargets&g=' + db.get('minGold',0) + '&t=' + db.get('minTff', 0) 
+			 + '&d=' + db.get('maxDa', 0) + '&q=' + db.get('maxSeconds', 0)
+			 + '&by_projection=' + db.get('byProjection',0),
+		   function(r) {
+				var row, i;
+				var x = r.responseText.split(';');
+				var html="";
+				for(i = 0; i < x.length-1; i++) {
+					row = x[i].split(':');
+					html += '<tr class="targetTR"><td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a></td><td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td><td align="center">' + row[2] + '</td>'
+					+'<td align="right">'
+						+'<span class="gold">' + row[5] + '</span>'
+						+'<span class="projection" style="display:none;">Projected: '+row[7] + '</span>' +
+					'</td><td align="left">(' +row[6] + ')</td><td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"></td></tr>';
+				}
+				$("#targetsFirstRow").after(html);
+				
+			   
+				$(".projection").css("color","#B3FFF8");
+				$(".targetTR").hover(
+					function () {
+						$(this).find(".gold").hide();
+						$(this).find(".projection").show();
+					}, function () {
+						$(this).find(".gold").show();
+						$(this).find(".projection").hide();                  
+				});
+			});    
+	}
+
+	, showFakeSabList : function() {
+		var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
+
+		$table.append('<tr><td id="_sab_content">Loading... Please wait...</td></tr>');
+		GUI.showMessage($table);
+		getFakeSabTargets();
+	}
+
+	, getFakeSabTargets : function() {
+		function clickHelper(e) {
+			openTab('http://www.kingsofchaos.com/attack.php?id=' + String(e.target.id).replace(/__/, ''));
+		}
+		getLux('&a=getfakesabtargets',
+			function(r) {
+				var i;
+				if ( r.responseText != '403' ) {
+					document.getElementById('_sab_content').innerHTML = r.responseText;
+				}
+			   
+				var q = document.getElementsByName('_luxbot_targets_t');
+				for (i = 0; i < q.length; i++) {
+					q[i].addEventListener('click', clickHelper, true);
+				}
+				// $("#getTodaysSabs")
+				
+				document.getElementById('getTodaysSabs').value="View Your Sabs";
+				document.getElementById('getTodaysSabs').addEventListener('click',getTodaysSabs,true);
+				document.getElementById('getTodaysSabs').removeEventListener('click',getSabTargets,false);
+		});
+	}
+}
 // Note: The version is added here by the build script as a global string.
 
 var User;
@@ -2788,8 +2753,9 @@ var action;
     }
 
 	// Every page has its own init. Look at /includes/pages/...
-	Page[action].run();
-
+	if (Page[action]) {
+		Page[action].run();
+	}
 	// Plugins want to be run on all pages. Look at /includes/plugins/...
 	_.each(Plugins, function(plugin) {
 		log("running plugin " + plugin.description);
