@@ -1,16 +1,10 @@
-
     function makeCollapsable(action) {
-        //TODO: ensure only once
-        addCSS(".expando {float:right;}")
-        addCSS(".collapsed_table > tbody > tr:nth-child(n+2) { visibility:hidden; display:none;}");
-        addCSS("table.table_lines > tbody > tr > th {cursor:pointer;}")
-        addCSS("table.table_lines { margin-top:5px; }")
-        
+    
         function collapseTable(table) {
             var $table = $(table)
             $table.find(".expando").text("+")
             $table.addClass("collapsed_table")
-        }       
+        }
     
         function onTableClick(e) {        
             var $table = $(e.target).closest("table")

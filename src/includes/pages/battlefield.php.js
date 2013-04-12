@@ -1,7 +1,3 @@
-
-    //
-    // BATTLEFIELD
-    //
 Page.battlefield = {
 
     run: function() { 
@@ -100,7 +96,6 @@ Page.battlefield = {
     }
         
     , bf_needsRecon: function ($pRows) {
-        addCSS(" ._lux_needs_update {position:absolute; padding-left:12px;}");
         
         var kocids = '';
         $pRows.each(function() {
@@ -147,8 +142,6 @@ Page.battlefield = {
 
         var page = textBetween($(".battlefield>tbody>tr").last().text(), 'page ', ' of'); 
         var ppx = (page-1)*20+1;
-
-        addCSS(" ._lux_online {position:absolute; right:240px;}");
 
         getLux('&a=bf_online&u=' + kocids,
             function(r) {
@@ -213,5 +206,4 @@ Page.battlefield = {
             }
         });
     }
-
 }

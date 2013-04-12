@@ -15,7 +15,6 @@ Page.attack = {
         }
         
 
-        addCSS(".sabbable>span { border-bottom:thin dotted white;}");
         $(".personnel").before("<table id='lux_sabbable' class='table_lines' width='100%' cellpadding='6' cellSpacing='0'><th colspan='3'>LuXBot Info - Sabbable<span style='float:right;'><a href='http://www.kingsofchaos.com/intelfile.php?asset_id="+userid+"'>(Logs)</a></span></th></table>");
     
         

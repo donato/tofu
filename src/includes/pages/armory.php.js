@@ -83,7 +83,6 @@ Page.armory = {
         }    
   
         , showStats : function () {
-            addCSS("#container {max-width:500px;height:300px;}");
             $(".personnel").before('<table class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0"><tbody><tr><th>Armory Value Stats</th></tr><tr><td><div id="container"></div></td></tr></tbody></table><br />');
 
             getLux('&a=armoryStats',function(a) {
@@ -176,7 +175,6 @@ Page.armory = {
             });
             
             if (losses !== '') {
-                addCSS("#_lux_sabbed_popup {text-align:center;border-top: 5px solid red; border-left: 5px solid red; border-right: 5px solid darkred; border-bottom: 5px solid darkred;position:fixed;right:10px;bottom:10px;width:auto;}");
 
                 var arr = losses.split(';');
                 var i=0;

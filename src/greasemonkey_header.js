@@ -8,6 +8,9 @@
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/underscore-1.4.2.min.js
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/hex_md5.js
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/highstock-1.1.5.js
+// @resource    sidebar_targets      https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
+// @resource    sidebar_sabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
+// @resource    styles				 https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue
@@ -17,9 +20,6 @@
 // @grant       GM_addStyle
 // @grant       GM_getResourceText
 // @grant       GM_getResourceURL
-// @resource    sidebar_targets      https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
-// @resource    sidebar_sabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
-// @resource    styles				 https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
 // ==/UserScript==
 
 // Info on GM resources : http://stackoverflow.com/questions/5250187/greasemonkey-image-not-showing

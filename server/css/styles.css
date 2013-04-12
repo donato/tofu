@@ -26,3 +26,26 @@
 #tofu_control_box  > ul {
     list-style:none;
 }
+
+._lux_online {
+    position:absolute;
+}
+ 
+#_luxbot_alliances{
+    display:none;
+    visibility:hidden;
+}
+
+.expando {float:right;}
+.collapsed_table > tbody > tr:nth-child(n+2) { visibility:hidden; display:none;}
+table.table_lines > tbody > tr > th {cursor:pointer;}
+table.table_lines { margin-top:5px; }
+
+#container {max-width:500px;height:300px;}
+#_lux_sabbed_popup {text-align:center;border-top: 5px solid red; border-left: 5px solid red; border-right: 5px solid darkred; border-bottom: 5px solid darkred;position:fixed;right:10px;bottom:10px;width:auto;}
+
+.sabbable>span { border-bottom:thin dotted white;}
+
+._lux_needs_update {position:absolute; padding-left:12px;}
+._lux_online {position:absolute; right:240px;}
+

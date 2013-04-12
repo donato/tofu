@@ -1,7 +1,4 @@
 
-    //
-    // Stats Page Functions
-    //
 Page.stats = {   
 
     run: function() {
@@ -110,9 +107,7 @@ Page.stats = {
             }
         }
         
-        if (statstable === undefined) {
-            return;
-        }
+        if (statstable === undefined) { return; }
        
         var allianceindex;
         for (i = 0; i < statstable.rows.length; i++) {
@@ -134,11 +129,24 @@ Page.stats = {
             }
             continue;
         }
+		
         statstable.rows[allianceindex].cells[0].innerHTML = '<b>Alliances (' + alliances.length + '):</b>';
-        statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a href="javascript:LuXBotShowAlliances();"> + Show Secondary</a>';
-        addCSS('#_luxbot_alliances{display:none;visibility:hidden;}');
-        addJS('function LuXBotShowAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'block\';q.style.visibility = \'visible\';q.nextSibling.href = \'javascript:LuXBotHideAlliances();\';q.nextSibling.innerHTML = \' - Hide Secondary\'}');
-        addJS('function LuXBotHideAlliances(){var q = document.getElementById(\'_luxbot_alliances\');q.style.display = \'none\';q.style.visibility = \'hidden\';q.nextSibling.href = \'javascript:LuXBotShowAlliances();\';q.nextSibling.innerHTML = \' + Show Secondary\'}');
+        statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a id="expandAlliances"> + Show Secondary</a>';
+
+		$.on('click', '#expandAlliances', function(){
+			var q = document.getElementById('_luxbot_alliances');
+			q.style.display = 'none';
+			q.style.visibility = 'hidden';
+			q.nextSibling.id = 'collapseAlliances';
+			q.nextSibling.innerHTML = ' + Show Secondary';
+		});
+		$.on('click', '#expandAlliances', function(){
+			var q = document.getElementById('_luxbot_alliances');
+			q.style.display = 'block';
+			q.style.visibility = 'visible';
+			q.nextSibling.id = 'expandAlliances';
+			q.nextSibling.innerHTML = ' - Hide Secondary'
+		});
     }
     
 
@@ -234,11 +242,7 @@ Page.stats = {
     , statsOnlineCheck: function() {
 
         var userid = document.URL.split(/[=&?]/)[2];
-        addCSS(" ._lux_online {position:absolute;}");
 
-        //response in form of 
-        //key=val\n
-        //key=val\n
         getLux('&a=stats_online&u=' + userid,
             function(r) {
                 var stable = $("table:contains('User Stats')").last();
