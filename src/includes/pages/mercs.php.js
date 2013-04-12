@@ -2,8 +2,14 @@
 Page.mercs = {
 
     run: function() {
-        rows = $("form").find("table>tbody>tr");
-        Buttons.btn_init(rows, 4, 1, 2);
+	
+		var buttonsConstraint = function(val, $row) {
+			log($row);
+			var quantityAvailable = $row.find("td").eq(2).int();
+			return Math.min(val, quantityAvailable);
+		}
+		
+        Buttons.init(User.gold, getTableByHeading("Buy Mercenaries"), 1, buttonsConstraint);
     }
 	
     

@@ -9,8 +9,16 @@ Page.train = {
         this.tffChart();
         
         //Set up the clickable buttons
-        var $rows = $("form").eq(0).find("table>tbody>tr");
-        Buttons.init( $rows, 3, 1);
+		var buttonsConstraint = function( val, $row ) {
+			var selected = 0;
+			$("input[type='text']").each(function() {
+				selected += $(this).val().int();
+			});
+			var maxCanTrain = getRowValues("Untrained Soldiers")[0];
+			return Math.min(val, maxCanTrain - selected);
+		}
+		
+        Buttons.init(User.gold, getTableByHeading("Train Your Troops"), 1, buttonsConstraint);
     }
     
 	, unheldWeapons : function() {

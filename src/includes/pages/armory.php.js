@@ -7,7 +7,8 @@ Page.armory = {
             
             //next two lines adds the clickable buttons
             rows = $("form[name='buyform']").find("table>tbody>tr");
-            Buttons.init(rows,4,2); 
+            Buttons.init(User.gold, getTableByHeading("Buy Weapons"), 2);
+
 
             this.formatPage()
             this.addBuyButton();

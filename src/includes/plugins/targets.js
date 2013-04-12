@@ -4,7 +4,7 @@ Plugins['targets'] = {
 	, defaultEnabled : true
 	
 	, run : function () {
-		this.addSabTargetsButton();
+		// this.addSabTargetsButton();
 	}
 	
 	, formInputs : {
@@ -30,7 +30,7 @@ Plugins['targets'] = {
 	, showFarmList : function() {
 		var farmOptions = _.map(this.formInputs, function (def, key) {
 			return db.get(key, def);
-		}
+		});
 		var maxDa = db.get("maxDa", 1000);
 		var minTff = db.get("minTff", 10);
 		var minGold = db.get("minGold", 0);

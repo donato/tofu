@@ -8,13 +8,10 @@
 }
 
 #tofu_popup_box {
-    display:none;
     position: absolute;
     top:0;
     left:0;
     width:100%;
-    
-
 }
 
 #tofu_popup_box >div {
