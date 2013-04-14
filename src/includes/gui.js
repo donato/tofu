@@ -2,16 +2,28 @@ var GUI = {
 	
     init: function () {
         this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
-		
+
 		// the variable version is a global created by the build script
         this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
 			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
-		});  
-		
+		});
+
 		$('body')
 			.append( this.$controlbox )
 			.append( this.$popup );
+			
+		var self = this;	
+		this.$popup.click(function (event) {
+			if ($(event.target).is("#tofu_popup_box")) {
+				self.hide();
+			}
+		});
+
+		$(document).keyup(function(e) {
+			if (e.keyCode != 27) { return; }
+			self.hide();
+		});
     }
 
     , displayText: function(tx) {
@@ -19,18 +31,13 @@ var GUI = {
     }
 
     , displayHtml: function(html) {
-		log("Displaying HTML: " + html);
         this.$popup.append($("<div>").append(html));
         this.$popup.show();  
     }
 
-	// This is a temporary function to be removed later
-    , showMessage:function (text) {
-        this.displayText(text);
-    }
-	
 	, hide: function() {
 		this.$popup.hide();
+		this.$popup.children().remove();
 	}
 	
     /*

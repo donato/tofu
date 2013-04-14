@@ -18,8 +18,7 @@ Plugins['sabtargets'] = {
 		$sabButton.click(this.sabTargetsButton.bind(this));
 		
 		var $leftBarRows = $("td.menu_cell> table> tbody > tr");
-		$leftBarRows.eq(2).after($sabButton);
-		
+		$leftBarRows.eq(2).after($("<tr>").append($sabButton));
    }
 
 	, sabTargetsButton : function() {

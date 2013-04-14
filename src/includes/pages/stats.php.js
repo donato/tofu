@@ -133,14 +133,14 @@ Page.stats = {
         statstable.rows[allianceindex].cells[0].innerHTML = '<b>Alliances (' + alliances.length + '):</b>';
         statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a id="expandAlliances"> + Show Secondary</a>';
 
-		$.on('click', '#expandAlliances', function(){
+		$("body").on('click', '#expandAlliances', function(){
 			var q = document.getElementById('_luxbot_alliances');
 			q.style.display = 'none';
 			q.style.visibility = 'hidden';
 			q.nextSibling.id = 'collapseAlliances';
 			q.nextSibling.innerHTML = ' + Show Secondary';
 		});
-		$.on('click', '#expandAlliances', function(){
+		$("body").on('click', '#expandAlliances', function(){
 			var q = document.getElementById('_luxbot_alliances');
 			q.style.display = 'block';
 			q.style.visibility = 'visible';

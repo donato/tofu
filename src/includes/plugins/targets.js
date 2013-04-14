@@ -4,28 +4,23 @@ Plugins['targets'] = {
 	, defaultEnabled : true
 	
 	, run : function () {
-		// this.addSabTargetsButton();
+		this.addTargetsButton();
 	}
 	
-	, formInputs : {
-		'maxDa' : 'Maximum Defense', 
-		'minTff' : '..', 
-		'minGold' : 0,
-		'maxSeconds' : 120, 
-		'byProjection' : 0, 
-		'saMultiplier' : 0.80,
-		'tffAdd' : 10
-	}
-	
-	, inputDefaults : {
-		'maxDa' : 1000, 
-		'minTff' : 10, 
-		'minGold' : 0,
-		'maxSeconds' : 120, 
-		'byProjection' : 0, 
-		'saMultiplier' : 0.80,
-		'tffAdd' : 10
-	}
+	, addTargetsButton : function() {
+		var $button = $('<a>', {'href':'#'}).append(
+			$("<img>", {
+				'onclick' : 'return false;',
+				'class' : 'tofu',
+				'id' : 'sidebar_sabtargets',
+				'src' : gmGetResourceURL("sidebar_targets")
+		}));
+		
+		$button.click(this.showFarmList.bind(this));
+		
+		var $leftBarRows = $("td.menu_cell > table> tbody > tr");
+		$leftBarRows.eq(2).after($("<tr>").append($button));
+   }
 	
 	, showFarmList : function() {
 		var farmOptions = _.map(this.formInputs, function (def, key) {
@@ -40,7 +35,7 @@ Plugins['targets'] = {
 		var tffAdder = db.get("tffAdder", 50);
 		
 		 var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
-		+'<tr><th colspan="7">Master Targets (Loading)</th></tr>'
+		+'<tr><th colspan="7" class="header">Master Targets (Loading)</th></tr>'
 		+'<tr id="targetsFirstRow"><td><b>Name</b></td><td colspan="2" align="center"><b>Defensive Action</b></td><td align="center"><b>Total Fighting Force</b></td><td width=200 align="right"><b>Gold</b></td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 		+'<tr><th colspan="7">Settings</th></tr>'
 		+'<tr><td colspan=7 id="targets_settings"> </td></tr>'
@@ -72,13 +67,14 @@ Plugins['targets'] = {
 			form3.append($("<input type=button id='targets_save' value='Save' /><br />"));
 			form3.append($("<input type=button id='targets_reset' value='Reset' /> "));
 
-		GUI.showMessage(html);
+		GUI.displayText(html);
 		$("#targets_settings").append(form1);    
 		$("#targets_settings").append(form2);    
 		$("#targets_settings").append(form3);    
 			
+		var self = this;
 		$("#targets_refresh").click(function() {
-			this.getTargets();
+			self.getTargets();
 		});            
 		$("#targets_autofill").click(function() {
 			var tffAdd = $("input[name='tffAdder']").val();
@@ -103,7 +99,7 @@ Plugins['targets'] = {
 			db.put("saMultiplier", $("input[name='saMultiplier']").val().float().toString());
 			db.put("tffAdder", $("input[name='tffAdder']").val().int());
 			db.put("byProjection", $("input[name='by_projection']").prop('checked'));
-			this.getTargets();
+			self.getTargets();
 		});
 
 		this.getTargets(); 
@@ -120,16 +116,21 @@ Plugins['targets'] = {
 				var html="";
 				for(i = 0; i < x.length-1; i++) {
 					row = x[i].split(':');
-					html += '<tr class="targetTR"><td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a></td><td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td><td align="center">' + row[2] + '</td>'
+					html += '<tr class="targetTR">'+
+					'<td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a></td><td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td>' +
+					'<td align="center">' + row[2] + '</td>'
 					+'<td align="right">'
 						+'<span class="gold">' + row[5] + '</span>'
 						+'<span class="projection" style="display:none;">Projected: '+row[7] + '</span>' +
-					'</td><td align="left">(' +row[6] + ')</td><td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"></td></tr>';
+					'</td>' +
+					'<td align="left">(' +row[6] + ')</td>'+
+					// '<td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"></td>'+
+					'</tr>';
 				}
 				$("#targetsFirstRow").after(html);
 				
-			   
-				$(".projection").css("color","#B3FFF8");
+				// Remove "Loading" text.
+			   $("#_luxbot_targets_table .header").text("Master Targets");
 				$(".targetTR").hover(
 					function () {
 						$(this).find(".gold").hide();
@@ -145,7 +146,7 @@ Plugins['targets'] = {
 		var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
 
 		$table.append('<tr><td id="_sab_content">Loading... Please wait...</td></tr>');
-		GUI.showMessage($table);
+		GUI.displayText($table);
 		getFakeSabTargets();
 	}
 

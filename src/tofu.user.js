@@ -22,12 +22,10 @@
 // @grant       GM_getResourceURL
 // ==/UserScript==
 
-// Info on GM resources : http://stackoverflow.com/questions/5250187/greasemonkey-image-not-showing
-
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-var version = '0.2.130411';
+var version = '0.2.130414';
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -150,16 +148,29 @@ var GUI = {
 	
     init: function () {
         this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
-		
+
 		// the variable version is a global created by the build script
         this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
 			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
-		});  
-		
+		});
+
 		$('body')
 			.append( this.$controlbox )
 			.append( this.$popup );
+			
+		var self = this;	
+		this.$popup.click(function (event) {
+			log(event.target);
+			if ($(event.target).is("#tofu_popup_box")) {
+				self.hide();
+			}
+		});
+
+		$(document).keyup(function(e) {
+			if (e.keyCode != 27) { return; }
+			self.hide();
+		});
     }
 
     , displayText: function(tx) {
@@ -172,13 +183,9 @@ var GUI = {
         this.$popup.show();  
     }
 
-	// This is a temporary function to be removed later
-    , showMessage:function (text) {
-        this.displayText(text);
-    }
-	
 	, hide: function() {
 		this.$popup.hide();
+		this.$popup.children().remove();
 	}
 	
     /*
@@ -459,7 +466,6 @@ var Init = {
 
 
 }
-
     String.prototype.trim = function () {
 		return this.replace(/^\s+|\s+$/g, '');
 	};
@@ -2132,14 +2138,14 @@ Page.stats = {
         statstable.rows[allianceindex].cells[0].innerHTML = '<b>Alliances (' + alliances.length + '):</b>';
         statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a id="expandAlliances"> + Show Secondary</a>';
 
-		$.on('click', '#expandAlliances', function(){
+		$("body").on('click', '#expandAlliances', function(){
 			var q = document.getElementById('_luxbot_alliances');
 			q.style.display = 'none';
 			q.style.visibility = 'hidden';
 			q.nextSibling.id = 'collapseAlliances';
 			q.nextSibling.innerHTML = ' + Show Secondary';
 		});
-		$.on('click', '#expandAlliances', function(){
+		$("body").on('click', '#expandAlliances', function(){
 			var q = document.getElementById('_luxbot_alliances');
 			q.style.display = 'block';
 			q.style.visibility = 'visible';
@@ -2502,8 +2508,7 @@ Plugins['sabtargets'] = {
 		$sabButton.click(this.sabTargetsButton.bind(this));
 		
 		var $leftBarRows = $("td.menu_cell> table> tbody > tr");
-		$leftBarRows.eq(2).after($sabButton);
-		
+		$leftBarRows.eq(2).after($("<tr>").append($sabButton));
    }
 
 	, sabTargetsButton : function() {
@@ -2550,9 +2555,24 @@ Plugins['targets'] = {
 	, defaultEnabled : true
 	
 	, run : function () {
-		// this.addSabTargetsButton();
+		this.addTargetsButton();
 	}
 	
+	, addTargetsButton : function() {
+		var $button = $('<a>', {'href':'#'}).append(
+			$("<img>", {
+				'onclick' : 'return false;',
+				'class' : 'tofu',
+				'id' : 'sidebar_sabtargets',
+				'src' : gmGetResourceURL("sidebar_targets")
+		}));
+		
+		$button.click(this.showFarmList.bind(this));
+		
+		var $leftBarRows = $("td.menu_cell > table> tbody > tr");
+		$leftBarRows.eq(2).after($("<tr>").append($button));
+   }
+
 	, formInputs : {
 		'maxDa' : 'Maximum Defense', 
 		'minTff' : '..', 
@@ -2586,7 +2606,7 @@ Plugins['targets'] = {
 		var tffAdder = db.get("tffAdder", 50);
 		
 		 var html = '<table class="table_lines" id="_luxbot_targets_table" width="100%" cellspacing="0" cellpadding="6" border="0">'
-		+'<tr><th colspan="7">Master Targets (Loading)</th></tr>'
+		+'<tr><th colspan="7" class="header">Master Targets (Loading)</th></tr>'
 		+'<tr id="targetsFirstRow"><td><b>Name</b></td><td colspan="2" align="center"><b>Defensive Action</b></td><td align="center"><b>Total Fighting Force</b></td><td width=200 align="right"><b>Gold</b></td><td>&nbsp;</td><td>&nbsp;</td></tr>'
 		+'<tr><th colspan="7">Settings</th></tr>'
 		+'<tr><td colspan=7 id="targets_settings"> </td></tr>'
@@ -2618,13 +2638,14 @@ Plugins['targets'] = {
 			form3.append($("<input type=button id='targets_save' value='Save' /><br />"));
 			form3.append($("<input type=button id='targets_reset' value='Reset' /> "));
 
-		GUI.showMessage(html);
+		GUI.displayText(html);
 		$("#targets_settings").append(form1);    
 		$("#targets_settings").append(form2);    
 		$("#targets_settings").append(form3);    
 			
+		var self = this;
 		$("#targets_refresh").click(function() {
-			this.getTargets();
+			self.getTargets();
 		});            
 		$("#targets_autofill").click(function() {
 			var tffAdd = $("input[name='tffAdder']").val();
@@ -2649,7 +2670,7 @@ Plugins['targets'] = {
 			db.put("saMultiplier", $("input[name='saMultiplier']").val().float().toString());
 			db.put("tffAdder", $("input[name='tffAdder']").val().int());
 			db.put("byProjection", $("input[name='by_projection']").prop('checked'));
-			this.getTargets();
+			self.getTargets();
 		});
 
 		this.getTargets(); 
@@ -2666,16 +2687,21 @@ Plugins['targets'] = {
 				var html="";
 				for(i = 0; i < x.length-1; i++) {
 					row = x[i].split(':');
-					html += '<tr class="targetTR"><td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a></td><td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td><td align="center">' + row[2] + '</td>'
+					html += '<tr class="targetTR">'+
+					'<td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a></td><td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td>' +
+					'<td align="center">' + row[2] + '</td>'
 					+'<td align="right">'
 						+'<span class="gold">' + row[5] + '</span>'
 						+'<span class="projection" style="display:none;">Projected: '+row[7] + '</span>' +
-					'</td><td align="left">(' +row[6] + ')</td><td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"></td></tr>';
+					'</td>' +
+					'<td align="left">(' +row[6] + ')</td>'+
+					// '<td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"></td>'+
+					'</tr>';
 				}
 				$("#targetsFirstRow").after(html);
 				
-			   
-				$(".projection").css("color","#B3FFF8");
+				// Remove "Loading" text.
+			   $("#_luxbot_targets_table .header").text("Master Targets");
 				$(".targetTR").hover(
 					function () {
 						$(this).find(".gold").hide();
@@ -2691,7 +2717,7 @@ Plugins['targets'] = {
 		var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
 
 		$table.append('<tr><td id="_sab_content">Loading... Please wait...</td></tr>');
-		GUI.showMessage($table);
+		GUI.displayText($table);
 		getFakeSabTargets();
 	}
 

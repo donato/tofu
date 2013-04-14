@@ -1,25 +1,34 @@
-
 #tofu_control_box {
     border: 1px solid white;
     position: absolute;
     right: 0;
     top: 0;
-    width: 200px;
+    text-align:right;
+}
+#tofu_control_box  ul{
+    padding:5px;
+    margin: 5px;
 }
 
 #tofu_popup_box {
-    position: absolute;
+    position: fixed;
     top:0;
     left:0;
+    height:100%;
     width:100%;
+    display:none;
+    
+    background-color:rgba(0,0,0,0.5);
 }
 
 #tofu_popup_box >div {
-    padding:25px;
-    margin:25px;
+    height: 90%;
+    overflow-y: scroll;
+    margin:15px;
+    padding: 10px;
     border: 1px solid blue;
-    background-color:gray;
     text-align:center;
+    background-color:gray;
     color:black;
 }
 
@@ -42,7 +51,23 @@ table.table_lines > tbody > tr > th {cursor:pointer;}
 table.table_lines { margin-top:5px; }
 
 #container {max-width:500px;height:300px;}
-#_lux_sabbed_popup {text-align:center;border-top: 5px solid red; border-left: 5px solid red; border-right: 5px solid darkred; border-bottom: 5px solid darkred;position:fixed;right:10px;bottom:10px;width:auto;}
+
+.projection {
+    color: #B3FFF8;
+}
+
+#_lux_sabbed_popup {
+    background-color: black;
+    border-color: red darkred darkred red;
+    border-style: solid;
+    border-width: 5px;
+    bottom: 10px;
+    position: fixed;
+    right: 10px;
+    text-align: center;
+    width: auto;
+}
+
 
 .sabbable>span { border-bottom:thin dotted white;}
 

@@ -21,6 +21,10 @@ File.open("tofu.user.js", "w") { |tofu|
     tofu.puts IO.read("main.js")
 }
 
+# Now overwrite the version in Firefox
+FileUtils.cp 'tofu.user.js', install_dir+"tofu.user.js"
+
+
 puts "Verifying included modules...\n"
 includes.each do |f|
     output =  `jshint #{f}`
@@ -42,7 +46,3 @@ pages.each do |f|
     end
 end
 
-
-
-# Now overwrite the version in Firefox
-FileUtils.cp 'tofu.user.js', install_dir+"tofu.user.js"
