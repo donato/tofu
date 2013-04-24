@@ -131,6 +131,7 @@ Plugins['targets'] = {
 				
 				// Remove "Loading" text.
 			   $("#_luxbot_targets_table .header").text("Master Targets");
+			   
 				$(".targetTR").hover(
 					function () {
 						$(this).find(".gold").hide();
@@ -142,34 +143,4 @@ Plugins['targets'] = {
 			});    
 	}
 
-	, showFakeSabList : function() {
-		var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
-
-		$table.append('<tr><td id="_sab_content">Loading... Please wait...</td></tr>');
-		GUI.displayText($table);
-		getFakeSabTargets();
-	}
-
-	, getFakeSabTargets : function() {
-		function clickHelper(e) {
-			openTab('http://www.kingsofchaos.com/attack.php?id=' + String(e.target.id).replace(/__/, ''));
-		}
-		getLux('&a=getfakesabtargets',
-			function(r) {
-				var i;
-				if ( r.responseText != '403' ) {
-					document.getElementById('_sab_content').innerHTML = r.responseText;
-				}
-			   
-				var q = document.getElementsByName('_luxbot_targets_t');
-				for (i = 0; i < q.length; i++) {
-					q[i].addEventListener('click', clickHelper, true);
-				}
-				// $("#getTodaysSabs")
-				
-				document.getElementById('getTodaysSabs').value="View Your Sabs";
-				document.getElementById('getTodaysSabs').addEventListener('click',getTodaysSabs,true);
-				document.getElementById('getTodaysSabs').removeEventListener('click',getSabTargets,false);
-		});
-	}
 }
