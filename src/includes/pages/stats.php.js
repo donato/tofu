@@ -140,7 +140,7 @@ Page.stats = {
 			q.nextSibling.id = 'collapseAlliances';
 			q.nextSibling.innerHTML = ' + Show Secondary';
 		});
-		$("body").on('click', '#expandAlliances', function(){
+		$("body").on('click', '#collapseAlliances', function(){
 			var q = document.getElementById('_luxbot_alliances');
 			q.style.display = 'block';
 			q.style.visibility = 'visible';

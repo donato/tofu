@@ -1,9 +1,4 @@
-
-    //
-    // Train Page Functions
-    //
 Page.train = {
-
     run: function() {
         this.unheldWeapons();
         this.tffChart();
@@ -14,7 +9,7 @@ Page.train = {
 			$("input[type='text']").each(function() {
 				selected += $(this).val().int();
 			});
-			var maxCanTrain = getRowValues("Untrained Soldiers")[0];
+			var maxCanTrain = to_int(getRowValues("Untrained Soldiers")[0]);
 			return Math.min(val, maxCanTrain - selected);
 		}
 		
@@ -28,22 +23,26 @@ Page.train = {
 			}
             return '<span style="color:red">'+unheld+'</span>';
         }
-		
-        var stable = $("table.personnel").last();
+		function getTroopCount($table, str) {
+			return $stable
+					.find("tr:contains('"+ str +"'):first>td:last")
+					.html().int();
+		}
+        var $stable = $("table.personnel").last();
         
-        var spies = $(stable).find("tr:contains('Spies'):first>td:last").html().trim();
-        var sentries = $(stable).find("tr:contains('Sentries'):first>td:last").html().trim();
-        var attackers = $(stable).find("tr:contains('Trained Attack Soldiers'):first>td:last").html().trim();
-        var attackMercs = $(stable).find("tr:contains('Trained Attack Mercenaries'):first>td:last").html().trim();
-        var defenders = $(stable).find("tr:contains('Trained Defense Soldiers'):first>td:last").html().trim();
-        var defenseMercs = $(stable).find("tr:contains('Trained Defense Mercenaries'):first>td:last").html().trim();
+        var spies        = getTroopCount($stable, "Spies");
+        var sentries     = getTroopCount($stable, "Sentries");
+        var attackers    = getTroopCount($stable, "Trained Attack Soldiers");
+        var attackMercs  = getTroopCount($stable, "Trained Attack Mercenaries");
+        var defenders    = getTroopCount($stable, "Trained Defense Soldiers");
+        var defenseMercs = getTroopCount($stable, "Trained Defense Mercenaries");
 
-        $(stable).after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='holding' class='table_lines'><tbody><tr><th colspan=3>Troops/Weapons</th></tr><tr><th class='subh'>Troops</th><th  class='subh'>Weapons</th><th align='right' class='subh'>Unhelds</th></tr></tbody></table>");
+        $stable.after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='holding' class='table_lines'><tbody><tr><th colspan=3>Troops/Weapons</th></tr><tr><th class='subh'>Troops</th><th  class='subh'>Weapons</th><th align='right' class='subh'>Unhelds</th></tr></tbody></table>");
         
-        var unheldSpy = describe(User.spyWeaps - spies.int() );
-        var unheldSentry = describe(User.sentryWeaps - sentries.int() );
-        var unheldStrike = describe(User.saWeaps - attackers.int() - attackMercs.int() );
-        var unheldDefense = describe(User.daWeaps - defenders.int() - defenseMercs.int() );
+        var unheldSpy = describe(User.spyWeaps - spies );
+        var unheldSentry = describe(User.sentryWeaps - sentries );
+        var unheldStrike = describe(User.saWeaps - attackers - attackMercs );
+        var unheldDefense = describe(User.daWeaps - defenders - defenseMercs );
 
         $("#holding")
 			.append("<tr><td><b>Strike Weapons&nbsp;</b></td><td>"+User.saWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldStrike+" </td></tr>")
@@ -53,10 +52,11 @@ Page.train = {
 	}
 	
     , tffChart: function() {
-        var stable = $("table:contains('Train Your Troops')").last();
-        $(stable).after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='growth' class='table_lines'><tbody><tr><th colspan=3>Growth Stats</th></tr></tbody></table>");
+        var $stable = $("table:contains('Train Your Troops')").last();
+        $stable.after( $("<table>", { 'id': 'growth', 'class' : 'table_lines'})
+				.append("<tbody><tr><th colspan=3>Growth Stats</th></tr></tbody>")
+		);
         $("#growth").append("<tr><td><div id='container' style='height:250px'></div></td></tr>");
-
         
         getLux('&a=trainStats',function(a) {
 			var chart = new Highcharts.StockChart({

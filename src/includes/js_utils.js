@@ -30,7 +30,7 @@
     }
 
     function to_int(str) {
-        str = str.replace(/[^0-9]/g, '');
+        str = str.replace(/[^0-9\.]/g, '');
         if (str === '') {
             return '';
         }
@@ -59,14 +59,16 @@
         return "<tr><td>"+arr.join("</td><td>")+"</td></tr>";
     }
 
-    function addCommas(sValue) {
-
-		sValue = String(sValue);
+    var addCommas = function () {
         var sRegExp = new RegExp('(-?[0-9]+)([0-9]{3})');
-        
-        while(sRegExp.test(sValue)) {
-            sValue = sValue.replace(sRegExp, '$1,$2');
-        }
-        return sValue;
-    }
+
+		return function (sValue) {
+			sValue = String(sValue);
+			
+			while(sRegExp.test(sValue)) {
+				sValue = sValue.replace(sRegExp, '$1,$2');
+			}
+			return sValue;
+		};
+	}();
     

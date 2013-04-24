@@ -1,9 +1,3 @@
-
-
-    //
-    // LOGGING
-    //
- 
     function logBase(stats, data, officers) {
         //stats=sa;da;spy;sentry;
         //details=fort;siege;econ;tech;conscription;turns;covertlevel;bonus
