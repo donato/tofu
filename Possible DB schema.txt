@@ -1,0 +1,62 @@
+Explanations
+    players - ie, the person playing the account, may have multiple accounts over time
+    accounts - ie, the kocid, in game
+    approvalTypes - ie, war with DEMK
+    approvals - each player for each of their approvals
+
+alliances - name (Primary), friendship_status
+ 
+players  - playerName(Primary), 
+            forum_id, 
+            personalMessage, 
+            authorityCode,
+            sabCount, 
+            reconCount, 
+            scanCount, 
+            attackCount, 
+            reconRequests
+            
+accounts - playerName (foreign key), kocid (primary key), 
+            name, rank, tff, bonus, race, recruitId, commanderId, morale
+            siege, fort, economy, technology, 
+            primaryAlliance, chain, isActive
+            
+ 
+account_stats   - kocid, type, logid, loggedBy, time, value
+account_weapons - kocid, weaponId, logid, loggedBy, time, quantity, strength,
+
+attacks - logid(Primary), ircPosted, type, gold, time, attacker, defender,
+            attacker_damage, defender_damage
+.
+attackLogs - logid(Foreign), repairCost, defender_losses,
+            utmCasualties, tmCasualties, 
+            utCasualties, tCasualties
+.
+defenseLogs - logid (Foreign), repairCost, attacker_losses, 
+            spiesLost, sentriesLost,
+            utmCasualties, tmCasualties, 
+            utCasualties, tCasualties
+
+sabs    - logid, ircPosted, time,
+            sabberId, targetId, weaponType, numSpys, weaponCount
+
+approvalTypes - id, description
+approvals - approvalType(foreign), kocid, 
+            added_by, timeAdded, timeExpires, description
+approvalInfo - (primary) kocid, threat_level, target_stat, capped [+time]           
+            
+messages - id, senderId, subject, message, time
+reconRequests - time, requesterId, requestedId, active
+
+
+Things to cache:
+armoryvalue, troopsSlayed/lost, valueSabbed, weaponsSabbed
+
+Things to record which change rapidly
+tff, morale, alliancePower
+
+Things to record which change infrequently
+commanderId, race, UP, alliance, chainName
+
+player record
+record chain

@@ -108,17 +108,3 @@
         
         return vals
     }
-
-	function getLux(url, callback) {
-        var address= Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
-        
-        log("Get URL: " +address);
-        get(address,callback);
-    }  
-    
-    function postLux(url, data, callback) {
-        var address = Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
-        
-        log("Post URL: "+ address);
-        post(address, data, callback);
-    }

@@ -87,9 +87,9 @@ var Init = {
                     temp.innerHTML = 'Show Messages (' + (x.length-1) + ')';
                     
                     // messages is a global var
-                    if ((Tofu.messages = x.pop()) === '1') {
-                        GUI.showMessageBox();
-                    }
+                    // if ((Tofu.messages = x.pop()) === '1') {
+                        // GUI.showMessageBox();
+                    // }
                 });
             return 1;
         }
@@ -104,7 +104,7 @@ var Init = {
             var f_pass = $("#_forum_password").val();
             if (f_pass === '' || f_user === '')
                 return;
-            GUI.showMessage("Verifying...<br />");
+            GUI.displayText("Verifying...<br />");
             
             get('http://www.kingsofchaos.com/base.php',
                 function(responseDetails) {
@@ -138,7 +138,7 @@ var Init = {
         }
         
         var welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
-        GUI.showMessage(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
+        GUI.displayText(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
                     'User: <input type="text" id="_forum_username" value="'+(User.forumName? User.forumName : '')+'"/> Password: <input type="password" id="_forum_password" /> <input type="button" value="Login"'+
                                     'id="_luxbot_login" /><br />');   
                                     

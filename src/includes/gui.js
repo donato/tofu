@@ -31,6 +31,7 @@ var GUI = {
     }
 
     , displayHtml: function(html) {
+		this.hide();
         this.$popup.append($("<div>").append(html));
         this.$popup.show();  
     }

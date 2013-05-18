@@ -8,9 +8,10 @@
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/underscore-1.4.2.min.js
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/hex_md5.js
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/highstock-1.1.5.js
-// @resource    sidebar_targets      https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
-// @resource    sidebar_sabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
-// @resource    styles				 https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
+// @resource    sidebar_targets          https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
+// @resource    sidebar_sabtargets       https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
+// @resource    sidebar_fakesabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_fakesabtargets.gif
+// @resource    styles				     https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue

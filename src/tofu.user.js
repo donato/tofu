@@ -8,9 +8,10 @@
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/underscore-1.4.2.min.js
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/hex_md5.js
 // @require         https://raw.github.com/DonatoB/tofu/master/server/libs/highstock-1.1.5.js
-// @resource    sidebar_targets      https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
-// @resource    sidebar_sabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
-// @resource    styles				 https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
+// @resource    sidebar_targets          https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
+// @resource    sidebar_sabtargets       https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
+// @resource    sidebar_fakesabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_fakesabtargets.gif
+// @resource    styles				     https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue
@@ -25,7 +26,7 @@
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-var version = '0.2.130414';
+var version = '0.2.130518';
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -92,7 +93,7 @@ var Constants = {
 
 	version : '0.1.20130321'
 	
-	, baseUrl     : 'http://luxbot.net/bot/luxbot.php?'
+	, baseUrl     : 'http://donatoborrello.com/bot/luxbot.php?'
 	, downloadUrl : 'http://luxbot.net/bot/luxbot.user.js'
 	, versionUrl  : 'http://luxbot.net/bot/luxbot.version.php'
 	
@@ -112,12 +113,12 @@ var Constants = {
 }
     function log(s)               { GM_log(s); console.log(s);   }
     function openTab(t)           { GM_openInTab(t); }
-    function gmSetValue(t, t2)    { GM_setValue(t, "" + t2 + ""); } // Convert to string for allowing storage of large ints
+    function gmSetValue(t, t2)    { GM_setValue(t, "" + t2 + ""); } // Convert to string for storage of large ints
     function gmDeleteValue(t)     { GM_deleteValue(t); }
     function gmGetValue(t, def)   { return GM_getValue(t, def);}
     function gmGetResourceText(t) { return GM_getResourceText(t); }
     function gmGetResourceURL(t)  { return GM_getResourceURL(t); }
-    function gmAddStyle(t)          { GM_addStyle(t); }
+    function gmAddStyle(t)        { GM_addStyle(t); }
 
     function get(address, callback) {
         GM_xmlhttpRequest({
@@ -138,11 +139,42 @@ var Constants = {
             method: "POST",
             url: address,
             headers:{'Content-type':'application/x-www-form-urlencoded'},
-            data: encodeURI(data),
+            'data': encodeURI(data),
             onload: function(r) {
                 if (callback) { callback(r); }
             }
         });
+    }
+    // function postJson(address, data, callback) {
+        // GM_xmlhttpRequest({
+            // method: "POST",
+            // url: address,
+            // headers:{'Content-type':'application/json'},
+            // data: {json : JSON.stringify(data)},
+            // onload: function(r) {
+                // if (callback) { callback(r); }
+				// log(r.responseText);
+            // }
+        // });
+    // }
+	
+	function getLux(url, callback) {
+        var address = Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+        
+        log("Get URL: " +address);
+        get(address, callback);
+    }
+    
+    function postLux(url, data, callback) {
+        var address = Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+        
+        log("Post URL: "+ address);
+        post(address, data, callback);
+    }
+	
+    function postLuxJson(url, data, callback) {
+		postLux(url, '&json='+JSON.stringify(data), callback);
+		log(url , data);
     }
 var GUI = {
 	
@@ -161,7 +193,6 @@ var GUI = {
 			
 		var self = this;	
 		this.$popup.click(function (event) {
-			log(event.target);
 			if ($(event.target).is("#tofu_popup_box")) {
 				self.hide();
 			}
@@ -178,7 +209,7 @@ var GUI = {
     }
 
     , displayHtml: function(html) {
-		log("Displaying HTML: " + html);
+		this.hide();
         this.$popup.append($("<div>").append(html));
         this.$popup.show();  
     }
@@ -405,9 +436,9 @@ var Init = {
                     temp.innerHTML = 'Show Messages (' + (x.length-1) + ')';
                     
                     // messages is a global var
-                    if ((Tofu.messages = x.pop()) === '1') {
-                        GUI.showMessageBox();
-                    }
+                    // if ((Tofu.messages = x.pop()) === '1') {
+                        // GUI.showMessageBox();
+                    // }
                 });
             return 1;
         }
@@ -422,7 +453,7 @@ var Init = {
             var f_pass = $("#_forum_password").val();
             if (f_pass === '' || f_user === '')
                 return;
-            GUI.showMessage("Verifying...<br />");
+            GUI.displayText("Verifying...<br />");
             
             get('http://www.kingsofchaos.com/base.php',
                 function(responseDetails) {
@@ -456,7 +487,7 @@ var Init = {
         }
         
         var welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
-        GUI.showMessage(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
+        GUI.displayText(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
                     'User: <input type="text" id="_forum_username" value="'+(User.forumName? User.forumName : '')+'"/> Password: <input type="password" id="_forum_password" /> <input type="button" value="Login"'+
                                     'id="_luxbot_login" /><br />');   
                                     
@@ -498,7 +529,7 @@ var Init = {
     }
 
     function to_int(str) {
-        str = str.replace(/[^0-9]/g, '');
+        str = str.replace(/[^0-9\.]/g, '');
         if (str === '') {
             return '';
         }
@@ -527,16 +558,18 @@ var Init = {
         return "<tr><td>"+arr.join("</td><td>")+"</td></tr>";
     }
 
-    function addCommas(sValue) {
-
-		sValue = String(sValue);
+    var addCommas = function () {
         var sRegExp = new RegExp('(-?[0-9]+)([0-9]{3})');
-        
-        while(sRegExp.test(sValue)) {
-            sValue = sValue.replace(sRegExp, '$1,$2');
-        }
-        return sValue;
-    }
+
+		return function (sValue) {
+			sValue = String(sValue);
+			
+			while(sRegExp.test(sValue)) {
+				sValue = sValue.replace(sRegExp, '$1,$2');
+			}
+			return sValue;
+		};
+	}();
     
     // KoC Utils
     var db = {        
@@ -648,20 +681,6 @@ var Init = {
         
         return vals
     }
-
-	function getLux(url, callback) {
-        var address= Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
-        
-        log("Get URL: " +address);
-        get(address,callback);
-    }  
-    
-    function postLux(url, data, callback) {
-        var address = Constants.baseUrl+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
-        
-        log("Post URL: "+ address);
-        post(address, data, callback);
-    }
     function makeCollapsable(action) {
     
         function collapseTable(table) {
@@ -705,12 +724,6 @@ var Init = {
         var coltables = db.get('coltables_' + action, '').split(',');
         _.map(coltables, function (i) { collapseTable($tables.eq(i)); });
     }
-
-
-    //
-    // LOGGING
-    //
- 
     function logBase(stats, data, officers) {
         //stats=sa;da;spy;sentry;
         //details=fort;siege;econ;tech;conscription;turns;covertlevel;bonus
@@ -1588,20 +1601,29 @@ Page.base = {
 }
 Page.battlefield = {
 
+	statsLoadedId : undefined,
+	
     run: function() { 
         this.battlefieldAct();
         this.showUserInfoB();
     }
     
     , battlefieldAct: function () {
-        var $playerRows = $("tr.player");
+        var $playerRows = $('tr.player');
          
-        var missedGold = this.bf_logGold($playerRows);
+        var obj = this.bf_logGold($playerRows);
+		
+		postLuxJson('&a=battlefield', obj,
+			function(r) {
+				log("Response: "+r.responseText);
+			});	
+		return;
+		
         this.bf_showGold(missedGold);
         this.bf_needsRecon($playerRows);
         this.bf_online($playerRows);
-        
-        var $nav = $("tr.nav")
+
+        var $nav = $("tr.nav");
         if ($nav.size()) {
             var q = $nav.find('a');
             q.on("click", this.battlefieldAct);
@@ -1619,43 +1641,36 @@ Page.battlefield = {
         }
     }
     
-    , bf_logGold: function (users) {
-    //name,userid,gold,rank,alliance,Tff
+    , bf_logGold: function ($playerRows) {
+        var unseenGold = [];
+		var logstr = {};
+		
+        $playerRows.each(function(index, row) {
+			var $cols = $(row).find('td');
+            var kocid = $(row).attr("user_id");
+            if ( !kocid ) { return; }
 
-        var unscannedGold ='';
-        var logstr = '';
-        $(users).each(function(index, row) {
-        
-            var userid= $(row).attr("user_id");
-            if (userid) {
-                
-                var x = $(row).find("td");
-                
-                var name = remove_delimiters($(x[2]).text());
-                var tff  = to_int($(x[3]).text());
-                var rank = to_int($(x[6]).text());
-                var alliance = remove_delimiters($.trim($(x[1]).text()));
-                var gold = to_int($(x[5]).text());
-                
-                if(gold === '')
-                    unscannedGold += userid + ";";
-                    
-                if (name == User.kocnick && User.logself === 0)
-                    gold = '';
-                                
-                var temp = name + ":" + userid + ":" + gold + ":" + rank + ":" + alliance + ":" + tff +";";
-                
-                logstr+= temp;
-            }
+			var gold = to_int( $cols.eq(5).text() );
+			
+			if (!gold) { unseenGold.push(kocid); }
+			
+			if (name == User.kocnick && User.logself === 0) {
+				gold = '';
+			}
+
+			logstr[kocid] ={
+					'name'  : $cols.eq(2).text(),
+					'gold'  : gold,
+					'rank'  : to_int($cols.eq(6).text()),
+					'alliance' : $.trim($cols.eq(1).text()),
+					'tff'   : to_int($cols.eq(3).text())
+			};
         });
-            
-        if (logstr !== '') {
-            postLux('&a=loggold','&g=' + logstr ,
-                function(responseDetails) {
-                    log("Response: "+responseDetails.responseText);
-                });
-        }
-        return unscannedGold;
+
+        return {
+			'loginfo' : logstr,
+			'unknownGold' : unseenGold
+		};
     }
     
     , bf_showGold: function (userstr) {
@@ -1753,10 +1768,6 @@ Page.battlefield = {
     , battlefieldShowInfo: function (data) {
         // Hack to get the element to write into
         var $container = $("tr.profile").find("form[action='writemail.php']").closest("tbody");
-        // if (!$container || $container.size() ==0) {
-            // setTimeout( function() {battlefieldShowInfo(data);}, 200)
-            // return
-        // }
         
         $("tr.bf_inject").remove();
         
@@ -1778,14 +1789,15 @@ Page.battlefield = {
     }
   
     , showUserInfoB: function () {
+		var self = this;
         $("a.player").on('click', function(event) {
             if (String(event.target).indexOf('stats.php') > -1) {
                 var userid = String(event.target).substr(String(event.target).indexOf('=')+1, 7);
-                if (previd == userid) {
-                    previd=0;
+                if (self.statsLoadedId == userid) {
+                    self.statsLoadedId=0;
                     return;
                 }
-                previd = userid;
+                self.statsLoadedId = userid;
                 getLux('&a=getstats&userid=' + userid,
                     function(responseDetails) {
                         var r = responseDetails.responseText;
@@ -2003,6 +2015,14 @@ Page.mercs = {
 	
     
 }
+Page.recruit = {
+    run: function() {
+		var kocid = document.body.innerHTML.between("stats.php?id=", '"');
+		var recruitid= document.URL.substring( document.URL.indexOf("=") +1 );
+
+		getLux('&a=addRecruitid&kocid=' + kocid + '&recruitid='+recruitid);
+    }
+}
 
 Page.stats = {   
 
@@ -2011,7 +2031,7 @@ Page.stats = {
 
         this.statsPage();
         this.collapseAllianceInfoS();
-        this.showUserInfoS();
+        this.showLoggedStats();
         this.addStatsPageButtons();
         this.statsOnlineCheck();
     }
@@ -2054,12 +2074,13 @@ Page.stats = {
         }
     }
   
-    , showUserInfoS: function() {
+    , showLoggedStats: function() {
+		var self = this;
         var userid = document.URL.substr(document.URL.indexOf('=')+1, 7);
 
 
         $("#luxstats_reload").live("click",function() {
-            this.updateUserInfoS(userid);
+            self.updateUserInfoS(userid);
         });
         
         var offieTable = $("body").find("table:contains('Officers'):last");
@@ -2075,23 +2096,21 @@ Page.stats = {
             function(responseDetails) {
                 var i;
                 var container = $("#luxstats_info");
-                $(container).find(".statsrow").remove();
+                $(container).find("td").parent().remove();
                 if (responseDetails.responseText == '403') {
-                    container.append('<td colspan="2" style="font-weight:bold;text-align:center;">Access denied</td>');
+                    container.append('<tr><td colspan="2" style="font-weight:bold;text-align:center;">Access denied</td></tr>');
                 } else if (responseDetails.responseText == 'N/A') {
-                    container.append('<td colspan="2" style="font-weight:bold;text-align:center;">No data available</td>');
+                    container.append('<tr><td colspan="2" style="font-weight:bold;text-align:center;">No data available</td></tr>');
 
                 } else {
                     var userInfo = responseDetails.responseText.split(';');
 
                     for (i = 0; i < 10; i+=2) {
                         if (userInfo[i]== '???') {
-                            // alert(i);
-                            container.append("<tr class='statsrow'><td>"+Constants.statsdesc[i/2]+"</td><td colspan=2>"+userInfo[i]+"</td></tr>");
-                            // i++;
+                            container.append("<tr><td>"+Constants.statsdesc[i/2]+"</td><td colspan=2>"+userInfo[i]+"</td></tr>");
                         }
                         else
-                            container.append("<tr class='statsrow'><td>"+Constants.statsdesc[i/2]+"</td><td>"+userInfo[i]+"</td><td class='_luxbotago'>"+userInfo[i+1]+"</td></tr>");
+                            container.append("<tr><td>"+Constants.statsdesc[i/2]+"</td><td>"+userInfo[i]+"</td><td class='_luxbotago'>"+userInfo[i+1]+"</td></tr>");
                     }
                     if (userInfo.length > 10)
                         container.append("<tr><td>"+userInfo[11]+"</td></tr>");
@@ -2145,7 +2164,7 @@ Page.stats = {
 			q.nextSibling.id = 'collapseAlliances';
 			q.nextSibling.innerHTML = ' + Show Secondary';
 		});
-		$("body").on('click', '#expandAlliances', function(){
+		$("body").on('click', '#collapseAlliances', function(){
 			var q = document.getElementById('_luxbot_alliances');
 			q.style.display = 'block';
 			q.style.visibility = 'visible';
@@ -2159,18 +2178,9 @@ Page.stats = {
     , addIncomeCalc: function(race, tff) {
     
         var bonus = 1;        
-        if(race == 'Humans') {
-            bonus = 1.30;
-        }
-        if(race == 'Dwarves') {
-            bonus = 1.15;
-        }
+        if(race == 'Humans') { bonus = 1.30; }
+        if(race == 'Dwarves') { bonus = 1.15; }
         
-        // var calBonus = Math.floor(tff*bonus);
-        // var CalBonusInt = parseInt(calBonus);
-        // var tffInt = parseInt(tff);
-        // var calTbgMin = Math.floor(CalBonusInt + tffInt);
-        // var CalHourTbg = Math.floor(calTbgMin * 60);
         var formattedTbg = addCommas(Math.floor(60* tff *bonus));
         
         var nameIC = /<td><b>Name:<\/b>/;
@@ -2218,9 +2228,6 @@ Page.stats = {
         
         //cut off trailing semicolon
         officers = officers.slice(0, -1);
-        //alert(officers);
-        // if (tolog==true)
-            // sendLogDetails(username, name, userid, '', gold + ';' + rank + ';' + tff + ';' + chain + ';' + comid + '&morale='  + morale , '',officers, -1);
 
         return officers;            
     }
@@ -2273,12 +2280,7 @@ Page.stats = {
             });
     }
 }
-
-    //
-    // Train Page Functions
-    //
 Page.train = {
-
     run: function() {
         this.unheldWeapons();
         this.tffChart();
@@ -2289,7 +2291,7 @@ Page.train = {
 			$("input[type='text']").each(function() {
 				selected += $(this).val().int();
 			});
-			var maxCanTrain = getRowValues("Untrained Soldiers")[0];
+			var maxCanTrain = to_int(getRowValues("Untrained Soldiers")[0]);
 			return Math.min(val, maxCanTrain - selected);
 		}
 		
@@ -2303,22 +2305,26 @@ Page.train = {
 			}
             return '<span style="color:red">'+unheld+'</span>';
         }
-		
-        var stable = $("table.personnel").last();
+		function getTroopCount($table, str) {
+			return $stable
+					.find("tr:contains('"+ str +"'):first>td:last")
+					.html().int();
+		}
+        var $stable = $("table.personnel").last();
         
-        var spies = $(stable).find("tr:contains('Spies'):first>td:last").html().trim();
-        var sentries = $(stable).find("tr:contains('Sentries'):first>td:last").html().trim();
-        var attackers = $(stable).find("tr:contains('Trained Attack Soldiers'):first>td:last").html().trim();
-        var attackMercs = $(stable).find("tr:contains('Trained Attack Mercenaries'):first>td:last").html().trim();
-        var defenders = $(stable).find("tr:contains('Trained Defense Soldiers'):first>td:last").html().trim();
-        var defenseMercs = $(stable).find("tr:contains('Trained Defense Mercenaries'):first>td:last").html().trim();
+        var spies        = getTroopCount($stable, "Spies");
+        var sentries     = getTroopCount($stable, "Sentries");
+        var attackers    = getTroopCount($stable, "Trained Attack Soldiers");
+        var attackMercs  = getTroopCount($stable, "Trained Attack Mercenaries");
+        var defenders    = getTroopCount($stable, "Trained Defense Soldiers");
+        var defenseMercs = getTroopCount($stable, "Trained Defense Mercenaries");
 
-        $(stable).after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='holding' class='table_lines'><tbody><tr><th colspan=3>Troops/Weapons</th></tr><tr><th class='subh'>Troops</th><th  class='subh'>Weapons</th><th align='right' class='subh'>Unhelds</th></tr></tbody></table>");
+        $stable.after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='holding' class='table_lines'><tbody><tr><th colspan=3>Troops/Weapons</th></tr><tr><th class='subh'>Troops</th><th  class='subh'>Weapons</th><th align='right' class='subh'>Unhelds</th></tr></tbody></table>");
         
-        var unheldSpy = describe(User.spyWeaps - spies.int() );
-        var unheldSentry = describe(User.sentryWeaps - sentries.int() );
-        var unheldStrike = describe(User.saWeaps - attackers.int() - attackMercs.int() );
-        var unheldDefense = describe(User.daWeaps - defenders.int() - defenseMercs.int() );
+        var unheldSpy = describe(User.spyWeaps - spies );
+        var unheldSentry = describe(User.sentryWeaps - sentries );
+        var unheldStrike = describe(User.saWeaps - attackers - attackMercs );
+        var unheldDefense = describe(User.daWeaps - defenders - defenseMercs );
 
         $("#holding")
 			.append("<tr><td><b>Strike Weapons&nbsp;</b></td><td>"+User.saWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldStrike+" </td></tr>")
@@ -2328,10 +2334,11 @@ Page.train = {
 	}
 	
     , tffChart: function() {
-        var stable = $("table:contains('Train Your Troops')").last();
-        $(stable).after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='growth' class='table_lines'><tbody><tr><th colspan=3>Growth Stats</th></tr></tbody></table>");
+        var $stable = $("table:contains('Train Your Troops')").last();
+        $stable.after( $("<table>", { 'id': 'growth', 'class' : 'table_lines'})
+				.append("<tbody><tr><th colspan=3>Growth Stats</th></tr></tbody>")
+		);
         $("#growth").append("<tr><td><div id='container' style='height:250px'></div></td></tr>");
-
         
         getLux('&a=trainStats',function(a) {
 			var chart = new Highcharts.StockChart({
@@ -2380,6 +2387,49 @@ Page.train = {
         }
     }
 }
+Plugins['fakesabtargets'] = {
+    description : "Fake-Sab targets button added to sidebar"
+	
+	, defaultEnabled : false
+	
+	, run : function () {
+		this.addButton();
+	}
+	
+    , addButton : function() {
+		var $sabButton = $('<a>', {'href':'#'}).append(
+			$("<img>", {
+				'onclick' : 'return false;',
+				'class' : 'tofu',
+				'id' : 'sidebar_sabtargets',
+				'src' : gmGetResourceURL("sidebar_fakesabtargets")
+		}));
+		
+		$sabButton.click(this.showFakeSabList.bind(this));
+		
+		var $leftBarRows = $("td.menu_cell> table> tbody > tr");
+		$leftBarRows.eq(2).after($("<tr>").append($sabButton));
+   }
+
+	, showFakeSabList : function() {
+		var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
+
+		$table.append('<tr><td id="_sab_content">Loading... Please wait...</td></tr>');
+		GUI.displayHtml($table);
+		this.getFakeSabTargets();
+	}
+
+	, getFakeSabTargets : function() {
+		getLux('&a=getfakesabtargets',
+			function(r) {
+				var i;
+				log(r.responseText);
+				if ( r.responseText != '403' ) {
+					document.getElementById('_sab_content').innerHTML = r.responseText;
+				}
+		});
+	}
+}
 Plugins['gold_projection'] = {
 	description : "Show projected gold beneath current gold",
 	
@@ -2411,6 +2461,143 @@ Plugins['gold_projection'] = {
 		);
 	}
 }
+// ==UserScript==
+// @name           Koc Addon Recruit Helper
+// @namespace      http://*kingsofchaos.com/*
+// @description    Help in recruiting : Remember messages sent to users and when they were sent etc.
+// @include        http://*kingsofchaos.com/*
+// @exclude		   http://www.kingsofchaos.com/confirm.login.php*
+// @exclude		   http://*.kingsofchaos.com/index.php*
+// @exclude		   http://*.kingsofchaos.com/error.php*
+// ==/UserScript==
+
+var CurrentURL = document.URL;
+PageURL = CurrentURL.split(".com/");
+PageURL = PageURL[1].split(".php");
+
+if (PageURL[0] == "writemail") {
+
+    var stuff = document.body.innerHTML;
+    nick = stuff.split("<b>To:</b> ");
+    nick = nick[1].split("</th>"); 
+    nick = nick[0];
+    nick = nick.replace(/\n/g,"").replace(/&nbsp;.*/g,"");
+    statid = document.getElementsByName("to")[0].value;
+
+    var d = new Date()
+    var ds = "" + d.getTime() + "";
+    if (GM_getValue('KoC_Message_Time_' + statid)) {
+        timespan = Math.floor((ds - Math.floor(GM_getValue('KoC_Message_Time_' + statid))) / 1000);
+        var time = duration(timespan);
+        var th = document.getElementsByTagName('th');
+        for(i=0;i< th.length;i++) {
+          if((th[i].innerHTML.match('To:')) && (!(th[i].innerHTML.match('Subject:')))) {
+            th[i].innerHTML += '&nbsp;&nbsp;&nbsp;<span title="Subject: '+ GM_getValue('KoC_Message_Subj_'+statid) + "\nMessage:\n" + GM_getValue('KoC_Message_Msg_'+statid).replace(/<br>/g,"\n") + '">[Last Msg: '+ time + ']</span>';
+             break;
+           }
+         }
+    }
+
+
+  var sendbut = document.getElementsByName("send")[0];
+  sendbut.addEventListener('click', function(event) {
+      var message = document.getElementsByTagName('textarea')[0].value.replace(/\n/g,'<br>'); 
+      var q = document.getElementsByTagName('input'); 
+      for (var j=0; j < q.length; j++) {
+         if (q[j].type == 'text') {
+           if(q[j].name == 'subject')
+             subject = q[j].value;
+         }
+       }
+      GM_setValue('KoC_Message_Nick_' + statid, nick);
+      GM_setValue('KoC_Message_Subj_' + statid, subject);
+      GM_setValue('KoC_Message_Msg_' + statid, message);
+      GM_setValue('KoC_Message_Time_' + statid, ds);
+
+  },true);
+}
+
+if (PageURL[0] == "inbox") {
+ var delbut = document.getElementsByName("delete_all_to_messages")[0];
+ var detailsbut = document.createElement('input');
+ detailsbut.setAttribute("type","button");
+ detailsbut.setAttribute("name","outgoing_message_details");
+ detailsbut.setAttribute("id","ogm_details");
+ detailsbut.setAttribute("value","Details");
+ detailsbut.addEventListener('click', function(event) {
+ var valarr = GM_listValues();
+ var idstime = new Array();
+  for each (var val in GM_listValues()) {
+   if (val.match("KoC_Message_Time_")) {
+    var temprow = new Array(val.replace(/KoC_Message_Time_/g,""),GM_getValue(val));
+    idstime.push(temprow);
+   }
+  }
+  idstime.sort(function(a,b){return b[1]-a[1]}); 
+
+  var tds = document.getElementsByTagName('td'); 
+  for(i=0;i<tds.length;i++) { 
+    if (tds[i].getAttribute("class") == "content") { 
+      var content = tds[i]; 
+      break 
+    }
+  }
+
+  var detailsHTML = "<table width=\"100%\" bgcolor=\"#000000\" border=\"0\" cellspacing=\"6\" cellpadding=\"6\">\n\t<tr>\n\t\t<th>To</th>\n\t\t<th>Subject</th>\n\t\t<th>Sent</th>\n\t\t<th>Message</th></tr>"
+
+ for each (var pair in idstime) {
+    statid = pair[0];
+    var d = new Date()
+    var ds = "" + d.getTime() + "";
+    timespan = Math.floor((ds - Math.floor(GM_getValue('KoC_Message_Time_' + statid))) / 1000);
+    toname = GM_getValue("KoC_Message_Nick_"+statid);
+    tosubj = GM_getValue('KoC_Message_Subj_'+statid);
+    if (toname == null) { toname = statid; }
+    if (tosubj == "") { tosubj = "None"; }
+    rowHTML = '<tr id="msg_row_'+statid+'"><td><a href="stats.php?id='+statid+'">'+ toname +'</a></td><td>'+ tosubj +'</td><td>'+duration(timespan)+'</td><td align="center"><input type="button" id="og_msg_'+statid+'" value="Show"></td></tr>';
+    detailsHTML += rowHTML; 
+  }
+ content.innerHTML = detailsHTML;
+
+ for each (var pair in idstime) {
+  statid = pair[0];
+  document.getElementById("og_msg_"+statid).addEventListener('click',(function(statid){ return function() { displaymsg(GM_getValue("KoC_Message_Msg_"+statid),statid,this.value); this.value = ((this.value == "Show") ? "Hide" : "Show"); } })(statid),false);
+ }
+ 
+
+ },true);
+ delbut.parentNode.insertBefore(detailsbut,delbut);
+}
+
+function displaymsg ( msg, statid, toggle ) {
+ if (toggle == "Show") {
+
+ var therow = document.getElementById("msg_row_"+statid);
+ var msgrow = document.createElement('tr');
+ msgrow.setAttribute('id','the_msg_'+statid);
+ msgrow.innerHTML = "<td style=\"padding-left: 30px; padding-right: 30px;\" colspan=\"4\" width=\"100%\">\n\t\t<table width=\"100%\" bgcolor=\"#888888\" cellpadding=\"6\" cellspacing=\"0\">\n\t\t<tbody><tr>\n\t\t\t<td style=\"border: 1px solid rgb(136, 136, 136);\" colspan=\"3\" bgcolor=\"#111111\"><p style=\"padding-left: 15px;\">"+ msg +"</p></td>\n\t\t</tr>\n\t\t</tbody></table>\n\t\t</td>"
+ therow.parentNode.insertBefore(msgrow,therow.nextSibling);
+ } else {
+  var msgrow = document.getElementById('the_msg_'+statid);
+  msgrow.parentNode.removeChild(msgrow);
+ }
+}
+
+function duration ( timespan ) {
+  time = "";
+  if ((timespan > 1209600) && (time === "")) time += Math.floor(timespan / 604800) + ' weeks ago';
+  if ((timespan > 604800) && (time === "")) time += '1 week ago';
+  if ((timespan > 172800) && (time === "")) time += Math.floor(timespan / 86400) + ' days ago';
+  if ((timespan > 86400) && (time === "")) time += '1 day ago';
+  if ((timespan > 7200) && (time === "")) time += Math.floor(timespan / 3600) + ' hours ago';
+  if ((timespan > 3600) && (time === "")) time += '1 hour ago';
+  if ((timespan > 120) && (time === "")) time += Math.floor(timespan / 60) + ' minutes ago';
+  if ((timespan > 60) && (time === "")) time += '1 minute ago';
+  if ((timespan > 1) && (time === "")) time += timespan + ' seconds ago';
+  if (time === "") time += '1 second ago';
+  return time;
+}
+
 Plugins['recon_request'] = {
 	description : "Recon request system"
 	
@@ -2572,26 +2759,6 @@ Plugins['targets'] = {
 		var $leftBarRows = $("td.menu_cell > table> tbody > tr");
 		$leftBarRows.eq(2).after($("<tr>").append($button));
    }
-
-	, formInputs : {
-		'maxDa' : 'Maximum Defense', 
-		'minTff' : '..', 
-		'minGold' : 0,
-		'maxSeconds' : 120, 
-		'byProjection' : 0, 
-		'saMultiplier' : 0.80,
-		'tffAdd' : 10
-	}
-	
-	, inputDefaults : {
-		'maxDa' : 1000, 
-		'minTff' : 10, 
-		'minGold' : 0,
-		'maxSeconds' : 120, 
-		'byProjection' : 0, 
-		'saMultiplier' : 0.80,
-		'tffAdd' : 10
-	}
 	
 	, showFarmList : function() {
 		var farmOptions = _.map(this.formInputs, function (def, key) {
@@ -2702,6 +2869,7 @@ Plugins['targets'] = {
 				
 				// Remove "Loading" text.
 			   $("#_luxbot_targets_table .header").text("Master Targets");
+			   
 				$(".targetTR").hover(
 					function () {
 						$(this).find(".gold").hide();
@@ -2713,36 +2881,6 @@ Plugins['targets'] = {
 			});    
 	}
 
-	, showFakeSabList : function() {
-		var $table = $("<table>", {'class': 'table_lines', 'id':'_luxbot_targets_table', 'width':'100%', cellspacing:0, cellpadding:6, border:0 });
-
-		$table.append('<tr><td id="_sab_content">Loading... Please wait...</td></tr>');
-		GUI.displayText($table);
-		getFakeSabTargets();
-	}
-
-	, getFakeSabTargets : function() {
-		function clickHelper(e) {
-			openTab('http://www.kingsofchaos.com/attack.php?id=' + String(e.target.id).replace(/__/, ''));
-		}
-		getLux('&a=getfakesabtargets',
-			function(r) {
-				var i;
-				if ( r.responseText != '403' ) {
-					document.getElementById('_sab_content').innerHTML = r.responseText;
-				}
-			   
-				var q = document.getElementsByName('_luxbot_targets_t');
-				for (i = 0; i < q.length; i++) {
-					q[i].addEventListener('click', clickHelper, true);
-				}
-				// $("#getTodaysSabs")
-				
-				document.getElementById('getTodaysSabs').value="View Your Sabs";
-				document.getElementById('getTodaysSabs').addEventListener('click',getTodaysSabs,true);
-				document.getElementById('getTodaysSabs').removeEventListener('click',getSabTargets,false);
-		});
-	}
 }
 // Note: The version is added here by the build script as a global string.
 

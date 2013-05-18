@@ -8,9 +8,10 @@ Page.battlefield = {
     }
     
     , battlefieldAct: function () {
-        var $playerRows = $("tr.player");
+        var $playerRows = $('tr.player');
          
         var obj = this.bf_logGold($playerRows);
+		
 		postLuxJson('&a=battlefield', obj,
 			function(r) {
 				log("Response: "+r.responseText);
@@ -40,40 +41,34 @@ Page.battlefield = {
     }
     
     , bf_logGold: function ($playerRows) {
-		var allKocids = [];
-        var unscannedGold = [];
-		var logstr = [];
+        var unseenGold = [];
+		var logstr = {};
+		
         $playerRows.each(function(index, row) {
-        
-            var userid = $(row).attr("user_id");
-            if (userid) {
-                allKocids.push(userid);
+			var $cols = $(row).find('td');
+            var kocid = $(row).attr("user_id");
+            if ( !kocid ) { return; }
 
-                var x = $(row).find("td");
-                var gold = to_int($(x[5]).text());
-                
-                if(gold === '') {
-                    unscannedGold.push(userid);
-				}
-                if (name == User.kocnick && User.logself === 0) {
-                    gold = '';
-                }
+			var gold = to_int( $cols.eq(5).text() );
+			
+			if (!gold) { unseenGold.push(kocid); }
+			
+			if (name == User.kocnick && User.logself === 0) {
+				gold = '';
+			}
 
-                logstr.push({
-					'name'  : $(x[2]).text(),
-					'kocid' : userid,
+			logstr[kocid] ={
+					'name'  : $cols.eq(2).text(),
 					'gold'  : gold,
-					'rank'  : to_int($(x[6]).text()),
-					'alliance' : $.trim($(x[1]).text()),
-					'tff'   : to_int($(x[3]).text())
-				});
-            }
+					'rank'  : to_int($cols.eq(6).text()),
+					'alliance' : $.trim($cols.eq(1).text()),
+					'tff'   : to_int($cols.eq(3).text())
+			};
         });
 
         return {
-			allKocids : allKocids,
-			info_to_log : logstr,
-			unscannedKocids : unscannedGold
+			'loginfo' : logstr,
+			'unknownGold' : unseenGold
 		};
     }
     
@@ -172,10 +167,6 @@ Page.battlefield = {
     , battlefieldShowInfo: function (data) {
         // Hack to get the element to write into
         var $container = $("tr.profile").find("form[action='writemail.php']").closest("tbody");
-        // if (!$container || $container.size() ==0) {
-            // setTimeout( function() {battlefieldShowInfo(data);}, 200)
-            // return
-        // }
         
         $("tr.bf_inject").remove();
         

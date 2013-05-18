@@ -6,7 +6,7 @@ Page.stats = {
 
         this.statsPage();
         this.collapseAllianceInfoS();
-        this.showUserInfoS();
+        this.showLoggedStats();
         this.addStatsPageButtons();
         this.statsOnlineCheck();
     }
@@ -49,12 +49,13 @@ Page.stats = {
         }
     }
   
-    , showUserInfoS: function() {
+    , showLoggedStats: function() {
+		var self = this;
         var userid = document.URL.substr(document.URL.indexOf('=')+1, 7);
 
 
         $("#luxstats_reload").live("click",function() {
-            this.updateUserInfoS(userid);
+            self.updateUserInfoS(userid);
         });
         
         var offieTable = $("body").find("table:contains('Officers'):last");
@@ -70,23 +71,21 @@ Page.stats = {
             function(responseDetails) {
                 var i;
                 var container = $("#luxstats_info");
-                $(container).find(".statsrow").remove();
+                $(container).find("td").parent().remove();
                 if (responseDetails.responseText == '403') {
-                    container.append('<td colspan="2" style="font-weight:bold;text-align:center;">Access denied</td>');
+                    container.append('<tr><td colspan="2" style="font-weight:bold;text-align:center;">Access denied</td></tr>');
                 } else if (responseDetails.responseText == 'N/A') {
-                    container.append('<td colspan="2" style="font-weight:bold;text-align:center;">No data available</td>');
+                    container.append('<tr><td colspan="2" style="font-weight:bold;text-align:center;">No data available</td></tr>');
 
                 } else {
                     var userInfo = responseDetails.responseText.split(';');
 
                     for (i = 0; i < 10; i+=2) {
                         if (userInfo[i]== '???') {
-                            // alert(i);
-                            container.append("<tr class='statsrow'><td>"+Constants.statsdesc[i/2]+"</td><td colspan=2>"+userInfo[i]+"</td></tr>");
-                            // i++;
+                            container.append("<tr><td>"+Constants.statsdesc[i/2]+"</td><td colspan=2>"+userInfo[i]+"</td></tr>");
                         }
                         else
-                            container.append("<tr class='statsrow'><td>"+Constants.statsdesc[i/2]+"</td><td>"+userInfo[i]+"</td><td class='_luxbotago'>"+userInfo[i+1]+"</td></tr>");
+                            container.append("<tr><td>"+Constants.statsdesc[i/2]+"</td><td>"+userInfo[i]+"</td><td class='_luxbotago'>"+userInfo[i+1]+"</td></tr>");
                     }
                     if (userInfo.length > 10)
                         container.append("<tr><td>"+userInfo[11]+"</td></tr>");
@@ -154,18 +153,9 @@ Page.stats = {
     , addIncomeCalc: function(race, tff) {
     
         var bonus = 1;        
-        if(race == 'Humans') {
-            bonus = 1.30;
-        }
-        if(race == 'Dwarves') {
-            bonus = 1.15;
-        }
+        if(race == 'Humans') { bonus = 1.30; }
+        if(race == 'Dwarves') { bonus = 1.15; }
         
-        // var calBonus = Math.floor(tff*bonus);
-        // var CalBonusInt = parseInt(calBonus);
-        // var tffInt = parseInt(tff);
-        // var calTbgMin = Math.floor(CalBonusInt + tffInt);
-        // var CalHourTbg = Math.floor(calTbgMin * 60);
         var formattedTbg = addCommas(Math.floor(60* tff *bonus));
         
         var nameIC = /<td><b>Name:<\/b>/;
@@ -213,9 +203,6 @@ Page.stats = {
         
         //cut off trailing semicolon
         officers = officers.slice(0, -1);
-        //alert(officers);
-        // if (tolog==true)
-            // sendLogDetails(username, name, userid, '', gold + ';' + rank + ';' + tff + ';' + chain + ';' + comid + '&morale='  + morale , '',officers, -1);
 
         return officers;            
     }
