@@ -29,14 +29,16 @@ table.table_lines {
 }
 
 #tofu_popup_box >div {
-    height: 90%;
-    overflow-y: auto;
-    margin:15px;
+    height: 80%;
+    max-width: 1000px;
+    margin: 30px auto;
     padding: 10px;
+    overflow-y: auto;
+    
     border: 1px solid blue;
     text-align:center;
-    background-color:gray;
     color:black;
+    background-color:gray;
 }
 
 #tofu_control_box  > ul {
