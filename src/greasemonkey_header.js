@@ -11,6 +11,7 @@
 // @resource    sidebar_targets          https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
 // @resource    sidebar_sabtargets       https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
 // @resource    sidebar_fakesabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_fakesabtargets.gif
+// @resource    icon_sword               https://raw.github.com/DonatoB/tofu/master/server/img/sword.png
 // @resource    styles				     https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
 // @grant       GM_getValue
 // @grant       GM_setValue
@@ -23,6 +24,7 @@
 // @grant       GM_getResourceURL
 // ==/UserScript==
 
+// Silver sword icon from here - http://www.iconfinder.com/iconsets/free-silver-button-icons-2#readme
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};

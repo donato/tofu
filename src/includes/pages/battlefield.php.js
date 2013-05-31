@@ -1,6 +1,7 @@
 Page.battlefield = {
 
 	statsLoadedId : undefined,
+	allKocids : [],
 	
     run: function() { 
         this.battlefieldAct();
@@ -10,15 +11,19 @@ Page.battlefield = {
     , battlefieldAct: function () {
         var $playerRows = $('tr.player');
          
-        var obj = this.bf_logGold($playerRows);
+        var logInfo = this.logGold($playerRows);
+		this.allKocids = _.keys(logInfo);
 		
-		postLuxJson('&a=battlefield', obj,
+		var self = this;
+		postLuxJson('&a=battlefield', logInfo,
 			function(r) {
-				log("Response: "+r.responseText);
+				var json = $.parseJSON(r.responseText);
+				
+				self.showGold(json);
 			});	
 		return;
 		
-        this.bf_showGold(missedGold);
+		
         this.bf_needsRecon($playerRows);
         this.bf_online($playerRows);
 
@@ -40,9 +45,8 @@ Page.battlefield = {
         }
     }
     
-    , bf_logGold: function ($playerRows) {
-        var unseenGold = [];
-		var logstr = {};
+    , logGold: function ($playerRows) {
+		var logInfo = {};
 		
         $playerRows.each(function(index, row) {
 			var $cols = $(row).find('td');
@@ -50,15 +54,13 @@ Page.battlefield = {
             if ( !kocid ) { return; }
 
 			var gold = to_int( $cols.eq(5).text() );
-			
-			if (!gold) { unseenGold.push(kocid); }
-			
 			if (name == User.kocnick && User.logself === 0) {
 				gold = '';
 			}
 
-			logstr[kocid] ={
+			logInfo[kocid] ={
 					'name'  : $cols.eq(2).text(),
+					'race'  : $cols.eq(4).text().trim(),
 					'gold'  : gold,
 					'rank'  : to_int($cols.eq(6).text()),
 					'alliance' : $.trim($cols.eq(1).text()),
@@ -66,35 +68,20 @@ Page.battlefield = {
 			};
         });
 
-        return {
-			'loginfo' : logstr,
-			'unknownGold' : unseenGold
-		};
+        return logInfo;
     }
     
-    , bf_showGold: function (userstr) {
-        if (userstr === "")
-            return;
-            
-        //cut off trailing comma
-        userstr = userstr.slice(0, -1);
-        
-        
-        getLux('&a=loggold&u=' + userstr,
-            function(r) {
-                //log(r.responseText);
-                var players = r.responseText.split(';');
-                $(players).each(function(index, val) {
-                    if (val !== '') {    
-                        var info = val.split(":");
-                        var GoldTd = $("tr[user_id='"+info[0]+"'] > td").eq(5);
-                        GoldTd.text( info[1] + ' Gold, ' + info[2]);
-                        GoldTd.css("color","#aaaaaa");
-                        GoldTd.css("font-style","italic");
+    , showGold: function (json) {
 
-                    }
-                });
-        });
+		log("ShowGold");
+		log(json);
+		_.each(json, function(obj, id) {
+			log("Trying to load " + id + " " + obj);
+			var GoldTd = $("tr[user_id='"+id+"'] > td").eq(5);
+			GoldTd.text( addCommas(obj["gold"]) + ' Gold, ' + obj["update"]);
+			GoldTd.css("color","#aaaaaa");
+			GoldTd.css("font-style","italic");
+		});
     }
         
     , bf_needsRecon: function ($pRows) {

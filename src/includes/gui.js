@@ -3,10 +3,9 @@ var GUI = {
     init: function () {
         this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
 
-		// the variable version is a global created by the build script
         this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
+			'html' : 'TOFUTOFU'
 		});
 
 		$('body')
@@ -20,9 +19,12 @@ var GUI = {
 			}
 		});
 
-		$(document).keyup(function(e) {
-			if (e.keyCode != 27) { return; }
-			self.hide();
+		$(document).keyup(function(e){
+			if (e.keyCode === 27) { self.hide(); }
+		});
+		
+		this.$controlbox.click(function() { 
+			alert("Trying to open box");
 		});
     }
 

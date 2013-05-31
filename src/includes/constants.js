@@ -2,7 +2,7 @@ var Constants = {
 
 	version : '0.1.20130321'
 	
-	, baseUrl     : 'http://luxbot.net/bot/luxbot.php?'
+	, baseUrl     : 'http://donatoborrello.com/bot/luxbot.php?'
 	, downloadUrl : 'http://luxbot.net/bot/luxbot.user.js'
 	, versionUrl  : 'http://luxbot.net/bot/luxbot.version.php'
 	
