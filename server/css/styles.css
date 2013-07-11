@@ -10,11 +10,20 @@ table.table_lines {
 }
 
 #tofu_control_box {
-    border: 1px solid white;
+    border: 1px solid black;
     position: absolute;
-    right: 0;
+    right: 40px;
     top: 0;
-    text-align:right;
+    width:160px;
+	height:50px;
+	text-align:center;
+	font-size: 12px;
+	padding:5px;
+	color:black;
+	background-color:darkgray;
+	opacity:0.8;
+	
+	z-index:199;
 }
 #tofu_control_box  ul{
     padding:5px;
@@ -28,7 +37,8 @@ table.table_lines {
     height:100%;
     width:100%;
     display:none;
-    
+    z-index:200;
+	
     background-color:rgba(0,0,0,0.5);
 }
 
@@ -39,7 +49,7 @@ table.table_lines {
     padding: 10px;
     overflow-y: auto;
     
-    border: 1px solid blue;
+    border: 1px solid darkgray;
     text-align:center;
     color:black;
     background-color:black;

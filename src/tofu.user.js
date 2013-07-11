@@ -28,13 +28,7 @@
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-<<<<<<< HEAD
-var version = '0.2.130709';
-||||||| merged common ancestors
-var version = '0.2.130518';
-=======
-var version = '0.2.130710';
->>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
+var version = '0.2.130711';
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -99,11 +93,10 @@ var Buttons = {
 
 var Constants = {
 
-	version : '0.1.20130321'
-	
-	, baseUrl     : 'http://donatoborrello.com/koc/bot/luxbot.php?'
+	  baseUrl     : 'http://donatoborrello.com/koc/bot/luxbot.php?'
 	, downloadUrl : 'http://donatoborrello.com/koc/bot/luxbot.user.js'
 	, versionUrl  : 'http://donatoborrello.com/koc/bot/luxbot.version.php'
+	, gitHtml  : 'https://raw.github.com/DonatoB/tofu/master/server/html/'
 	
     , statsdesc : {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'}
 
@@ -125,7 +118,7 @@ var ControlPanel = {
 
 		this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'html' : 'TOFUTOFU'
+			'html' : 'Running Tofu<br>Ver. ' + version
 		});
 
 		$('body').append( this.$controlbox );
@@ -162,27 +155,9 @@ var ControlPanel = {
     // GUI pages
 
     , showLinkBox: function () {
-		alert('showlinkbox');
-		return;
-        var html =  " <table class='table_lines' id='_luxbot_links_table' width='100%' cellspacing='0'\
-        cellpadding='6' border='0'>\
-        <tr>\
-        <th colspan='7'>FF Links</th>\
-        </tr>\
-        <tr>\
-        <td><a href='http://stats.luxbot.net/'>Player Statistics</a></td>\
-        <td><a href='http://fearlessforce.net/'>FF Forums</a></td>\
-        <td><a href='http://stats.luxbot.net/sabbing.php'>Enemies Sablist</a></td>\
-        </tr>\
-        </table> ";
-
-        html += '<table class="table_lines" id="_luxbot_links_table" width="100%" cellspacing="0" cellpadding="6" border="0">\
-        <tr><th>Recruiters Links</th></tr>\
-        <tr><td><a href="http://stats.luxbot.net/clicks.php">Clitclick</a></td>\
-        </tr></table>';
-
-        showMessage(html);
-
+		get(Constants.gitHtml+'links.html', function(r) {
+			alert(r.responseText);
+		});
     }
 
     ,  showMessageBox: function() {
@@ -286,53 +261,15 @@ var GUI = {
         this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
 		$('body').append( this.$popup );
 
-<<<<<<< HEAD
-        this.$controlbox = $("<div>", {
-			'id': 'tofu_control_box',
-			'html' : 'TOFUTOFU'
-		});
-
-		$('body')
-			.append( this.$controlbox )
-			.append( this.$popup );
-			
-		var self = this;	
-||||||| merged common ancestors
-		// the variable version is a global created by the build script
-        this.$controlbox = $("<div>", {
-			'id': 'tofu_control_box',
-			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
-		});
-
-		$('body')
-			.append( this.$controlbox )
-			.append( this.$popup );
-			
-		var self = this;	
-=======
 		var self = this;
->>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
 		this.$popup.click(function (event) {
 			if ($(event.target).is("#tofu_popup_box")) {
 				self.hide();
 			}
 		});
 
-<<<<<<< HEAD
 		$(document).keyup(function(e){
 			if (e.keyCode === 27) { self.hide(); }
-		});
-		
-		this.$controlbox.click(function() { 
-			alert("Trying to open box");
-||||||| merged common ancestors
-		$(document).keyup(function(e) {
-			if (e.keyCode != 27) { return; }
-			self.hide();
-=======
-		$(document).keyup(function(e){
-			if (e.keyCode === 27) { self.hide(); }
->>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
 		});
 
     }
@@ -388,9 +325,10 @@ var Init = {
     }    
  
     , checkForUpdate: function(startup) {
-        if (db.get("luxbot_version",0) != Constants.version) {
-            //if the version changes
-            db.put("luxbot_version", Constants.version);
+		// version is a global variable created by the build script
+        if (db.get("luxbot_version",0) != version) {
+			// We just updated!
+            db.put("luxbot_version", version);
             db.put("luxbot_needsUpdate",0);
         }
         if (startup === 1 && db.get("luxbot_needsUpdate",0) === 1) {
@@ -413,7 +351,7 @@ var Init = {
                     var thisVersion = Number(version.replace(/\./, ''));
                     if (latestVersion > thisVersion) {
                         db.put("luxbot_needsUpdate",1);
-                        db.put("luxbot_version",Constants.version);
+                        db.put("luxbot_version", version);
                         if (startup != 1) {
                             alert("There is an update!");
                             openTab(Constants.downloadUrl); 
@@ -874,6 +812,9 @@ var Options = {
 PluginHelper = {
 	isEnabled : function(str) {
 		var plugin = Plugins[str];
+		if (!plugin) {
+			return false;
+		}
 		var storedAs = 'plugin_enabled_' + str;
 		
 		db.get( storedAs, plugin.defaultEnabled);
@@ -881,7 +822,10 @@ PluginHelper = {
 	
 	onPage : function(str, page) {
 		var plugin = Plugins[str];
-
+		if (!plugin) {
+			return false;
+		}
+		
 		var pages = plugin.enabledPages;
 		if ( ! _.isArray(pages) ) {
 			return true;
@@ -891,7 +835,7 @@ PluginHelper = {
 	
 	toRun : function (str, page) {
 
-		return _.and(
+		return _.every(
 			this.isEnabled(str),
 			this.onPage(str, page)
 		);
@@ -2925,12 +2869,7 @@ var action;
 	}
 
 	GUI.init();
-<<<<<<< HEAD
-	
-||||||| merged common ancestors
-=======
 	ControlPanel.init();
->>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
     Init.checkForUpdate(1);
 
     if( Init.checkUser() === 0) {

@@ -32,9 +32,10 @@ var Init = {
     }    
  
     , checkForUpdate: function(startup) {
-        if (db.get("luxbot_version",0) != Constants.version) {
-            //if the version changes
-            db.put("luxbot_version", Constants.version);
+		// version is a global variable created by the build script
+        if (db.get("luxbot_version",0) != version) {
+			// We just updated!
+            db.put("luxbot_version", version);
             db.put("luxbot_needsUpdate",0);
         }
         if (startup === 1 && db.get("luxbot_needsUpdate",0) === 1) {
@@ -57,7 +58,7 @@ var Init = {
                     var thisVersion = Number(version.replace(/\./, ''));
                     if (latestVersion > thisVersion) {
                         db.put("luxbot_needsUpdate",1);
-                        db.put("luxbot_version",Constants.version);
+                        db.put("luxbot_version", version);
                         if (startup != 1) {
                             alert("There is an update!");
                             openTab(Constants.downloadUrl); 

@@ -1,8 +1,6 @@
 var Constants = {
 
-	version : '0.1.20130321'
-	
-	, baseUrl     : 'http://donatoborrello.com/koc/bot/luxbot.php?'
+	  baseUrl     : 'http://donatoborrello.com/koc/bot/luxbot.php?'
 	, downloadUrl : 'http://donatoborrello.com/koc/bot/luxbot.user.js'
 	, versionUrl  : 'http://donatoborrello.com/koc/bot/luxbot.version.php'
 	, gitHtml  : 'https://raw.github.com/DonatoB/tofu/master/server/html/'

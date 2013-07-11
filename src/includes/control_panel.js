@@ -4,7 +4,7 @@ var ControlPanel = {
 
 		this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'html' : 'TOFUTOFU'
+			'html' : 'Running Tofu<br>Ver. ' + version
 		});
 
 		$('body').append( this.$controlbox );
@@ -43,7 +43,7 @@ var ControlPanel = {
     , showLinkBox: function () {
 		get(Constants.gitHtml+'links.html', function(r) {
 			alert(r.responseText);
-		}
+		});
     }
 
     ,  showMessageBox: function() {
