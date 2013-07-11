@@ -5,15 +5,9 @@ Plugins['recon_request'] = {
 	
 	, run : function() {
 		this.initReconRequest();
-
-		if (action == "stats") {
-			this.addStatsPageButton();
-		}
 	}
 	
     , initReconRequest : function() {
-        //runs on every page, adds box to upper left of page.
-        
         var x = $('<div id="_luxbot_ReconRequestPopup" style="display:none; position: absolute; top:0px; margin:15px; padding:20px;background-color: black; border: 1px solid green; font-family: arial; font-size: 10px;  overflow: auto;">');
         $("body").append(x);
         x.css("left",(document.body.clientWidth/2)-100 + "px");
@@ -23,14 +17,7 @@ Plugins['recon_request'] = {
 
         this.toggleReconRequestPopup(db.get('reconRequest') !== 0);
     }
-	
-	, addStatsPageButton : function() {
-		var $table = getTableByHeading("User Stats");
 
-		$table.parent().find("table").last().append('<tr><td align=center colspan=4><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td></tr>');	
-		
-		$("#_luxbot_requestRecon").click(this.addRequestRecon);
-	}
     , addRequestRecon: function() {
         var getopponent = document.getElementsByName('defender_id');
         var data = getopponent[0].value;

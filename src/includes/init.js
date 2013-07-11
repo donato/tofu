@@ -1,6 +1,14 @@
 var Init = {
 
-    loadUser : function(kocid) {
+    loadUser : function(action) {
+	
+		var kocid;
+		if (action == 'base') {
+			var html = document.body.innerHTML.split("stats.php?id=");
+			html = html[1];
+			kocid = html.slice(0, html.indexOf('"'));
+		}
+		
         db.init(kocid);
         if (db.id === 0) return false;
                 

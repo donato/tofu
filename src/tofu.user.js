@@ -11,6 +11,7 @@
 // @resource    sidebar_targets          https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_targets.gif
 // @resource    sidebar_sabtargets       https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_sabtargets.gif
 // @resource    sidebar_fakesabtargets   https://raw.github.com/DonatoB/tofu/master/server/img/sidebar_fakesabtargets.gif
+// @resource    icon_sword               https://raw.github.com/DonatoB/tofu/master/server/img/sword.png
 // @resource    styles				     https://raw.github.com/DonatoB/tofu/master/server/css/styles.css
 // @grant       GM_getValue
 // @grant       GM_setValue
@@ -23,10 +24,11 @@
 // @grant       GM_getResourceURL
 // ==/UserScript==
 
+// Silver sword icon from here - http://www.iconfinder.com/iconsets/free-silver-button-icons-2#readme
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-var version = '0.2.130518';
+var version = '0.2.130709';
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -181,10 +183,9 @@ var GUI = {
     init: function () {
         this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
 
-		// the variable version is a global created by the build script
         this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
+			'html' : 'TOFUTOFU'
 		});
 
 		$('body')
@@ -198,9 +199,12 @@ var GUI = {
 			}
 		});
 
-		$(document).keyup(function(e) {
-			if (e.keyCode != 27) { return; }
-			self.hide();
+		$(document).keyup(function(e){
+			if (e.keyCode === 27) { self.hide(); }
+		});
+		
+		this.$controlbox.click(function() { 
+			alert("Trying to open box");
 		});
     }
 
@@ -349,7 +353,15 @@ var GUI = {
 
 var Init = {
 
-    loadUser : function(kocid) {
+    loadUser : function(action) {
+	
+		var kocid;
+		if (action == 'base') {
+			var html = document.body.innerHTML.split("stats.php?id=");
+			html = html[1];
+			kocid = html.slice(0, html.indexOf('"'));
+		}
+		
         db.init(kocid);
         if (db.id === 0) return false;
                 
@@ -574,7 +586,7 @@ var Init = {
     // KoC Utils
     var db = {        
         // This allows it to store info for different koc ids on same pc
-        init :function(kocid) {
+        init: function(kocid) {
             if (kocid === undefined || kocid === null) {
 				this.id = gmGetValue("lux_last_user",0);
 				return;
@@ -582,18 +594,22 @@ var Init = {
 			gmSetValue("lux_last_user", kocid);
 			this.id = kocid;
         },
-        get : function(option,def) {
+        get: function(option,def) {
             option += "_"+this.id;
             var value = gmGetValue(option, def);
             if (option.indexOf('gold_')>0) 
                 value = parseInt(value, 10);
             return value;
         },
+		getInt: function(option, def) {
+			var ret = this.get(option, def);
+			return parseInt(ret, 10);
+		},
         put: function(option,val) {
             option += "_"+this.id;
             gmSetValue(option,val);
         },
-        del : function(option) {
+        del: function(option) {
             option += "_"+this.id;
             gmDeleteValue(option);
         }
@@ -850,6 +866,32 @@ var Options = {
 		});
 		
 		GUI.toggleGUI();
+	}
+}
+PluginHelper = {
+	isEnabled : function(str) {
+		var plugin = Plugins[str];
+		var storedAs = 'plugin_enabled_' + str;
+		
+		db.get( storedAs, plugin.defaultEnabled);
+	},
+	
+	onPage : function(str, page) {
+		var plugin = Plugins[str];
+
+		var pages = plugin.enabledPages;
+		if ( ! _.isArray(pages) ) {
+			return true;
+		}
+		return $.inArray(page, pages);
+	},
+	
+	toRun : function (str, page) {
+
+		return _.and(
+			this.isEnabled(str),
+			this.onPage(str, page)
+		);
 	}
 }
 
@@ -1602,6 +1644,7 @@ Page.base = {
 Page.battlefield = {
 
 	statsLoadedId : undefined,
+	allKocids : [],
 	
     run: function() { 
         this.battlefieldAct();
@@ -1611,15 +1654,19 @@ Page.battlefield = {
     , battlefieldAct: function () {
         var $playerRows = $('tr.player');
          
-        var obj = this.bf_logGold($playerRows);
+        var logInfo = this.logGold($playerRows);
+		this.allKocids = _.keys(logInfo);
 		
-		postLuxJson('&a=battlefield', obj,
+		var self = this;
+		postLuxJson('&a=battlefield', logInfo,
 			function(r) {
-				log("Response: "+r.responseText);
+				var json = $.parseJSON(r.responseText);
+				
+				self.showGold(json);
 			});	
 		return;
 		
-        this.bf_showGold(missedGold);
+		
         this.bf_needsRecon($playerRows);
         this.bf_online($playerRows);
 
@@ -1641,9 +1688,8 @@ Page.battlefield = {
         }
     }
     
-    , bf_logGold: function ($playerRows) {
-        var unseenGold = [];
-		var logstr = {};
+    , logGold: function ($playerRows) {
+		var logInfo = {};
 		
         $playerRows.each(function(index, row) {
 			var $cols = $(row).find('td');
@@ -1651,15 +1697,13 @@ Page.battlefield = {
             if ( !kocid ) { return; }
 
 			var gold = to_int( $cols.eq(5).text() );
-			
-			if (!gold) { unseenGold.push(kocid); }
-			
 			if (name == User.kocnick && User.logself === 0) {
 				gold = '';
 			}
 
-			logstr[kocid] ={
+			logInfo[kocid] ={
 					'name'  : $cols.eq(2).text(),
+					'race'  : $cols.eq(4).text().trim(),
 					'gold'  : gold,
 					'rank'  : to_int($cols.eq(6).text()),
 					'alliance' : $.trim($cols.eq(1).text()),
@@ -1667,35 +1711,20 @@ Page.battlefield = {
 			};
         });
 
-        return {
-			'loginfo' : logstr,
-			'unknownGold' : unseenGold
-		};
+        return logInfo;
     }
     
-    , bf_showGold: function (userstr) {
-        if (userstr === "")
-            return;
-            
-        //cut off trailing comma
-        userstr = userstr.slice(0, -1);
-        
-        
-        getLux('&a=loggold&u=' + userstr,
-            function(r) {
-                //log(r.responseText);
-                var players = r.responseText.split(';');
-                $(players).each(function(index, val) {
-                    if (val !== '') {    
-                        var info = val.split(":");
-                        var GoldTd = $("tr[user_id='"+info[0]+"'] > td").eq(5);
-                        GoldTd.text( info[1] + ' Gold, ' + info[2]);
-                        GoldTd.css("color","#aaaaaa");
-                        GoldTd.css("font-style","italic");
+    , showGold: function (json) {
 
-                    }
-                });
-        });
+		log("ShowGold");
+		log(json);
+		_.each(json, function(obj, id) {
+			log("Trying to load " + id + " " + obj);
+			var GoldTd = $("tr[user_id='"+id+"'] > td").eq(5);
+			GoldTd.text( addCommas(obj["gold"]) + ' Gold, ' + obj["update"]);
+			GoldTd.css("color","#aaaaaa");
+			GoldTd.css("font-style","italic");
+		});
     }
         
     , bf_needsRecon: function ($pRows) {
@@ -2016,11 +2045,16 @@ Page.mercs = {
     
 }
 Page.recruit = {
-    run: function() {
+
+	addRecruitId : function() {
 		var kocid = document.body.innerHTML.between("stats.php?id=", '"');
 		var recruitid= document.URL.substring( document.URL.indexOf("=") +1 );
-
+	
 		getLux('&a=addRecruitid&kocid=' + kocid + '&recruitid='+recruitid);
+	},
+	
+    run: function() {
+		this.addRecruitId();
     }
 }
 
@@ -2605,15 +2639,9 @@ Plugins['recon_request'] = {
 	
 	, run : function() {
 		this.initReconRequest();
-
-		if (action == "stats") {
-			this.addStatsPageButton();
-		}
 	}
 	
     , initReconRequest : function() {
-        //runs on every page, adds box to upper left of page.
-        
         var x = $('<div id="_luxbot_ReconRequestPopup" style="display:none; position: absolute; top:0px; margin:15px; padding:20px;background-color: black; border: 1px solid green; font-family: arial; font-size: 10px;  overflow: auto;">');
         $("body").append(x);
         x.css("left",(document.body.clientWidth/2)-100 + "px");
@@ -2623,14 +2651,7 @@ Plugins['recon_request'] = {
 
         this.toggleReconRequestPopup(db.get('reconRequest') !== 0);
     }
-	
-	, addStatsPageButton : function() {
-		var $table = getTableByHeading("User Stats");
 
-		$table.parent().find("table").last().append('<tr><td align=center colspan=4><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td></tr>');	
-		
-		$("#_luxbot_requestRecon").click(this.addRequestRecon);
-	}
     , addRequestRecon: function() {
         var getopponent = document.getElementsByName('defender_id');
         var data = getopponent[0].value;
@@ -2890,26 +2911,19 @@ var action;
 !function($, document) {
     "use strict";
 
-	var newCSS = gmGetResourceText ("styles");
-	gmAddStyle (newCSS);
+	gmAddStyle( gmGetResourceText ("styles") );
 
+	
     action = Page.getCurrentPage();
-
-	var kocid;
-    if (action == 'base') {
-        var html = document.body.innerHTML.split("stats.php?id=");
-        html = html[1];
-        kocid = html.slice(0, html.indexOf('"'));
-    }
-    
-	// This is a global
-    User = Init.loadUser(kocid);
+	
+    User = Init.loadUser(action);
 	if (!User) {
 		alert ("Please go to your Command Center for initialization");
 		return false;
 	}
 
 	GUI.init();
+	
     Init.checkForUpdate(1);
 
     if( Init.checkUser() === 0) {
@@ -2920,10 +2934,12 @@ var action;
 	if (Page[action]) {
 		Page[action].run();
 	}
+	
 	// Plugins want to be run on all pages. Look at /includes/plugins/...
 	_.each(Plugins, function(plugin) {
-		log("running plugin " + plugin.description);
-		plugin.run();
+		if (PluginHelper.toRun(plugin)) {
+			plugin.run();
+		}
 	});
 
 }(window.jQuery, document);
