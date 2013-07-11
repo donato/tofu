@@ -18,12 +18,7 @@ var action;
 	}
 
 	GUI.init();
-<<<<<<< HEAD
-	
-||||||| merged common ancestors
-=======
 	ControlPanel.init();
->>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
     Init.checkForUpdate(1);
 
     if( Init.checkUser() === 0) {
