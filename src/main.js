@@ -3,7 +3,7 @@
 var User;
 var action;
 
-!function($, document) {
+!function($, _, document) {
     "use strict";
 
 	gmAddStyle( gmGetResourceText ("styles") );
@@ -18,7 +18,12 @@ var action;
 	}
 
 	GUI.init();
+<<<<<<< HEAD
 	
+||||||| merged common ancestors
+=======
+	ControlPanel.init();
+>>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
     Init.checkForUpdate(1);
 
     if( Init.checkUser() === 0) {
@@ -37,4 +42,4 @@ var action;
 		}
 	});
 
-}(window.jQuery, document);
+}(window.jQuery, (this._ || _ || unsafeWindow._), document);

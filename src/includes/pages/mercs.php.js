@@ -4,8 +4,7 @@ Page.mercs = {
     run: function() {
 	
 		var buttonsConstraint = function(val, $row) {
-			log($row);
-			var quantityAvailable = $row.find("td").eq(2).int();
+			var quantityAvailable = $row.find("td").eq(2).text().int();
 			return Math.min(val, quantityAvailable);
 		}
 		

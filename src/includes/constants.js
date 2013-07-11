@@ -2,9 +2,10 @@ var Constants = {
 
 	version : '0.1.20130321'
 	
-	, baseUrl     : 'http://donatoborrello.com/bot/luxbot.php?'
-	, downloadUrl : 'http://luxbot.net/bot/luxbot.user.js'
-	, versionUrl  : 'http://luxbot.net/bot/luxbot.version.php'
+	, baseUrl     : 'http://donatoborrello.com/koc/bot/luxbot.php?'
+	, downloadUrl : 'http://donatoborrello.com/koc/bot/luxbot.user.js'
+	, versionUrl  : 'http://donatoborrello.com/koc/bot/luxbot.version.php'
+	, gitHtml  : 'https://raw.github.com/DonatoB/tofu/master/server/html/'
 	
     , statsdesc : {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'}
 

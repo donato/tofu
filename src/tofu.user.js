@@ -28,7 +28,13 @@
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
+<<<<<<< HEAD
 var version = '0.2.130709';
+||||||| merged common ancestors
+var version = '0.2.130518';
+=======
+var version = '0.2.130710';
+>>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -95,9 +101,9 @@ var Constants = {
 
 	version : '0.1.20130321'
 	
-	, baseUrl     : 'http://donatoborrello.com/bot/luxbot.php?'
-	, downloadUrl : 'http://luxbot.net/bot/luxbot.user.js'
-	, versionUrl  : 'http://luxbot.net/bot/luxbot.version.php'
+	, baseUrl     : 'http://donatoborrello.com/koc/bot/luxbot.php?'
+	, downloadUrl : 'http://donatoborrello.com/koc/bot/luxbot.user.js'
+	, versionUrl  : 'http://donatoborrello.com/koc/bot/luxbot.version.php'
 	
     , statsdesc : {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'}
 
@@ -113,6 +119,102 @@ var Constants = {
 	
 	, options : [ 'logself', 'scrollbattlelog', 'turnclock', 'commandCenterStats', 'targets', 'fakesabtargets', 'goldprojection', 'armorygraph', 'armorydiff']
 }
+var ControlPanel = {
+
+    init: function () {
+
+		this.$controlbox = $("<div>", {
+			'id': 'tofu_control_box',
+			'html' : 'TOFUTOFU'
+		});
+
+		$('body').append( this.$controlbox );
+
+
+		this.$controlbox.click( this.showControlPanel );
+    }
+
+
+    , showControlPanel: function() {
+		GUI.displayHtml('<div id="tofu_popup_navbar"><ul></ul></div><div id="tofu_popup_content"></div>');
+		
+		var panelTabs = [
+			// 'Tab Text', 'id', callback
+			['Show links', 'showlinkbox', ControlPanel.showLinkBox],
+			['Farmlist Setup','showfarmlist', ControlPanel.showFarmList],
+			['Check for update', 'checkupdate', Init.checkForUpdate]
+		];
+		
+		var $nav = $('#tofu_popup_navbar > ul');
+		_.each(panelTabs, function(arr) {
+			$nav.append("<li><a href='javascript:void(0);' id='"+arr[1]+"'>"+arr[0]+"</a></li>");
+			$('#'+arr[1]).click(arr[2]);
+		});
+    }
+
+
+
+    ,  toggle: function() {
+        var $d = $("_luxbot_darken").toggle();
+    }
+
+
+    // GUI pages
+
+    , showLinkBox: function () {
+		alert('showlinkbox');
+		return;
+        var html =  " <table class='table_lines' id='_luxbot_links_table' width='100%' cellspacing='0'\
+        cellpadding='6' border='0'>\
+        <tr>\
+        <th colspan='7'>FF Links</th>\
+        </tr>\
+        <tr>\
+        <td><a href='http://stats.luxbot.net/'>Player Statistics</a></td>\
+        <td><a href='http://fearlessforce.net/'>FF Forums</a></td>\
+        <td><a href='http://stats.luxbot.net/sabbing.php'>Enemies Sablist</a></td>\
+        </tr>\
+        </table> ";
+
+        html += '<table class="table_lines" id="_luxbot_links_table" width="100%" cellspacing="0" cellpadding="6" border="0">\
+        <tr><th>Recruiters Links</th></tr>\
+        <tr><td><a href="http://stats.luxbot.net/clicks.php">Clitclick</a></td>\
+        </tr></table>';
+
+        showMessage(html);
+
+    }
+
+    ,  showMessageBox: function() {
+        if (messages === undefined) {
+            return;
+        }
+        var content = '';
+        var i;
+        for (i = 0; i < messages.length; i++) {
+            var y = messages[i].split('|');
+            content += '<tr id="_luxbot_message_' + y[3] + '"><td><a href="javascript:void(0);" name="' + y[3] + '">+</a></td><td>' + y[1] + '</td><td>' + y[0] + '</td><td>' + y[2] + '</td></tr>';
+        }
+
+        GUI.showMessage('<h3>Messages</h3><table id="_luxbot_messages" width="100%"><tr><th>Show</th><th>Sender</th><th>Subject</th><th>Date</th></tr>' + content + '</table>');
+        document.getElementById("_luxbot_guibox").addEventListener('click', GUI.showMessageDetails, true);
+    }
+
+    , showMessageDetails: function(event) {
+        if (event.target.name !== undefined) {
+
+            getLux('&a=getmessage&id=' + String(event.target.name),
+               function(r) {
+                    var q = document.getElementById('_luxbot_message_' + String(event.target.name));
+                    GUI.showMessage('<h3>Messages</h3><table id="_luxbot_messages" width="100%"><tr><th>From</th><td>' + q.childNodes[1].innerHTML + '</td></tr><tr><th>Subject</th><td>' + q.childNodes[2].innerHTML + '</td></tr><tr><th>Date</th><td>' + q.childNodes[3].innerHTML + '</td></tr><tr><th>Message</th><td>' + r.responseText + '</td></tr>', GUI.showMessageBox);
+                    addCSS('#_luxbot_messages {border-spacing:4px;}\
+                    #_luxbot_messages th{width:100px;padding:6px;}');
+            });
+        }
+    }
+    
+}
+
     function log(s)               { GM_log(s); console.log(s);   }
     function openTab(t)           { GM_openInTab(t); }
     function gmSetValue(t, t2)    { GM_setValue(t, "" + t2 + ""); } // Convert to string for storage of large ints
@@ -179,10 +281,12 @@ var Constants = {
 		log(url , data);
     }
 var GUI = {
-	
+
     init: function () {
         this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
+		$('body').append( this.$popup );
 
+<<<<<<< HEAD
         this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
 			'html' : 'TOFUTOFU'
@@ -193,19 +297,44 @@ var GUI = {
 			.append( this.$popup );
 			
 		var self = this;	
+||||||| merged common ancestors
+		// the variable version is a global created by the build script
+        this.$controlbox = $("<div>", {
+			'id': 'tofu_control_box',
+			'html' : '<ul><li>ToFu Version</li><li>Version: '+version+'</li></ul> </div>'
+		});
+
+		$('body')
+			.append( this.$controlbox )
+			.append( this.$popup );
+			
+		var self = this;	
+=======
+		var self = this;
+>>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
 		this.$popup.click(function (event) {
 			if ($(event.target).is("#tofu_popup_box")) {
 				self.hide();
 			}
 		});
 
+<<<<<<< HEAD
 		$(document).keyup(function(e){
 			if (e.keyCode === 27) { self.hide(); }
 		});
 		
 		this.$controlbox.click(function() { 
 			alert("Trying to open box");
+||||||| merged common ancestors
+		$(document).keyup(function(e) {
+			if (e.keyCode != 27) { return; }
+			self.hide();
+=======
+		$(document).keyup(function(e){
+			if (e.keyCode === 27) { self.hide(); }
+>>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
 		});
+
     }
 
     , displayText: function(tx) {
@@ -215,140 +344,14 @@ var GUI = {
     , displayHtml: function(html) {
 		this.hide();
         this.$popup.append($("<div>").append(html));
-        this.$popup.show();  
+        this.$popup.show();
     }
 
 	, hide: function() {
 		this.$popup.hide();
 		this.$popup.children().remove();
 	}
-	
-    /*
-    , showControlPanel() {
 
-        this.createGUIBox();
-        
-        this.addGUILink('Open Control Panel<br>' + version, this.toggle, "#_luxbot_gui");
-        this.addGUILink('Show links', this.showLinkBox, "#_luxbot_nav_div");
-        this.addGUILink('Farmlist Setup', this.showFarmList, "#_luxbot_nav_div");
-        this.addGUILink('Check for update', Init.checkForUpdate, "#_luxbot_nav_div");
-        
-        
-        var q = document.getElementsByTagName('td');
-        var i, t;
-        for (i = 0; i < q.length; i++) {
-            if (q[i].className == 'menu_cell' && q[i].innerHTML.indexOf('username') == -1) {
-                if (checkOption('option_sabTargets')) {
-                    t = q[i].childNodes[1].insertRow(3);
-                    t.innerHTML = '<a href="javascript:void(0);" id="_luxbot_sablist_nav"><img src="'+ gmGetResourceURL("sidebar_sabtargets")+'" /></a>';
-                    document.getElementById("_luxbot_sablist_nav").addEventListener('click', sabTargetsButton, true);
-                }
-                if (checkOption('option_Targets')) {
-                    t = q[i].childNodes[1].insertRow(3);
-                    t.innerHTML = '<a href="javascript:void(0);" id="_luxbot_farmlist_nav"><img src="'+ gmGetResourceURL("sidebar_targets")+'" /></a>';
-                    document.getElementById("_luxbot_farmlist_nav").addEventListener('click', showFarmList, true);
-                }
-                
-                if (checkOption('option_fakeSabTargets')) {
-                    t = q[i].childNodes[1].insertRow(3);
-                    t.innerHTML = '<a href="javascript:void(0);" id="_luxbot_fakesablist_nav"><img src="'+ gmGetResourceURL("sidebar_fakesabtargets")+'" /></a>';
-                    document.getElementById("_luxbot_fakesablist_nav").addEventListener('click', showFakeSabList, true);
-                }
-                break;
-            }
-        } 
-    }
-
-    , createGUIBox: function() {
-        if (widget === undefined) {
-            
-            var x = document.createElement('div');
-            x.id = '_luxbot_darken';
-            document.body.appendChild(x);
-
-            
-            var q = document.createElement('div');
-            q.id = '_luxbot_guibox';
-            document.body.appendChild(q);
-                            
-            q.innerHTML = '<button id="_luxbot_closenav">X</button><div id="_luxbot_nav_div"><ul id="_luxbot_nav"></ul></div><div style="clear:both;"></div><div id="_luxbot_content"></div>';
-            document.getElementById("_luxbot_closenav").addEventListener('click', this.toggle, true);
-            document.getElementById("_luxbot_darken").addEventListener('click', this.toggle, true);
-            
-            guicontent = document.getElementById('_luxbot_content');
-            
-            this.toggle();
-        }
-        
-        guicontent.innerHTML = '<h1>This is the Control Panel for LuXBOT</h1>Please select a task from above!<br /><button id="_luxbot_close">Close</button>';
-        document.getElementById('_luxbot_nav_div').style.display = 'block';
-        document.getElementById("_luxbot_close").addEventListener('click', this.toggle, true);
-    }
-
-
-    ,  toggle: function() {
-        var $d = $("_luxbot_darken").toggle()
-    }
-
-    , addGUILink: function(text, event, parent) {
-        var id = '_luxbot_' + event.name;
-        $(parent+">ul").append("<li><a href='javascript:void(0);' id='"+id+"'>"+text+"</a></li>");
-        $("#"+id).click(event);
-    }
-
-    // GUI pages
-
-    , showLinkBox: function () {
-
-        var html =  " <table class='table_lines' id='_luxbot_links_table' width='100%' cellspacing='0'\
-        cellpadding='6' border='0'>\
-        <tr>\
-        <th colspan='7'>FF Links</th>\
-        </tr>\
-        <tr>\
-        <td><a href='http://stats.luxbot.net/'>Player Statistics</a></td>\
-        <td><a href='http://fearlessforce.net/'>FF Forums</a></td>\
-        <td><a href='http://stats.luxbot.net/sabbing.php'>Enemies Sablist</a></td>\
-        </tr>\
-        </table> ";
-
-        html += '<table class="table_lines" id="_luxbot_links_table" width="100%" cellspacing="0" cellpadding="6" border="0">\
-        <tr><th>Recruiters Links</th></tr>\
-        <tr><td><a href="http://stats.luxbot.net/clicks.php">Clitclick</a></td>\
-        </tr></table>';
-
-        showMessage(html);
-
-    }
-
-    ,  showMessageBox: function() {
-        if (messages === undefined) {
-            return;
-        }
-        var content = '';
-        var i;
-        for (i = 0; i < messages.length; i++) {
-            var y = messages[i].split('|');
-            content += '<tr id="_luxbot_message_' + y[3] + '"><td><a href="javascript:void(0);" name="' + y[3] + '">+</a></td><td>' + y[1] + '</td><td>' + y[0] + '</td><td>' + y[2] + '</td></tr>';
-        }
-        
-        GUI.showMessage('<h3>Messages</h3><table id="_luxbot_messages" width="100%"><tr><th>Show</th><th>Sender</th><th>Subject</th><th>Date</th></tr>' + content + '</table>');
-        document.getElementById("_luxbot_guibox").addEventListener('click', GUI.showMessageDetails, true);
-    }
-
-    , showMessageDetails: function(event) {
-        if (event.target.name !== undefined) {
-            
-            getLux('&a=getmessage&id=' + String(event.target.name),
-               function(r) {
-                    var q = document.getElementById('_luxbot_message_' + String(event.target.name));
-                    GUI.showMessage('<h3>Messages</h3><table id="_luxbot_messages" width="100%"><tr><th>From</th><td>' + q.childNodes[1].innerHTML + '</td></tr><tr><th>Subject</th><td>' + q.childNodes[2].innerHTML + '</td></tr><tr><th>Date</th><td>' + q.childNodes[3].innerHTML + '</td></tr><tr><th>Message</th><td>' + r.responseText + '</td></tr>', GUI.showMessageBox);
-                    addCSS('#_luxbot_messages {border-spacing:4px;}\
-                    #_luxbot_messages th{width:100px;padding:6px;}');
-            });
-        }
-    }
-    */
 }
 
 var Init = {
@@ -2034,8 +2037,7 @@ Page.mercs = {
     run: function() {
 	
 		var buttonsConstraint = function(val, $row) {
-			log($row);
-			var quantityAvailable = $row.find("td").eq(2).int();
+			var quantityAvailable = $row.find("td").eq(2).text().int();
 			return Math.min(val, quantityAvailable);
 		}
 		
@@ -2908,7 +2910,7 @@ Plugins['targets'] = {
 var User;
 var action;
 
-!function($, document) {
+!function($, _, document) {
     "use strict";
 
 	gmAddStyle( gmGetResourceText ("styles") );
@@ -2923,7 +2925,12 @@ var action;
 	}
 
 	GUI.init();
+<<<<<<< HEAD
 	
+||||||| merged common ancestors
+=======
+	ControlPanel.init();
+>>>>>>> 52cffa32e464635e47c194b0ebc449f8c05bb2e3
     Init.checkForUpdate(1);
 
     if( Init.checkUser() === 0) {
@@ -2942,4 +2949,4 @@ var action;
 		}
 	});
 
-}(window.jQuery, document);
+}(window.jQuery, (this._ || _ || unsafeWindow._), document);
