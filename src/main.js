@@ -3,7 +3,7 @@
 var User;
 var action;
 
-!function($, document) {
+!function($, _, document) {
     "use strict";
 
 	var newCSS = gmGetResourceText ("styles");
@@ -26,6 +26,7 @@ var action;
 	}
 
 	GUI.init();
+	ControlPanel.init();
     Init.checkForUpdate(1);
 
     if( Init.checkUser() === 0) {
@@ -42,4 +43,4 @@ var action;
 		plugin.run();
 	});
 
-}(window.jQuery, document);
+}(window.jQuery, (this._ || _ || unsafeWindow._), document);

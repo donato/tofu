@@ -25,7 +25,7 @@ File.open("tofu.user.js", "w") { |tofu|
 FileUtils.cp 'tofu.user.js', install_dir+"tofu.user.js"
 
 
-puts "Verifying included modules...\n"
+puts "\nVerifying included modules...\n"
 includes.each do |f|
     output =  `jshint #{f}`
     if output.size > 0
