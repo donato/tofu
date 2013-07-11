@@ -416,7 +416,7 @@ var Init = {
                         
                         db.put('kocnick', user[1]);
                         db.put('kocid', user[0]);
-                        var password = HEX.hex_md5(f_pass);
+                        var password = hex_md5(f_pass);
                         db.put('forumPass', password);
                         db.put('forumName', f_user);
                         initVB();
