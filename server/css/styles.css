@@ -79,6 +79,10 @@ table.table_lines { margin-top:5px; }
     color: #B3FFF8;
 }
 
+.supplemental {
+	font-size:10px;
+}
+
 #_lux_sabbed_popup {
     background-color: black;
     border-color: red darkred darkred red;

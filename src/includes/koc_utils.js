@@ -20,6 +20,10 @@
 			var ret = this.get(option, def);
 			return parseInt(ret, 10);
 		},
+		getFloat: function(option, def) {
+			var ret = this.get(option, def);
+			return parseFloat(ret, 10);
+		},
         put: function(option,val) {
             option += "_"+this.id;
             gmSetValue(option,val);
@@ -112,3 +116,100 @@
         
         return vals
     }
+
+	function raceBonus(stat, race) {
+		race = race || db.get('race');
+		
+		switch(stat) {
+			case 'income' : 
+				if (race =='humans') { return 1.3; }
+				if (race =='dwarves') { return 1.15; }
+				break;
+			case 'sa' : 
+				if (race =='orcs') { return 1.35; }
+				break;
+			case 'da' : 
+				if (race =='orcs') { return 1.2; }
+				if (race =='dwarves') { return 1.4; }
+				break;
+			case 'spy' : 
+				if (race =='humans') { return 1.35; }
+				if (race =='elves') { return 1.45; }
+				break;
+			case 'sentry' : 
+				if (race =='undead') { return 1.35; }
+				break;
+		}
+		return 1;
+	}
+
+
+	function fortBonus(fort) {
+		fort = fort || db.get('fort');
+
+		var cb = 0;
+		if (fort == "Camp") cb = 0;
+		if (fort == "Stockade") cb = 1;
+		if (fort == "Rabid") cb = 2;
+		if (fort == "Walled") cb = 3;
+		if (fort == "Towers") cb = 4;
+		if (fort == "Battlements") cb = 5;
+		if (fort == "Portcullis") cb = 6;
+		if (fort == "Boiling Oil") cb = 7;
+		if (fort == "Trenches") cb = 8;
+		if (fort == "Moat") cb = 9;
+		if (fort == "Drawbridge") cb = 10;
+		if (fort == "Fortress") cb = 11;
+		if (fort == "Stronghold") cb = 12;
+		if (fort == "Palace") cb = 13;
+		if (fort == "Keep") cb = 14;
+		if (fort == "Citadel") cb = 15;
+		if (fort == "Hand of God") cb = 16;
+		cb = Math.pow(1.25,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+
+	function siegeBonus(siege){
+		siege = siege || db.get('siege');
+
+		var cb = 0;
+		if (siege == "None") cb = 0;
+		if (siege == "Flaming Arrows") cb = 1;
+		if (siege == "Ballistas") cb = 2;
+		if (siege == "Battering Rams") cb = 3;
+		if (siege == "Ladders") cb = 4;
+		if (siege == "Trojan") cb = 5;
+		if (siege == "Catapults") cb = 6;
+		if (siege == "War Elephants") cb = 7;
+		if (siege == "Siege Towers") cb = 8;
+		if (siege == "Trebuchets") cb = 9;
+		if (siege == "Black Powder") cb = 10;
+		if (siege == "Sappers") cb = 11;
+		if (siege == "Dynamite") cb = 12;
+		if (siege == "Greek Fire") cb = 13;
+		if (siege == "Cannons") cb = 14;
+		cb = Math.pow(1.3,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+	
+	function covertBonus(level) {
+		level = level || db.getInt('covertlevel',0);
+		
+		return Math.pow(1.6, level);
+	}
+	
+	function upgradeBonus(type, option) {
+		switch (type) {
+			case 'sa':
+				return siegeBonus(option);
+			case 'da':
+				return fortBonus(option);
+			case 'spy':
+			case 'sentry':
+				return covertBonus(option);
+		}
+		return 1;
+	}
+			

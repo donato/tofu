@@ -28,7 +28,7 @@
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-var version = '0.2.130711';
+var version = '0.2.130722';
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -118,7 +118,7 @@ var ControlPanel = {
 
 		this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'html' : 'Running Tofu<br>Ver. ' + version
+			'html' : 'Open Control Panel<br>Tofu V.' + version
 		});
 
 		$('body').append( this.$controlbox );
@@ -472,7 +472,7 @@ var Init = {
     };
 	
     String.prototype.float = function() {
-        var r = parseFloat(this.replace(/[^0-9\.]*/g,''),10);
+        var r = parseFloat(this.replace(/[^0-9\.\-]*/g,''),10);
         if (isNaN(r)) r=-1;
         return r;
     };
@@ -482,7 +482,7 @@ var Init = {
     }
 
     function to_int(str) {
-        str = str.replace(/[^0-9\.]/g, '');
+        str = str.replace(/[^0-9\.\-]/g, '');
         if (str === '') {
             return '';
         }
@@ -545,6 +545,10 @@ var Init = {
 		getInt: function(option, def) {
 			var ret = this.get(option, def);
 			return parseInt(ret, 10);
+		},
+		getFloat: function(option, def) {
+			var ret = this.get(option, def);
+			return parseFloat(ret, 10);
 		},
         put: function(option,val) {
             option += "_"+this.id;
@@ -638,6 +642,103 @@ var Init = {
         
         return vals
     }
+
+	function raceBonus(stat, race) {
+		race = race || db.get('race');
+		
+		switch(stat) {
+			case 'income' : 
+				if (race =='humans') { return 1.3; }
+				if (race =='dwarves') { return 1.15; }
+				break;
+			case 'sa' : 
+				if (race =='orcs') { return 1.35; }
+				break;
+			case 'da' : 
+				if (race =='orcs') { return 1.2; }
+				if (race =='dwarves') { return 1.4; }
+				break;
+			case 'spy' : 
+				if (race =='humans') { return 1.35; }
+				if (race =='elves') { return 1.45; }
+				break;
+			case 'sentry' : 
+				if (race =='undead') { return 1.35; }
+				break;
+		}
+		return 1;
+	}
+
+
+	function fortBonus(fort) {
+		fort = fort || db.get('fort');
+
+		var cb = 0;
+		if (fort == "Camp") cb = 0;
+		if (fort == "Stockade") cb = 1;
+		if (fort == "Rabid") cb = 2;
+		if (fort == "Walled") cb = 3;
+		if (fort == "Towers") cb = 4;
+		if (fort == "Battlements") cb = 5;
+		if (fort == "Portcullis") cb = 6;
+		if (fort == "Boiling Oil") cb = 7;
+		if (fort == "Trenches") cb = 8;
+		if (fort == "Moat") cb = 9;
+		if (fort == "Drawbridge") cb = 10;
+		if (fort == "Fortress") cb = 11;
+		if (fort == "Stronghold") cb = 12;
+		if (fort == "Palace") cb = 13;
+		if (fort == "Keep") cb = 14;
+		if (fort == "Citadel") cb = 15;
+		if (fort == "Hand of God") cb = 16;
+		cb = Math.pow(1.25,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+
+	function siegeBonus(siege){
+		siege = siege || db.get('siege');
+
+		var cb = 0;
+		if (siege == "None") cb = 0;
+		if (siege == "Flaming Arrows") cb = 1;
+		if (siege == "Ballistas") cb = 2;
+		if (siege == "Battering Rams") cb = 3;
+		if (siege == "Ladders") cb = 4;
+		if (siege == "Trojan") cb = 5;
+		if (siege == "Catapults") cb = 6;
+		if (siege == "War Elephants") cb = 7;
+		if (siege == "Siege Towers") cb = 8;
+		if (siege == "Trebuchets") cb = 9;
+		if (siege == "Black Powder") cb = 10;
+		if (siege == "Sappers") cb = 11;
+		if (siege == "Dynamite") cb = 12;
+		if (siege == "Greek Fire") cb = 13;
+		if (siege == "Cannons") cb = 14;
+		cb = Math.pow(1.3,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+	
+	function covertBonus(level) {
+		level = level || db.getInt('covertlevel',0);
+		
+		return Math.pow(1.6, level);
+	}
+	
+	function upgradeBonus(type, option) {
+		switch (type) {
+			case 'sa':
+				return siegeBonus(option);
+			case 'da':
+				return fortBonus(option);
+			case 'spy':
+			case 'sentry':
+				return covertBonus(option);
+		}
+		return 1;
+	}
+			
     function makeCollapsable(action) {
     
         function collapseTable(table) {
@@ -1493,19 +1594,54 @@ Page.base = {
         this.commandCenterStats();
         makeCollapsable(action);
     }
-    
-    , commandCenterStats: function() {
-        var $tbody = $("#tbody");
+      
+    , basePage: function() {
 
-        if (checkOption('option_commandCenterStats'))
-            $tbody.prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>");//prepend(tab);
-        else
-            $("tr:contains('Recent Attacks'):last").parent().parent().before("<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>");//prepend(tab);
-            getLux("&a=sabstats",
-             function(r) { $("#ff-load").html(""+r.responseText); 
-        }); 
+        var stable = $("table:contains('Military Effectiveness')").last();
+        var sa = $(stable).find("tr:contains('Strike Action'):first>td:eq(1)").text();
+        var da = $(stable).find("tr:contains('Defensive Action'):first>td:eq(1)").text();
+        var spy = $(stable).find("tr:contains('Spy Rating'):first>td:eq(1)").text();
+        var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
+
+        
+        stable = $("table:contains('Military Overview')").last();
+        var fort = $(stable).find("tr:contains('Fortification'):first>td:eq(1)").text();
+        var siege = $(stable).find("tr:contains('Siege Technology'):first>td:eq(1)").text();
+        var economy = $(stable).find("tr:contains('Economy'):first>td:eq(1)").text();
+        var technology = $(stable).find("tr:contains('Technology'):last>td:eq(1)").text();
+        var conscription = $(stable).find("tr:contains('Conscription'):first>td:eq(1)").text();
+        conscription = conscription.substr(0, conscription.indexOf(' soldiers'));
+        var tff = $("body").find("tr:contains('Total Fighting Force'):last>td:eq(1)").text();
+        var turns = $(stable).find("tr:contains('Game Turns'):first>td:eq(1)").text();
+        turns = turns.substr(0,turns.indexOf(" /"));
+        var covertlevel = $(stable).find("tr:contains('Covert Level'):first>td:eq(1)").text();
+        var income = $(stable).find("tr:contains('Projected Income'):first>td:eq(1)").text();
+        income = income.substr(0,income.indexOf(" Gold")).int();
+
+        var officers = Page.stats.stats_getOfficers(false);
+
+        var bonus = textBetween($(".officers>tbody>tr:last").text(), "(x ",")");
+        
+		// this will help for paging through officers and recording their info
+       // nav();
+        
+        db.put('sa',sa.int());
+        db.put('da',da.int());
+        db.put('spy',spy.int());
+        db.put('sentry',sentry.int());
+        db.put('income',income.int() + "");
+		db.put('technology', technology.float() + "");
+        db.put('tff',tff.int());
+        db.put('bonus',bonus);
+        db.put('fort', fort);
+        db.put('siege',siege);
+        db.put('covertlevel', covertlevel);
+ 
+        db.put('race', textBetween($("head>link").eq(3).attr("href"),"css/",".css").toLowerCase());
+ 
+        logBase(sa.int() + ";"+da.int()+";"+spy.int()+";"+sentry.int(), fort+";"+siege+";"+economy+";"+technology+";"+conscription.int()+";"+turns.int()+";"+covertlevel+";"+bonus, officers);
     }
-
+    
     , baseLayout: function() {
         var $tbody = $("td.content > table > tbody").last()
         $tbody.attr("id","tbody");
@@ -1536,57 +1672,70 @@ Page.base = {
                         .remove()
         var $officers = getTableByHeading("Officers")
                         .remove()
+        $("#base_right_col").prepend('<br /><br />')
+        $("#base_right_col").prepend( this.tbgStats() )
+        $("#base_right_col").prepend('<br /><br />')
         $("#base_right_col").prepend($military_overview )
+        $("#base_right_col").prepend('<br /><br />')
         $("#base_right_col").prepend($officers )
+        $("#base_right_col").prepend('<br /><br />')
         $("#base_right_col").prepend($military_effectiveness )
         $("#base_left_col").append($recent_attacks )
-        // $("#base_left_col").append($grow_army ) // Causes errors?
+        // $("td.content").append($grow_army ) // Causes errors?
         $(".user_info").after($commander_notice)
         
         //if player is blocking ads, this adds some extra space.
          $("td.content").parent().children("td").eq(2).attr("width", "50");
     }
-      
-    , basePage: function() {
-        db.put('race', textBetween($("head>link").eq(3).attr("href"),"css/",".css"));
+	
+    , commandCenterStats: function() {
+        var $tbody = $("#tbody");
 
-        var stable = $("table:contains('Military Effectiveness')").last();
-        var sa = $(stable).find("tr:contains('Strike Action'):first>td:eq(1)").text();
-        var da = $(stable).find("tr:contains('Defensive Action'):first>td:eq(1)").text();
-        var spy = $(stable).find("tr:contains('Spy Rating'):first>td:eq(1)").text();
-        var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
-
-        
-        stable = $("table:contains('Military Overview')").last();
-        var fort = $(stable).find("tr:contains('Fortification'):first>td:eq(1)").text();
-        var siege = $(stable).find("tr:contains('Siege Technology'):first>td:eq(1)").text();
-        var economy = $(stable).find("tr:contains('Economy'):first>td:eq(1)").text();
-        var technology = $(stable).find("tr:contains('Technology'):last>td:eq(1)").text();
-        var conscription = $(stable).find("tr:contains('Conscription'):first>td:eq(1)").text();
-        conscription = conscription.substr(0, conscription.indexOf(' soldiers'));
-        var tff = $("body").find("tr:contains('Total Fighting Force'):last>td:eq(1)").text();
-        var turns = $(stable).find("tr:contains('Game Turns'):first>td:eq(1)").text();
-        turns = turns.substr(0,turns.indexOf(" /"));
-        var covertlevel = $(stable).find("tr:contains('Covert Level'):first>td:eq(1)").text();
-        var income = $(stable).find("tr:contains('Projected Income'):first>td:eq(1)").text();
-        income = income.substr(0,income.indexOf(" Gold")).int();
-
-        var officers = Page.stats.stats_getOfficers(false);
-
-        var bonus = textBetween($(".officers>tbody>tr:last").text(), "(x ",")");
-        
-		// this will help for paging through officers and recording their info
-       // nav();
-        
-        db.put('sa',sa);
-        db.put('da',da);
-        db.put('spy',spy);
-        db.put('sentry',sentry);
-        db.put('income',income + "");
-        db.put('tff',tff);
-        
-        logBase(sa.int() + ";"+da.int()+";"+spy.int()+";"+sentry.int(), fort+";"+siege+";"+economy+";"+technology+";"+conscription.int()+";"+turns.int()+";"+covertlevel+";"+bonus, officers);
+        if (checkOption('option_commandCenterStats'))
+            $tbody.prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>")
+        else
+            $("tr:contains('Recent Attacks'):last").parent().parent().before("<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>");
+            getLux("&a=sabstats",
+             function(r) { $("#ff-load").html(""+r.responseText); 
+        }); 
     }
+
+	, tbgStats: function() {
+		function percentFormat(value) {
+			return Math.round(value*1000)/1000;
+		}
+		
+		var income = db.getInt('income');
+		var tech = parseFloat(db.get('technology'));
+		var offieBonus = parseFloat(db.getFloat('bonus'));
+
+		var Label = ["Strike Action", "Defensive Action", "Spy", "Sentry"];
+		var costs = [450000, 200000, 1000000, 1000000];
+		var strengths = [600, 256, 1000, 1000]
+		
+		var html = "";
+		_.each(['sa','da','spy','sentry'], function(stat, i) {
+			var multiplier = upgradeBonus(stat) * raceBonus(stat) * tech * offieBonus;
+			var hourlyValue = (income * 60 / costs[i]) * strengths[i] * multiplier;
+			
+			var currentStat = db.getInt(stat);
+			log(currentStat);
+			html += '  <tr>'
+				  + '    <td> ' + Label[i] + '&nbsp;</td><td>' + addCommas(Math.floor(hourlyValue)) +' ('+percentFormat(hourlyValue/currentStat) + '%) &nbsp;</td>'
+				  + '    <td>'+ addCommas(Math.floor(24 * hourlyValue)) +' ('+percentFormat((24*hourlyValue)/currentStat) + '%) </td>'
+				  + '  </tr>';
+		});
+		
+		return '<table class="table_lines" width="100%" cellpadding="6">'
+			 + '  <tbody>' 
+			 + '    <tr><th colspan=3>Investment Profile </th></tr>'
+			 + '    <tr><th class="subh">&nbsp;&nbsp;&nbsp;</th><th class="subh">1 Hour&nbsp;</th><th class="subh">1 Day</th></tr>' 
+			 + html
+		     + '  </tbody>'
+		     + '</table>';
+	}
+
+
 }
 Page.battlefield = {
 

@@ -20,7 +20,7 @@
     };
 	
     String.prototype.float = function() {
-        var r = parseFloat(this.replace(/[^0-9\.]*/g,''),10);
+        var r = parseFloat(this.replace(/[^0-9\.\-]*/g,''),10);
         if (isNaN(r)) r=-1;
         return r;
     };
@@ -30,7 +30,7 @@
     }
 
     function to_int(str) {
-        str = str.replace(/[^0-9\.]/g, '');
+        str = str.replace(/[^0-9\.\-]/g, '');
         if (str === '') {
             return '';
         }
