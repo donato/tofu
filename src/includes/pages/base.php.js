@@ -1,7 +1,3 @@
-    
-    //
-    // Command Center Functions
-    //
 Page.base = {
     run: function() {
         this.basePage();
@@ -18,7 +14,6 @@ Page.base = {
         var spy = $(stable).find("tr:contains('Spy Rating'):first>td:eq(1)").text();
         var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
 
-        
         stable = $("table:contains('Military Overview')").last();
         var fort = $(stable).find("tr:contains('Fortification'):first>td:eq(1)").text();
         var siege = $(stable).find("tr:contains('Siege Technology'):first>td:eq(1)").text();
@@ -117,7 +112,10 @@ Page.base = {
 
 	, tbgStats: function() {
 		function percentFormat(value) {
-			return Math.round(value*1000)/1000;
+			value*=100;
+			var decimalPlaces = Math.min(2, Math.floor(Math.log10(value)) );
+			
+			return (Math.round(value*1000)/1000).toFixed(2-decimalPlaces);
 		}
 		
 		var income = db.getInt('income');
@@ -131,10 +129,12 @@ Page.base = {
 		var html = "";
 		_.each(['sa','da','spy','sentry'], function(stat, i) {
 			var multiplier = upgradeBonus(stat) * raceBonus(stat) * tech * offieBonus;
+			
+			if (stat == 'sa' || stat =='da') { multiplier *= 5; }
+
 			var hourlyValue = (income * 60 / costs[i]) * strengths[i] * multiplier;
 			
 			var currentStat = db.getInt(stat);
-			log(currentStat);
 			html += '  <tr>'
 				  + '    <td> ' + Label[i] + '&nbsp;</td><td>' + addCommas(Math.floor(hourlyValue)) +' <span class="supplemental">('+percentFormat(hourlyValue/currentStat) + '%)</span> &nbsp;</td>'
 				  + '    <td>'+ addCommas(Math.floor(24 * hourlyValue)) +' <span class="supplemental">('+percentFormat((24*hourlyValue)/currentStat) + '%)</span> </td>'

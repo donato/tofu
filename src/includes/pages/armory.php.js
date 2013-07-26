@@ -126,9 +126,9 @@ Page.armory = {
                 if (diff === 0)
                     return '<span style="color:white"> + '+diff+'</span></td><td>&nbsp;';
                 else if (diff < 0)
-                    diff = '<span style="color:red"> '+addCommas(diff)+'</span></td><td>&nbsp;&nbsp;<span style="color:red">  '+(diff/total ).toFixed(4)+' %</span>';
+                    diff = '<span style="color:red"> '+addCommas(diff)+'</span></td><td>&nbsp;&nbsp;<span style="color:red">  '+(100*diff/total ).toFixed(4)+' %</span>';
                 else
-                    diff = '<span style="color:green"> + '+addCommas(diff)+'</td><td>&nbsp;&nbsp;<span style="color:green">  + '+(diff/total).toFixed(4)+' %</span>';
+                    diff = '<span style="color:green"> + '+addCommas(diff)+'</td><td>&nbsp;&nbsp;<span style="color:green">  + '+(100*diff/total).toFixed(4)+' %</span>';
                 return diff;
             }
             

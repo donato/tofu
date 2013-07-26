@@ -79,6 +79,11 @@ table.table_lines { margin-top:5px; }
     color: #B3FFF8;
 }
 
+.time_passed {
+	padding-right: 20px;
+	color: rgb(170, 170, 170);
+	font-style: italic;
+}
 .supplemental {
 	font-size:10px;
 }
@@ -98,6 +103,6 @@ table.table_lines { margin-top:5px; }
 
 .sabbable>span { border-bottom:thin dotted white;}
 
-._lux_needs_update {position:absolute; padding-left:12px;}
-._lux_online {position:absolute; right:240px;}
+._lux_needs_update { position:absolute; padding-left:12px; }
+._lux_online { position:absolute; right:240px; }
 

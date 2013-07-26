@@ -5,7 +5,7 @@ Page.battlefield = {
 	
     run: function() { 
         this.battlefieldAct();
-        this.showUserInfoB();
+        this.addClickEventsForUsers();
     }
     
     , battlefieldAct: function () {
@@ -73,8 +73,6 @@ Page.battlefield = {
     
     , showGold: function (json) {
 
-		log("ShowGold");
-		log(json);
 		_.each(json, function(obj, id) {
 			log("Trying to load " + id + " " + obj);
 			var GoldTd = $("tr[user_id='"+id+"'] > td").eq(5);
@@ -151,16 +149,18 @@ Page.battlefield = {
     }    
     
     
-    , battlefieldShowInfo: function (data) {
-        // Hack to get the element to write into
+    , showUserInfo: function (response) {
+		var data = response.responseText;
+		
+		$(".lux_bf_inject").remove();
+        
         var $container = $("tr.profile").find("form[action='writemail.php']").closest("tbody");
         
-        $("tr.bf_inject").remove();
-        
+
         if (data == '403') {
-            $container.prepend('<tr class="bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">Access denied</td>');
+            $container.prepend('<tr class="lux_bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">Access denied</td>');
         } else if (data == 'N/A') {
-             $container.prepend('<tr class="bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">No data available</td>');
+             $container.prepend('<tr class="lux_bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">No data available</td>');
         } else {
             var userInfo = data.split(';');
             var i;
@@ -168,13 +168,12 @@ Page.battlefield = {
             for (i = 4 ; i >=0; i--) {
                 var stat = userInfo[i*2]
                 var time = userInfo[i*2+1]
-                
-                $container.prepend("<tr class='bf_inject><td style='font-weight:bold'>"+statsdesc[i]+"</td><td>"+stat+"</td><td class='_luxbotago'>"+time+"</td></tr>")
+                $container.prepend("<tr class='lux_bf_inject'><td style='font-weight:bold'>"+Constants.statsdesc[i]+"</td><td>"+stat+"</td><td class='time_passed'>"+time+"</td></tr>")
             }
         }
     }
   
-    , showUserInfoB: function () {
+    , addClickEventsForUsers: function () {
 		var self = this;
         $("a.player").on('click', function(event) {
             if (String(event.target).indexOf('stats.php') > -1) {
@@ -184,11 +183,8 @@ Page.battlefield = {
                     return;
                 }
                 self.statsLoadedId = userid;
-                getLux('&a=getstats&userid=' + userid,
-                    function(responseDetails) {
-                        var r = responseDetails.responseText;
-                        this.battlefieldShowInfo(r);
-                });
+				
+                getLux('&a=getstats&userid=' + userid, Page.battlefield.showUserInfo);
             }
         });
     }
