@@ -4,34 +4,78 @@ Explanations
     approvalTypes - ie, war with DEMK
     approvals - each player for each of their approvals
 
+players
+		playerName(Unique),
+		member_id (Primary)
+		forum_id, 
+		accessLevel,
+		authCode,
+		lastLogin,
+		personalMessage, 
+            
+player_counts
+		sabs
+		sabsEnemy
+		sabWeapons
+		sabValue
+		attacksDefended
+		attacksInchain
+		attacksOutchain
+		attacksEnemy
+		goldStolen
+		troopsKilled
+		lostStrike
+		lostUntrained
+		lostStrikeMercs
+		lostUntrainedMercs
+		recons
+		scans
+		reconRequests
+
+player_events
+		type - [new_commander, new_race, new_siege, new_fort, new_up]
+		datetime
+		val
+		previous_val
+		
+accounts
+		playerName (foreign key)
+		kocid (primary key)
+		isActive
+        name
+		rank
+		tff
+		bonus
+		race
+		recruitId
+		commanderId
+		morale
+        siege
+		fort
+		economy
+		technology
+		primaryAlliance
+		chain
+ 
 alliances - name (Primary), friendship_status
- 
-players  - playerName(Primary), 
-            forum_id, 
-            personalMessage, 
-            authorityCode,
-            sabCount, 
-            reconCount, 
-            scanCount, 
-            attackCount, 
-            reconRequests
             
-accounts - playerName (foreign key), kocid (primary key), 
-            name, rank, tff, bonus, race, recruitId, commanderId, morale
-            siege, fort, economy, technology, 
-            primaryAlliance, chain, isActive
-            
- 
-account_stats   - kocid, type, logid, loggedBy, time, value
+account_stats 
+		kocid
+		type
+		time
+		value
+		logid
+		loggedBy
+		
 account_weapons - kocid, weaponId, logid, loggedBy, time, quantity, strength,
 
 attacks - logid(Primary), ircPosted, type, gold, time, attacker, defender,
             attacker_damage, defender_damage
-.
+
 attackLogs - logid(Foreign), repairCost, defender_losses,
             utmCasualties, tmCasualties, 
             utCasualties, tCasualties
-.
+
 defenseLogs - logid (Foreign), repairCost, attacker_losses, 
             spiesLost, sentriesLost,
             utmCasualties, tmCasualties, 
