@@ -5,12 +5,25 @@ table.table_lines {
     padding:6px;
 }
 
+.viewHistory {
+	font-size: 6pt;
+}
+
 #tofu_control_box {
-    border: 1px solid white;
+    border: 1px solid black;
     position: absolute;
-    right: 0;
+    right: 40px;
     top: 0;
-    text-align:right;
+    width:160px;
+	height:50px;
+	text-align:center;
+	font-size: 12px;
+	padding:5px;
+	color:black;
+	background-color:darkgray;
+	opacity:0.8;
+	
+	z-index:199;
 }
 #tofu_control_box  ul{
     padding:5px;
@@ -24,21 +37,22 @@ table.table_lines {
     height:100%;
     width:100%;
     display:none;
-    
+    z-index:200;
+	
     background-color:rgba(0,0,0,0.5);
 }
 
 #tofu_popup_box >div {
-    height: 80%;
+    max-height: 80%;
     max-width: 1000px;
     margin: 30px auto;
     padding: 10px;
     overflow-y: auto;
     
-    border: 1px solid blue;
+    border: 1px solid darkgray;
     text-align:center;
-    color:black;
-    background-color:gray;
+    color:white;
+    background-color:black;
 }
 
 #tofu_control_box  > ul {
@@ -65,6 +79,15 @@ table.table_lines { margin-top:5px; }
     color: #B3FFF8;
 }
 
+.time_passed {
+	padding-right: 20px;
+	color: rgb(170, 170, 170);
+	font-style: italic;
+}
+.supplemental {
+	font-size:10px;
+}
+
 #_lux_sabbed_popup {
     background-color: black;
     border-color: red darkred darkred red;
@@ -80,6 +103,6 @@ table.table_lines { margin-top:5px; }
 
 .sabbable>span { border-bottom:thin dotted white;}
 
-._lux_needs_update {position:absolute; padding-left:12px;}
-._lux_online {position:absolute; right:240px;}
+._lux_needs_update { position:absolute; padding-left:12px; }
+._lux_online { position:absolute; right:240px; }
 

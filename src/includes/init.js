@@ -1,6 +1,14 @@
 var Init = {
 
-    loadUser : function(kocid) {
+    loadUser : function(action) {
+	
+		var kocid;
+		if (action == 'base') {
+			var html = document.body.innerHTML.split("stats.php?id=");
+			html = html[1];
+			kocid = html.slice(0, html.indexOf('"'));
+		}
+		
         db.init(kocid);
         if (db.id === 0) return false;
                 
@@ -24,9 +32,10 @@ var Init = {
     }    
  
     , checkForUpdate: function(startup) {
-        if (db.get("luxbot_version",0) != Constants.version) {
-            //if the version changes
-            db.put("luxbot_version", Constants.version);
+		// version is a global variable created by the build script
+        if (db.get("luxbot_version",0) != version) {
+			// We just updated!
+            db.put("luxbot_version", version);
             db.put("luxbot_needsUpdate",0);
         }
         if (startup === 1 && db.get("luxbot_needsUpdate",0) === 1) {
@@ -49,7 +58,7 @@ var Init = {
                     var thisVersion = Number(version.replace(/\./, ''));
                     if (latestVersion > thisVersion) {
                         db.put("luxbot_needsUpdate",1);
-                        db.put("luxbot_version",Constants.version);
+                        db.put("luxbot_version", version);
                         if (startup != 1) {
                             alert("There is an update!");
                             openTab(Constants.downloadUrl); 
@@ -114,7 +123,7 @@ var Init = {
                         
                         db.put('kocnick', user[1]);
                         db.put('kocid', user[0]);
-                        var password = HEX.hex_md5(f_pass);
+                        var password = hex_md5(f_pass);
                         db.put('forumPass', password);
                         db.put('forumName', f_user);
                         initVB();

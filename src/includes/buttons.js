@@ -21,7 +21,6 @@ var Buttons = {
         this.$rows.each(function() {
 			var $this = $(this);
 			var $btn = $this.find("input.btn_helper").first();
-			log (money_left + " " + $btn.attr("cost"));
 			
 			var newVal = Math.floor( money_left / $btn.attr("cost"));
 			if ( typeof(self.constraintFunc) == typeof(Function)) {

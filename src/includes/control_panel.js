@@ -4,7 +4,7 @@ var ControlPanel = {
 
 		this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'html' : 'TOFUTOFU'
+			'html' : 'Open Control Panel<br>Tofu V.' + version
 		});
 
 		$('body').append( this.$controlbox );

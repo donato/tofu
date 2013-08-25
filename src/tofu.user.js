@@ -28,7 +28,7 @@
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-var version = '0.2.130710';
+var version = '0.2.130726';
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -52,7 +52,6 @@ var Buttons = {
         this.$rows.each(function() {
 			var $this = $(this);
 			var $btn = $this.find("input.btn_helper").first();
-			log (money_left + " " + $btn.attr("cost"));
 			
 			var newVal = Math.floor( money_left / $btn.attr("cost"));
 			if ( typeof(self.constraintFunc) == typeof(Function)) {
@@ -91,35 +90,41 @@ var Buttons = {
     }
 }
 
-var Constants = {
+var Constants = function() {
 
-	version : '0.1.20130321'
+	var baseUrl = "http://luxbot.net/bot/";
 	
-	, baseUrl     : 'http://donatoborrello.com/koc/bot/luxbot.php?'
-	, downloadUrl : 'http://donatoborrello.com/koc/bot/luxbot.user.js'
-	, versionUrl  : 'http://donatoborrello.com/koc/bot/luxbot.version.php'
-	
-    , statsdesc : {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'}
+	return {
 
-    , storedStrings : ['race',  'kocnick', 'forumName', 'forumPass', 'auth', 'logself']
+		  baseUrl     : baseUrl + 'luxbot.php?'
+		, downloadUrl : baseUrl + 'luxbot.user.js'
+		, versionUrl  : baseUrl + 'luxbot.version.php'
+		
+		, gitHtml  : 'https://raw.github.com/DonatoB/tofu/master/server/html/'
+		
+		, statsdesc : {0:'Strike Action', 1:'Defensive Action', 2:'Spy Rating', 3:'Sentry Rating', 4:'Gold'}
 
-    , storedNumbers :['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry', 'spyWeaps', 'sentryWeaps', 'daWeaps', 'saWeaps']
-	
-    , spyWeaps : ['Rope','Dirk','Cloak','Grappling Hook','Skeleton Key','Nunchaku']
-	
-    , sentryWeaps : ['Big Candle','Horn','Tripwire','Guard Dog','Lookout Tower']
-	
-    , daWeaps : ['Helmet', 'Shield','Chainmail','Plate Armor', 'Mithril', 'Elven Cloak', 'Gauntlets', 'Heavy Shield', 'Dragonskin', 'Invisibility Shield' ]
-	
-	, options : [ 'logself', 'scrollbattlelog', 'turnclock', 'commandCenterStats', 'targets', 'fakesabtargets', 'goldprojection', 'armorygraph', 'armorydiff']
-}
+		, storedStrings : ['race',  'kocnick', 'forumName', 'forumPass', 'auth', 'logself']
+
+		, storedNumbers :['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry', 'spyWeaps', 'sentryWeaps', 'daWeaps', 'saWeaps']
+		
+		, spyWeaps : ['Rope','Dirk','Cloak','Grappling Hook','Skeleton Key','Nunchaku']
+		
+		, sentryWeaps : ['Big Candle','Horn','Tripwire','Guard Dog','Lookout Tower']
+		
+		, daWeaps : ['Helmet', 'Shield','Chainmail','Plate Armor', 'Mithril', 'Elven Cloak', 'Gauntlets', 'Heavy Shield', 'Dragonskin', 'Invisibility Shield' ]
+		
+		, options : [ 'logself', 'scrollbattlelog', 'turnclock', 'commandCenterStats', 'targets', 'fakesabtargets', 'goldprojection', 'armorygraph', 'armorydiff']
+	}
+
+}();
 var ControlPanel = {
 
     init: function () {
 
 		this.$controlbox = $("<div>", {
 			'id': 'tofu_control_box',
-			'html' : 'TOFUTOFU'
+			'html' : 'Open Control Panel<br>Tofu V.' + version
 		});
 
 		$('body').append( this.$controlbox );
@@ -156,27 +161,9 @@ var ControlPanel = {
     // GUI pages
 
     , showLinkBox: function () {
-		alert('showlinkbox');
-		return;
-        var html =  " <table class='table_lines' id='_luxbot_links_table' width='100%' cellspacing='0'\
-        cellpadding='6' border='0'>\
-        <tr>\
-        <th colspan='7'>FF Links</th>\
-        </tr>\
-        <tr>\
-        <td><a href='http://stats.luxbot.net/'>Player Statistics</a></td>\
-        <td><a href='http://fearlessforce.net/'>FF Forums</a></td>\
-        <td><a href='http://stats.luxbot.net/sabbing.php'>Enemies Sablist</a></td>\
-        </tr>\
-        </table> ";
-
-        html += '<table class="table_lines" id="_luxbot_links_table" width="100%" cellspacing="0" cellpadding="6" border="0">\
-        <tr><th>Recruiters Links</th></tr>\
-        <tr><td><a href="http://stats.luxbot.net/clicks.php">Clitclick</a></td>\
-        </tr></table>';
-
-        showMessage(html);
-
+		get(Constants.gitHtml+'links.html', function(r) {
+			alert(r.responseText);
+		});
     }
 
     ,  showMessageBox: function() {
@@ -312,7 +299,15 @@ var GUI = {
 
 var Init = {
 
-    loadUser : function(kocid) {
+    loadUser : function(action) {
+	
+		var kocid;
+		if (action == 'base') {
+			var html = document.body.innerHTML.split("stats.php?id=");
+			html = html[1];
+			kocid = html.slice(0, html.indexOf('"'));
+		}
+		
         db.init(kocid);
         if (db.id === 0) return false;
                 
@@ -336,9 +331,10 @@ var Init = {
     }    
  
     , checkForUpdate: function(startup) {
-        if (db.get("luxbot_version",0) != Constants.version) {
-            //if the version changes
-            db.put("luxbot_version", Constants.version);
+		// version is a global variable created by the build script
+        if (db.get("luxbot_version",0) != version) {
+			// We just updated!
+            db.put("luxbot_version", version);
             db.put("luxbot_needsUpdate",0);
         }
         if (startup === 1 && db.get("luxbot_needsUpdate",0) === 1) {
@@ -361,7 +357,7 @@ var Init = {
                     var thisVersion = Number(version.replace(/\./, ''));
                     if (latestVersion > thisVersion) {
                         db.put("luxbot_needsUpdate",1);
-                        db.put("luxbot_version",Constants.version);
+                        db.put("luxbot_version", version);
                         if (startup != 1) {
                             alert("There is an update!");
                             openTab(Constants.downloadUrl); 
@@ -426,7 +422,7 @@ var Init = {
                         
                         db.put('kocnick', user[1]);
                         db.put('kocid', user[0]);
-                        var password = HEX.hex_md5(f_pass);
+                        var password = hex_md5(f_pass);
                         db.put('forumPass', password);
                         db.put('forumName', f_user);
                         initVB();
@@ -482,7 +478,7 @@ var Init = {
     };
 	
     String.prototype.float = function() {
-        var r = parseFloat(this.replace(/[^0-9\.]*/g,''),10);
+        var r = parseFloat(this.replace(/[^0-9\.\-]*/g,''),10);
         if (isNaN(r)) r=-1;
         return r;
     };
@@ -492,7 +488,7 @@ var Init = {
     }
 
     function to_int(str) {
-        str = str.replace(/[^0-9\.]/g, '');
+        str = str.replace(/[^0-9\.\-]/g, '');
         if (str === '') {
             return '';
         }
@@ -534,10 +530,13 @@ var Init = {
 		};
 	}();
     
+	Math.log10 = function(val) {
+		return Math.log(val)/Math.LN10;
+	}
     // KoC Utils
     var db = {        
         // This allows it to store info for different koc ids on same pc
-        init :function(kocid) {
+        init: function(kocid) {
             if (kocid === undefined || kocid === null) {
 				this.id = gmGetValue("lux_last_user",0);
 				return;
@@ -545,18 +544,26 @@ var Init = {
 			gmSetValue("lux_last_user", kocid);
 			this.id = kocid;
         },
-        get : function(option,def) {
+        get: function(option,def) {
             option += "_"+this.id;
             var value = gmGetValue(option, def);
             if (option.indexOf('gold_')>0) 
                 value = parseInt(value, 10);
             return value;
         },
+		getInt: function(option, def) {
+			var ret = this.get(option, def);
+			return parseInt(ret, 10);
+		},
+		getFloat: function(option, def) {
+			var ret = this.get(option, def);
+			return parseFloat(ret, 10);
+		},
         put: function(option,val) {
             option += "_"+this.id;
             gmSetValue(option,val);
         },
-        del : function(option) {
+        del: function(option) {
             option += "_"+this.id;
             gmDeleteValue(option);
         }
@@ -644,6 +651,103 @@ var Init = {
         
         return vals
     }
+
+	function raceBonus(stat, race) {
+		race = race || db.get('race');
+		
+		switch(stat) {
+			case 'income' : 
+				if (race =='humans') { return 1.3; }
+				if (race =='dwarves') { return 1.15; }
+				break;
+			case 'sa' : 
+				if (race =='orcs') { return 1.35; }
+				break;
+			case 'da' : 
+				if (race =='orcs') { return 1.2; }
+				if (race =='dwarves') { return 1.4; }
+				break;
+			case 'spy' : 
+				if (race =='humans') { return 1.35; }
+				if (race =='elves') { return 1.45; }
+				break;
+			case 'sentry' : 
+				if (race =='undead') { return 1.35; }
+				break;
+		}
+		return 1;
+	}
+
+
+	function fortBonus(fort) {
+		fort = fort || db.get('fort');
+
+		var cb = 0;
+		if (fort == "Camp") cb = 0;
+		if (fort == "Stockade") cb = 1;
+		if (fort == "Rabid") cb = 2;
+		if (fort == "Walled") cb = 3;
+		if (fort == "Towers") cb = 4;
+		if (fort == "Battlements") cb = 5;
+		if (fort == "Portcullis") cb = 6;
+		if (fort == "Boiling Oil") cb = 7;
+		if (fort == "Trenches") cb = 8;
+		if (fort == "Moat") cb = 9;
+		if (fort == "Drawbridge") cb = 10;
+		if (fort == "Fortress") cb = 11;
+		if (fort == "Stronghold") cb = 12;
+		if (fort == "Palace") cb = 13;
+		if (fort == "Keep") cb = 14;
+		if (fort == "Citadel") cb = 15;
+		if (fort == "Hand of God") cb = 16;
+		cb = Math.pow(1.25,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+
+	function siegeBonus(siege){
+		siege = siege || db.get('siege');
+
+		var cb = 0;
+		if (siege == "None") cb = 0;
+		if (siege == "Flaming Arrows") cb = 1;
+		if (siege == "Ballistas") cb = 2;
+		if (siege == "Battering Rams") cb = 3;
+		if (siege == "Ladders") cb = 4;
+		if (siege == "Trojan") cb = 5;
+		if (siege == "Catapults") cb = 6;
+		if (siege == "War Elephants") cb = 7;
+		if (siege == "Siege Towers") cb = 8;
+		if (siege == "Trebuchets") cb = 9;
+		if (siege == "Black Powder") cb = 10;
+		if (siege == "Sappers") cb = 11;
+		if (siege == "Dynamite") cb = 12;
+		if (siege == "Greek Fire") cb = 13;
+		if (siege == "Cannons") cb = 14;
+		cb = Math.pow(1.3,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+	
+	function covertBonus(level) {
+		level = level || db.getInt('covertlevel',0);
+		
+		return Math.pow(1.6, level);
+	}
+	
+	function upgradeBonus(type, option) {
+		switch (type) {
+			case 'sa':
+				return siegeBonus(option);
+			case 'da':
+				return fortBonus(option);
+			case 'spy':
+			case 'sentry':
+				return covertBonus(option);
+		}
+		return 1;
+	}
+			
     function makeCollapsable(action) {
     
         function collapseTable(table) {
@@ -713,17 +817,17 @@ var Init = {
                     });
     }
 
-	function sendAttackLogDetails (user, type, oppid, opponent, user_damages, opponent_damages, user_losses, opponent_losses, gold_stolen, logid, time) {
+	function sendAttackLogDetails(user, type, oppid, opponent, user_damages, opponent_damages, user_losses, opponent_losses, gold_stolen, logid, time) {
         getLux( '&a=logattack&type=' + type + '&user=' + user + 
             '&enemy=' + opponent + ';' + oppid + ';' + opponent_damages + ';' + opponent_losses +
             '&data=' + user_damages + ';' + user_losses + 
             '&gold=' + gold_stolen +
             '&time=' + time +
             '&logid=' + logid,
-            function(responseDetails) {
-        
-        });
-    }    
+            function(responseDetails) {}
+		);
+    }   
+
     function logRecon(enemy, enemyid, logid, gold, data, weapons) {
         getLux('&a=logRecon&enemy=' + enemy + 
                                 '&enemyid=' + enemyid +
@@ -813,6 +917,38 @@ var Options = {
 		});
 		
 		GUI.toggleGUI();
+	}
+}
+PluginHelper = {
+	isEnabled : function(str) {
+		var plugin = Plugins[str];
+		if (!plugin) {
+			return false;
+		}
+		var storedAs = 'plugin_enabled_' + str;
+		
+		db.get( storedAs, plugin.defaultEnabled);
+	},
+	
+	onPage : function(str, page) {
+		var plugin = Plugins[str];
+		if (!plugin) {
+			return false;
+		}
+		
+		var pages = plugin.enabledPages;
+		if ( ! _.isArray(pages) ) {
+			return true;
+		}
+		return $.inArray(page, pages);
+	},
+	
+	toRun : function (str, page) {
+
+		return _.every(
+			this.isEnabled(str),
+			this.onPage(str, page)
+		);
 	}
 }
 
@@ -943,9 +1079,9 @@ Page.armory = {
                 if (diff === 0)
                     return '<span style="color:white"> + '+diff+'</span></td><td>&nbsp;';
                 else if (diff < 0)
-                    diff = '<span style="color:red"> '+addCommas(diff)+'</span></td><td>&nbsp;&nbsp;<span style="color:red">  '+(diff/total ).toFixed(4)+' %</span>';
+                    diff = '<span style="color:red"> '+addCommas(diff)+'</span></td><td>&nbsp;&nbsp;<span style="color:red">  '+(100*diff/total ).toFixed(4)+' %</span>';
                 else
-                    diff = '<span style="color:green"> + '+addCommas(diff)+'</td><td>&nbsp;&nbsp;<span style="color:green">  + '+(diff/total).toFixed(4)+' %</span>';
+                    diff = '<span style="color:green"> + '+addCommas(diff)+'</td><td>&nbsp;&nbsp;<span style="color:green">  + '+(100*diff/total).toFixed(4)+' %</span>';
                 return diff;
             }
             
@@ -1397,25 +1533,15 @@ Page.attacklog = {
     
 
     , attackLogHelper: function ($rows, shift ) {
-        // TODO: TEST THIS
         function betweenTags (x) {
-		//eg broken..
-			var text = '<' + x.html();
-            var y = textBetween($(text).text(), ">","<");
-			log (x + ".." + y);
-			x = y;
-			return y;
+			return textBetween(x, ">","<");
         }
         
-		
         for (var i = 2; i < $rows.size()-1; i++) {
-			
+			var gold, enemy_id, enemy;
             var rawData = $rows.eq(i).html().split("<td");
-            //alert(rawData[3]);
-            //this removes the junk to get value (ie. align="right">2</td> becomes 2)
-            var enemy_id;
-            var enemy;
-            if (rawData[3].indexOf("not active") == -1) {
+
+            if (rawData[3].indexOf("(not active)") === -1) {
                 enemy_id = rawData[3].match(/id=(\d*)"/)[1];
                 enemy = rawData[3].match(/\d">(.+)<\/a>/)[1];
             } else {
@@ -1424,42 +1550,39 @@ Page.attacklog = {
             }
             var logid = rawData[5+shift].match(/id=(\d*)"/)[1];
             var goldTemp = rawData[5+shift].match(/">([\d,]*) Gold/);
-            var gold;
-            if (goldTemp== null)
+            if (goldTemp === null)
                 gold = "defended";
             else 
-                gold=goldTemp[1];
+                gold = goldTemp[1].int();
 
+			// For specific indexes, grab data between > and <
             rawData = _.map(rawData, betweenTags );
             var time = rawData[1];
             var timeunit = rawData[2];
             var type = rawData[4];
-            var enemy_losses = rawData[6+shift];
-            var your_losses = rawData[7+shift];
-            var enemy_damage = rawData[8+shift];
-            var your_damage = rawData[9+shift];
-                
-            //alert(your_damage);
-            
+            var enemy_losses = rawData[6+shift].int();
+            var your_losses = rawData[7+shift].int();
+            var enemy_damage = rawData[8+shift].int();
+            var your_damage = rawData[9+shift].int();
+                            
             time = timeToSeconds(time,timeunit);
-            if(!enemy_id)
+            if(!enemy_id) {
                 enemy_id=":invalid";//DONATO, Check this before release
-
-            if(type.indexOf("attack")!=-1 || type.indexOf("raid")!=-1)    //this seems contradictory but it makes sense
+			}
+			
+		    // If it is an attack/raid on you, then you were Defending
+            if(type.indexOf("attack") != -1 || type.indexOf("raid")!=-1) 
                 type="defend";
             else
                 type="attack";
                 
-            //alert('time: ' + time + ' :: enemy: ' + enemy + ' :: gold: ' + gold + ' :: enemy_losses: ' + enemy_losses + ' :: your_losses: ' + your_losses + ' ::  enemy_damage: ' + enemy_damage + ' :: your_damage: ' + your_damage + ' :: logid: ' + logid);
-            sendAttackLogDetails(User.kocnick, type, enemy_id, enemy, your_damage, enemy_damage, your_losses, enemy_losses, gold, logid, time);
+            log('type: ' + type +' :: time: ' + time + ' :: enemy: ' + enemy + '('+enemy_id+') :: gold: ' + gold + ' :: enemy_losses: ' + enemy_losses + ' :: your_losses: ' + your_losses + ' ::  enemy_damage: ' + enemy_damage + ' :: your_damage: ' + your_damage + ' :: logid: ' + logid);
+            sendAttackLogDetails(User.kocnick, type, enemy_id,  enemy, your_damage, enemy_damage, your_losses, enemy_losses, gold, logid, time);
+
         }
     }
 
  }
-    
-    //
-    // Command Center Functions
-    //
 Page.base = {
     run: function() {
         this.basePage();
@@ -1467,19 +1590,53 @@ Page.base = {
         this.commandCenterStats();
         makeCollapsable(action);
     }
-    
-    , commandCenterStats: function() {
-        var $tbody = $("#tbody");
+      
+    , basePage: function() {
 
-        if (checkOption('option_commandCenterStats'))
-            $tbody.prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>");//prepend(tab);
-        else
-            $("tr:contains('Recent Attacks'):last").parent().parent().before("<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>");//prepend(tab);
-            getLux("&a=sabstats",
-             function(r) { $("#ff-load").html(""+r.responseText); 
-        }); 
+        var stable = $("table:contains('Military Effectiveness')").last();
+        var sa = $(stable).find("tr:contains('Strike Action'):first>td:eq(1)").text();
+        var da = $(stable).find("tr:contains('Defensive Action'):first>td:eq(1)").text();
+        var spy = $(stable).find("tr:contains('Spy Rating'):first>td:eq(1)").text();
+        var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
+
+        stable = $("table:contains('Military Overview')").last();
+        var fort = $(stable).find("tr:contains('Fortification'):first>td:eq(1)").text();
+        var siege = $(stable).find("tr:contains('Siege Technology'):first>td:eq(1)").text();
+        var economy = $(stable).find("tr:contains('Economy'):first>td:eq(1)").text();
+        var technology = $(stable).find("tr:contains('Technology'):last>td:eq(1)").text();
+        var conscription = $(stable).find("tr:contains('Conscription'):first>td:eq(1)").text();
+        conscription = conscription.substr(0, conscription.indexOf(' soldiers'));
+        var tff = $("body").find("tr:contains('Total Fighting Force'):last>td:eq(1)").text();
+        var turns = $(stable).find("tr:contains('Game Turns'):first>td:eq(1)").text();
+        turns = turns.substr(0,turns.indexOf(" /"));
+        var covertlevel = $(stable).find("tr:contains('Covert Level'):first>td:eq(1)").text();
+        var income = $(stable).find("tr:contains('Projected Income'):first>td:eq(1)").text();
+        income = income.substr(0,income.indexOf(" Gold")).int();
+
+        var officers = Page.stats.stats_getOfficers(false);
+
+        var bonus = textBetween($(".officers>tbody>tr:last").text(), "(x ",")");
+        
+		// this will help for paging through officers and recording their info
+       // nav();
+        
+        db.put('sa',sa.int());
+        db.put('da',da.int());
+        db.put('spy',spy.int());
+        db.put('sentry',sentry.int());
+        db.put('income',income.int() + "");
+		db.put('technology', technology.float() + "");
+        db.put('tff',tff.int());
+        db.put('bonus',bonus);
+        db.put('fort', fort);
+        db.put('siege',siege);
+        db.put('covertlevel', covertlevel);
+ 
+        db.put('race', textBetween($("head>link").eq(3).attr("href"),"css/",".css").toLowerCase());
+ 
+        logBase(sa.int() + ";"+da.int()+";"+spy.int()+";"+sentry.int(), fort+";"+siege+";"+economy+";"+technology+";"+conscription.int()+";"+turns.int()+";"+covertlevel+";"+bonus, officers);
     }
-
+    
     , baseLayout: function() {
         var $tbody = $("td.content > table > tbody").last()
         $tbody.attr("id","tbody");
@@ -1510,57 +1667,75 @@ Page.base = {
                         .remove()
         var $officers = getTableByHeading("Officers")
                         .remove()
+        $("#base_right_col").prepend('<br /><br />')
+        $("#base_right_col").prepend( this.tbgStats() )
+        $("#base_right_col").prepend('<br /><br />')
         $("#base_right_col").prepend($military_overview )
+        $("#base_right_col").prepend('<br /><br />')
         $("#base_right_col").prepend($officers )
+        $("#base_right_col").prepend('<br /><br />')
         $("#base_right_col").prepend($military_effectiveness )
         $("#base_left_col").append($recent_attacks )
-        // $("#base_left_col").append($grow_army ) // Causes errors?
+        // $("td.content").append($grow_army ) // Causes errors?
         $(".user_info").after($commander_notice)
         
         //if player is blocking ads, this adds some extra space.
          $("td.content").parent().children("td").eq(2).attr("width", "50");
     }
-      
-    , basePage: function() {
-        db.put('race', textBetween($("head>link").eq(3).attr("href"),"css/",".css"));
+	
+    , commandCenterStats: function() {
+        var $tbody = $("#tbody");
 
-        var stable = $("table:contains('Military Effectiveness')").last();
-        var sa = $(stable).find("tr:contains('Strike Action'):first>td:eq(1)").text();
-        var da = $(stable).find("tr:contains('Defensive Action'):first>td:eq(1)").text();
-        var spy = $(stable).find("tr:contains('Spy Rating'):first>td:eq(1)").text();
-        var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
-
-        
-        stable = $("table:contains('Military Overview')").last();
-        var fort = $(stable).find("tr:contains('Fortification'):first>td:eq(1)").text();
-        var siege = $(stable).find("tr:contains('Siege Technology'):first>td:eq(1)").text();
-        var economy = $(stable).find("tr:contains('Economy'):first>td:eq(1)").text();
-        var technology = $(stable).find("tr:contains('Technology'):last>td:eq(1)").text();
-        var conscription = $(stable).find("tr:contains('Conscription'):first>td:eq(1)").text();
-        conscription = conscription.substr(0, conscription.indexOf(' soldiers'));
-        var tff = $("body").find("tr:contains('Total Fighting Force'):last>td:eq(1)").text();
-        var turns = $(stable).find("tr:contains('Game Turns'):first>td:eq(1)").text();
-        turns = turns.substr(0,turns.indexOf(" /"));
-        var covertlevel = $(stable).find("tr:contains('Covert Level'):first>td:eq(1)").text();
-        var income = $(stable).find("tr:contains('Projected Income'):first>td:eq(1)").text();
-        income = income.substr(0,income.indexOf(" Gold")).int();
-
-        var officers = Page.stats.stats_getOfficers(false);
-
-        var bonus = textBetween($(".officers>tbody>tr:last").text(), "(x ",")");
-        
-		// this will help for paging through officers and recording their info
-       // nav();
-        
-        db.put('sa',sa);
-        db.put('da',da);
-        db.put('spy',spy);
-        db.put('sentry',sentry);
-        db.put('income',income + "");
-        db.put('tff',tff);
-        
-        logBase(sa.int() + ";"+da.int()+";"+spy.int()+";"+sentry.int(), fort+";"+siege+";"+economy+";"+technology+";"+conscription.int()+";"+turns.int()+";"+covertlevel+";"+bonus, officers);
+        if (checkOption('option_commandCenterStats'))
+            $tbody.prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>")
+        else
+            $("tr:contains('Recent Attacks'):last").parent().parent().before("<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>");
+            getLux("&a=sabstats",
+             function(r) { $("#ff-load").html(""+r.responseText); 
+        }); 
     }
+
+	, tbgStats: function() {
+		function percentFormat(value) {
+			value*=100;
+			var decimalPlaces = Math.min(2, Math.floor(Math.log10(value)) );
+			
+			return (Math.round(value*1000)/1000).toFixed(2-decimalPlaces);
+		}
+		
+		var income = db.getInt('income');
+		var tech = parseFloat(db.get('technology'));
+		var offieBonus = parseFloat(db.getFloat('bonus'));
+
+		var Label = ["Strike Action", "Defensive Action", "Spy", "Sentry"];
+		var costs = [450000, 200000, 1000000, 1000000];
+		var strengths = [600, 256, 1000, 1000]
+		
+		var html = "";
+		_.each(['sa','da','spy','sentry'], function(stat, i) {
+			var multiplier = upgradeBonus(stat) * raceBonus(stat) * tech * offieBonus;
+			
+			if (stat == 'sa' || stat =='da') { multiplier *= 5; }
+
+			var hourlyValue = (income * 60 / costs[i]) * strengths[i] * multiplier;
+			
+			var currentStat = db.getInt(stat);
+			html += '  <tr>'
+				  + '    <td> ' + Label[i] + '&nbsp;</td><td>' + addCommas(Math.floor(hourlyValue)) +' <span class="supplemental">('+percentFormat(hourlyValue/currentStat) + '%)</span> &nbsp;</td>'
+				  + '    <td>'+ addCommas(Math.floor(24 * hourlyValue)) +' <span class="supplemental">('+percentFormat((24*hourlyValue)/currentStat) + '%)</span> </td>'
+				  + '  </tr>';
+		});
+		
+		return '<table class="table_lines" width="100%" cellpadding="6">'
+			 + '  <tbody>' 
+			 + '    <tr><th colspan=3>Investment Profile </th></tr>'
+			 + '    <tr><th class="subh">&nbsp;&nbsp;&nbsp;</th><th class="subh">1 Hour&nbsp;</th><th class="subh">1 Day</th></tr>' 
+			 + html
+		     + '  </tbody>'
+		     + '</table>';
+	}
+
+
 }
 Page.battlefield = {
 
@@ -1569,7 +1744,7 @@ Page.battlefield = {
 	
     run: function() { 
         this.battlefieldAct();
-        this.showUserInfoB();
+        this.addClickEventsForUsers();
     }
     
     , battlefieldAct: function () {
@@ -1637,8 +1812,6 @@ Page.battlefield = {
     
     , showGold: function (json) {
 
-		log("ShowGold");
-		log(json);
 		_.each(json, function(obj, id) {
 			log("Trying to load " + id + " " + obj);
 			var GoldTd = $("tr[user_id='"+id+"'] > td").eq(5);
@@ -1715,16 +1888,18 @@ Page.battlefield = {
     }    
     
     
-    , battlefieldShowInfo: function (data) {
-        // Hack to get the element to write into
+    , showUserInfo: function (response) {
+		var data = response.responseText;
+		
+		$(".lux_bf_inject").remove();
+        
         var $container = $("tr.profile").find("form[action='writemail.php']").closest("tbody");
         
-        $("tr.bf_inject").remove();
-        
+
         if (data == '403') {
-            $container.prepend('<tr class="bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">Access denied</td>');
+            $container.prepend('<tr class="lux_bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">Access denied</td>');
         } else if (data == 'N/A') {
-             $container.prepend('<tr class="bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">No data available</td>');
+             $container.prepend('<tr class="lux_bf_inject"><td colspan="4" style="font-weight:bold;text-align:center;background-color:#B4B5B4;color:#181818;border-bottom:1px solid black;padding:5px 0 5px 10px;">No data available</td>');
         } else {
             var userInfo = data.split(';');
             var i;
@@ -1732,13 +1907,12 @@ Page.battlefield = {
             for (i = 4 ; i >=0; i--) {
                 var stat = userInfo[i*2]
                 var time = userInfo[i*2+1]
-                
-                $container.prepend("<tr class='bf_inject><td style='font-weight:bold'>"+statsdesc[i]+"</td><td>"+stat+"</td><td class='_luxbotago'>"+time+"</td></tr>")
+                $container.prepend("<tr class='lux_bf_inject'><td style='font-weight:bold'>"+Constants.statsdesc[i]+"</td><td>"+stat+"</td><td class='time_passed'>"+time+"</td></tr>")
             }
         }
     }
   
-    , showUserInfoB: function () {
+    , addClickEventsForUsers: function () {
 		var self = this;
         $("a.player").on('click', function(event) {
             if (String(event.target).indexOf('stats.php') > -1) {
@@ -1748,11 +1922,8 @@ Page.battlefield = {
                     return;
                 }
                 self.statsLoadedId = userid;
-                getLux('&a=getstats&userid=' + userid,
-                    function(responseDetails) {
-                        var r = responseDetails.responseText;
-                        this.battlefieldShowInfo(r);
-                });
+				
+                getLux('&a=getstats&userid=' + userid, Page.battlefield.showUserInfo);
             }
         });
     }
@@ -1965,11 +2136,16 @@ Page.mercs = {
     
 }
 Page.recruit = {
-    run: function() {
+
+	addRecruitId : function() {
 		var kocid = document.body.innerHTML.between("stats.php?id=", '"');
 		var recruitid= document.URL.substring( document.URL.indexOf("=") +1 );
-
+	
 		getLux('&a=addRecruitid&kocid=' + kocid + '&recruitid='+recruitid);
+	},
+	
+    run: function() {
+		this.addRecruitId();
     }
 }
 
@@ -2554,15 +2730,9 @@ Plugins['recon_request'] = {
 	
 	, run : function() {
 		this.initReconRequest();
-
-		if (action == "stats") {
-			this.addStatsPageButton();
-		}
 	}
 	
     , initReconRequest : function() {
-        //runs on every page, adds box to upper left of page.
-        
         var x = $('<div id="_luxbot_ReconRequestPopup" style="display:none; position: absolute; top:0px; margin:15px; padding:20px;background-color: black; border: 1px solid green; font-family: arial; font-size: 10px;  overflow: auto;">');
         $("body").append(x);
         x.css("left",(document.body.clientWidth/2)-100 + "px");
@@ -2572,14 +2742,7 @@ Plugins['recon_request'] = {
 
         this.toggleReconRequestPopup(db.get('reconRequest') !== 0);
     }
-	
-	, addStatsPageButton : function() {
-		var $table = getTableByHeading("User Stats");
 
-		$table.parent().find("table").last().append('<tr><td align=center colspan=4><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td></tr>');	
-		
-		$("#_luxbot_requestRecon").click(this.addRequestRecon);
-	}
     , addRequestRecon: function() {
         var getopponent = document.getElementsByName('defender_id');
         var data = getopponent[0].value;
@@ -2839,20 +3002,12 @@ var action;
 !function($, _, document) {
     "use strict";
 
-	var newCSS = gmGetResourceText ("styles");
-	gmAddStyle (newCSS);
+	gmAddStyle( gmGetResourceText ("styles") );
 
+	
     action = Page.getCurrentPage();
-
-	var kocid;
-    if (action == 'base') {
-        var html = document.body.innerHTML.split("stats.php?id=");
-        html = html[1];
-        kocid = html.slice(0, html.indexOf('"'));
-    }
-    
-	// This is a global
-    User = Init.loadUser(kocid);
+	
+    User = Init.loadUser(action);
 	if (!User) {
 		alert ("Please go to your Command Center for initialization");
 		return false;
@@ -2870,10 +3025,12 @@ var action;
 	if (Page[action]) {
 		Page[action].run();
 	}
+	
 	// Plugins want to be run on all pages. Look at /includes/plugins/...
 	_.each(Plugins, function(plugin) {
-		log("running plugin " + plugin.description);
-		plugin.run();
+		if (PluginHelper.toRun(plugin)) {
+			plugin.run();
+		}
 	});
 
 }(window.jQuery, (this._ || _ || unsafeWindow._), document);
