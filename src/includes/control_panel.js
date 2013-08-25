@@ -43,7 +43,8 @@ var ControlPanel = {
     , showLinkBox: function () {
 		get(Constants.gitHtml+'links.html', function(r) {
 			alert(r.responseText);
-		}
+			$('#tofu_popup_content').html(r.responseText);
+		});
     }
 
     ,  showMessageBox: function() {
