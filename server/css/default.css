@@ -1,0 +1,116 @@
+table.table_lines {
+  width: 100%;
+  border-spacing: 0;
+  border-collapse: collapse;
+  padding: 6px;
+}
+.viewHistory {
+  font-size: 6pt;
+}
+#tofu_control_box {
+  border: 1px solid black;
+  position: absolute;
+  right: 40px;
+  top: 0;
+  width: 160px;
+  height: 50px;
+  text-align: center;
+  font-size: 12px;
+  padding: 5px;
+  color: black;
+  background-color: darkgray;
+  opacity: 0.8;
+  z-index: 199;
+}
+#tofu_control_box ul {
+  padding: 5px;
+  margin: 5px;
+}
+#tofu_popup_box {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: none;
+  z-index: 200;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+#tofu_popup_box > div {
+  max-height: 80%;
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 10px;
+  overflow-y: auto;
+  border: 1px solid darkgray;
+  text-align: center;
+  color: white;
+  background-color: black;
+}
+#tofu_control_box > ul {
+  list-style: none;
+}
+._lux_online {
+  position: absolute;
+}
+#_luxbot_alliances {
+  display: none;
+  visibility: hidden;
+}
+.expando {
+  float: right;
+}
+.collapsed_table > tbody > tr:nth-child(n+2) {
+  visibility: hidden;
+  display: none;
+}
+table.table_lines > tbody > tr > th {
+  cursor: pointer;
+}
+table.table_lines {
+  margin-top: 5px;
+}
+#container {
+  max-width: 500px;
+  height: 300px;
+}
+.projection {
+  color: #B3FFF8;
+}
+.time_passed {
+  padding-right: 20px;
+  color: #aaaaaa;
+  font-style: italic;
+}
+.supplemental {
+  font-size: 10px;
+}
+#_lux_sabbed_popup {
+  background-color: black;
+  border-color: red darkred darkred red;
+  border-style: solid;
+  border-width: 5px;
+  bottom: 10px;
+  position: fixed;
+  right: 10px;
+  text-align: center;
+  width: auto;
+}
+#_luxbot_messages {
+  border-spacing: 4px;
+}
+#_luxbot_messages th {
+  width: 100px;
+  padding: 6px;
+}
+.sabbable > span {
+  border-bottom: thin dotted white;
+}
+._lux_needs_update {
+  position: absolute;
+  padding-left: 12px;
+}
+._lux_online {
+  position: absolute;
+  right: 240px;
+}
