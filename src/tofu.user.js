@@ -28,7 +28,7 @@
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
 var Plugins = {};
-var version = '0.2.130726';
+var version = '0.2.130825';
 var Buttons = {
 	gold : 0,
 	cost_col : 0,
@@ -163,6 +163,7 @@ var ControlPanel = {
     , showLinkBox: function () {
 		get(Constants.gitHtml+'links.html', function(r) {
 			alert(r.responseText);
+			$('#tofu_popup_content').html(r.responseText);
 		});
     }
 

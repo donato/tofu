@@ -1,3 +1,4 @@
+/*
 // ==UserScript==
 // @name           Koc Addon Recruit Helper
 // @namespace      http://*kingsofchaos.com/*
@@ -18,7 +19,7 @@ if (PageURL[0] == "writemail") {
     nick = stuff.split("<b>To:</b> ");
     nick = nick[1].split("</th>"); 
     nick = nick[0];
-    nick = nick.replace(/\n/g,"").replace(/&nbsp;.*/g,"");
+    nick = nick.replace(/\n/g,"").replace(/&nbsp;.* /g,"");
     statid = document.getElementsByName("to")[0].value;
 
     var d = new Date()
@@ -134,4 +135,4 @@ function duration ( timespan ) {
   if (time === "") time += '1 second ago';
   return time;
 }
-
+*/

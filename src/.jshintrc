@@ -4,14 +4,16 @@
     "globalstrict" : false,
     "laxcomma" : true,
     "laxbreak" : true,
-    "browser"  : true,
     "eqnull"   : true,
     "debug"    : true,
     "devel"    : true,
     "asi"      : true,
     "jquery"   : true,
     "maxerr"   : 10000,
-    "multistr"   : true,    //will remove later
+	"sub"      : true,    // may remove later
+	"browser"  : false,   // may remove later
+	"smarttabs": true,    // may remove later
+    "multistr" : true,    // will remove later
     "predef"   : [
         "GM_getResourceText",
         "GM_getResourceURL",

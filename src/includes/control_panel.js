@@ -9,7 +9,6 @@ var ControlPanel = {
 
 		$('body').append( this.$controlbox );
 
-
 		this.$controlbox.click( this.showControlPanel );
     }
 
@@ -31,14 +30,9 @@ var ControlPanel = {
 		});
     }
 
-
-
     ,  toggle: function() {
-        var $d = $("_luxbot_darken").toggle();
+        $("_luxbot_darken").toggle();
     }
-
-
-    // GUI pages
 
     , showLinkBox: function () {
 		get(Constants.gitHtml+'links.html', function(r) {
@@ -55,7 +49,11 @@ var ControlPanel = {
         var i;
         for (i = 0; i < messages.length; i++) {
             var y = messages[i].split('|');
-            content += '<tr id="_luxbot_message_' + y[3] + '"><td><a href="javascript:void(0);" name="' + y[3] + '">+</a></td><td>' + y[1] + '</td><td>' + y[0] + '</td><td>' + y[2] + '</td></tr>';
+            content += '<tr id="_luxbot_message_' + y[3] + '">'
+					  +'<td><a href="javascript:void(0);" name="' + y[3] + '">+</a></td>'
+					  +'<td>' + y[1] + '</td><td>' + y[0] + '</td>'
+					  +'<td>' + y[2] + '</td>'
+					  +'</tr>';
         }
 
         GUI.showMessage('<h3>Messages</h3><table id="_luxbot_messages" width="100%"><tr><th>Show</th><th>Sender</th><th>Subject</th><th>Date</th></tr>' + content + '</table>');
@@ -63,14 +61,13 @@ var ControlPanel = {
     }
 
     , showMessageDetails: function(event) {
-        if (event.target.name !== undefined) {
+		var name = event.target.name;
+        if ( _.isString(name) ) {
 
-            getLux('&a=getmessage&id=' + String(event.target.name),
+            getLux('&a=getmessage&id=' + name,
                function(r) {
-                    var q = document.getElementById('_luxbot_message_' + String(event.target.name));
+                    var q = document.getElementById('_luxbot_message_' + name);
                     GUI.showMessage('<h3>Messages</h3><table id="_luxbot_messages" width="100%"><tr><th>From</th><td>' + q.childNodes[1].innerHTML + '</td></tr><tr><th>Subject</th><td>' + q.childNodes[2].innerHTML + '</td></tr><tr><th>Date</th><td>' + q.childNodes[3].innerHTML + '</td></tr><tr><th>Message</th><td>' + r.responseText + '</td></tr>', GUI.showMessageBox);
-                    addCSS('#_luxbot_messages {border-spacing:4px;}\
-                    #_luxbot_messages th{width:100px;padding:6px;}');
             });
         }
     }

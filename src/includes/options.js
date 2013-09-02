@@ -2,16 +2,18 @@ var Options = {
 	// Goal of this is to make the plugins toggle-able.
 
    showUserOptions: function() {
-		var makeToggle = function(name,value,opt1,opt2) {
-			var current = db.get(value, "true");
+   
+		function makeToggle( name, value, opt1, opt2 ) {
+			opt1 = opt1 || "Enabled";
+			opt2 = opt2 || "Disabled";
+			
+			var current = db.get(value, true);
 			var html;
 			
-			if (!opt1)
-				opt1 = "Enabled";
-			if (!opt2)
-				opt2 = "Disabled";
-			if (current == "true") {
-				html = "<tr><td> "+name+"</td><td><input type='radio' name='"+value+"' checked='checked' value='true'>"+opt1+"</input>"
+			var checked = ' checked="checked" ';
+
+			if (current=== true) {
+				return "<tr><td> "+name+"</td><td><input type='radio' name='"+value+"' checked='checked' value='true'>"+opt1+"</input>"
 						+"<input type='radio' name='"+value+"' value='false'>"+opt2+"</input></tr>";
 			} else {
 				html = "<tr><td> "+name+"</td><td><input type='radio' name='"+value+"' value='true'>"+opt1+"</input>"
@@ -19,6 +21,7 @@ var Options = {
 			}
 			return html;
 		}
+		
 		var c = (User.logself === 1) ?  ' checked="checked"' : '';
 		
 		var battlelog = db.get('battlelog', 0);
@@ -33,14 +36,14 @@ var Options = {
 				Show Full Log with Redirect<br />\
 			Always Focus Security Pages: <input type="checkbox" id="_luxbot_securitycheck" ' + (db.get('securityfocus', 0) === 1 ? ' checked="checked"' : '') + '/></fieldset>'
 			+'<table>'
-			+makeToggle("Turn Clock","option_clock") 
-			+makeToggle("Stats In Command Center","option_commandCenterStats","Top","Side") 
-			+makeToggle("Attack Targets","option_Targets") 
-			// +makeToggle("Show Enemy Sab List","option_sabTargets") 
-			+makeToggle("Show Fake Sab Targets","option_fakeSabTargets") 
-			+makeToggle("Show Personal Gold Projections","option_goldProjection") 
-			+makeToggle("Show Stats Changes in Armory","option_armory_diff") 
-			+makeToggle("Show Armory Value Graph in Armory","option_armory_graph") 
+			+makeToggle("Turn Clock", "option_clock") 
+			+makeToggle("Stats In Command Center", "option_commandCenterStats","Top","Side") 
+			+makeToggle("Attack Targets", "option_Targets") 
+			// +makeToggle("Show Enemy Sab List", "option_sabTargets") 
+			+makeToggle("Show Fake Sab Targets", "option_fakeSabTargets") 
+			+makeToggle("Show Personal Gold Projections", "option_goldProjection") 
+			+makeToggle("Show Stats Changes in Armory", "option_armory_diff") 
+			+makeToggle("Show Armory Value Graph in Armory", "option_armory_graph") 
 			+"</table>"
 			
 			+ '<br /><br /><input type="button" value="Save!" id="_luxbot_save" /> <br />');
