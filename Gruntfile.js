@@ -29,7 +29,24 @@ module.exports = function(grunt) {
 			}
 		},
 		requirejs: {
-
+			compile: {
+				options: {
+					almond:true,
+					name:'node_modules/almond/almond',
+					baseUrl: '.',
+					include: 'src/main.js',
+					out: 'tofu-min.user.js',
+					paths: {
+						'include' : 'src/includes',
+						'jQuery' : 'bower_components/jquery/jquery',
+						'underscore' : 'bower_components/underscore/underscore',
+					},
+					wrap: {
+						// Note: the minifier strips the needed comments so we cannot use this currently
+						// startFile: 'src/greasemonkey_header.js',
+					}
+				}
+			}
 		}
 	});
 
