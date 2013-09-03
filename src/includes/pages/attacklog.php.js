@@ -1,8 +1,7 @@
-
-    //Attack Logs
-Page.attacklog = {
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run : function() {
-        //send entire attacklog to lux
         var defendedRows = $("td.content > table.attacklog > tbody > tr");
         this.attackLogHelper(defendedRows,0);
         
@@ -62,3 +61,4 @@ Page.attacklog = {
     }
 
  }
+ });

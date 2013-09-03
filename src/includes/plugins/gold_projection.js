@@ -1,4 +1,4 @@
-Plugins['gold_projection'] = {
+define({
 	description : "Show projected gold beneath current gold",
 	
 	defaultEnabled : true,
@@ -28,4 +28,4 @@ Plugins['gold_projection'] = {
 			, secsTillTurn*1000
 		);
 	}
-}
+});

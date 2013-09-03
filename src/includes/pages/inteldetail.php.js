@@ -1,7 +1,6 @@
-  
-
-Page.inteldetail = {
-
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run: function() {
         this.processIntelLog();
     }
@@ -73,4 +72,4 @@ Page.inteldetail = {
         logRecon(enemy, enemyid, logid, gold, data, weapons)
     }
 
-}
+}});

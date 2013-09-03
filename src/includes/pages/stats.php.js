@@ -1,6 +1,6 @@
-
-Page.stats = {   
-
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run: function() {
         this.enemyid = document.URL.split(/[=&?]/)[2];
 
@@ -254,4 +254,4 @@ Page.stats = {
                 }
             });
     }
-}
+}});

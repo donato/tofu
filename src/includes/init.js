@@ -1,4 +1,5 @@
-var Init = {
+define(['jQuery', 'underscore'], function($, _) {
+	return {
 
     loadUser : function(action) {
 	
@@ -154,6 +155,5 @@ var Init = {
         $("#_luxbot_login").click(initLogin);
     
     }
-
-
 }
+});

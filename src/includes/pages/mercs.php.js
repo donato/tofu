@@ -1,6 +1,6 @@
-
-Page.mercs = {
-
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run: function() {
 	
 		var buttonsConstraint = function(val, $row) {
@@ -12,4 +12,4 @@ Page.mercs = {
     }
 	
     
-}
+}});

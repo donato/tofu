@@ -1,4 +1,4 @@
-Plugins['targets'] = {
+define({
     description : "Targets button added to sidebar"
 	
 	, defaultEnabled : true
@@ -143,4 +143,4 @@ Plugins['targets'] = {
 			});    
 	}
 
-}
+});

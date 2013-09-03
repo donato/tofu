@@ -1,4 +1,5 @@
-PluginHelper = {
+define(['jQuery', 'underscore'], function($,_) {
+return {
 	isEnabled : function(str) {
 		var plugin = Plugins[str];
 		if (!plugin) {
@@ -30,3 +31,4 @@ PluginHelper = {
 		);
 	}
 }
+});

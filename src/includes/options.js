@@ -1,5 +1,5 @@
-var Options = {
-	// Goal of this is to make the plugins toggle-able.
+define(['jQuery', 'underscore'], function($,_) {
+return {
 
    showUserOptions: function() {
    
@@ -59,4 +59,4 @@ var Options = {
 		
 		GUI.toggleGUI();
 	}
-}
+}});

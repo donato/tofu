@@ -1,4 +1,4 @@
-Plugins['recon_request'] = {
+define({
 	description : "Recon request system"
 	
 	, defaultEnabled : true
@@ -61,4 +61,4 @@ Plugins['recon_request'] = {
                 }
         });
     }
-}
+});

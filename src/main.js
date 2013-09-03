@@ -1,9 +1,21 @@
-// Note: The version is added here by the build script as a global string.
+// (window.jQuery, (this._ || _ || unsafeWindow._), document);
 
-var User;
-var action;
-
-!function($, _, document) {
+require([
+	'jQuery',
+	'underscore',
+	'include/buttons',
+	'include/constants',
+	'include/control_panel',
+	'include/gm_wrappers',
+	'include/gui',
+	'include/init',
+	'include/js_utils',
+	'include/koc_utils',
+	'include/layout',
+	'include/logging',
+	'include/options',
+	'include/plugin_container',
+], function($, _) {
     "use strict";
 
 	gmAddStyle( gmGetResourceText ("styles") );
@@ -37,4 +49,4 @@ var action;
 		}
 	});
 
-}(window.jQuery, (this._ || _ || unsafeWindow._), document);
+});

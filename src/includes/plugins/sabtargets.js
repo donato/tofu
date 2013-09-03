@@ -1,4 +1,4 @@
-Plugins['sabtargets'] = {
+define({
     description : "Sab targets button added to sidebar"
 	
 	, defaultEnabled : true
@@ -57,5 +57,4 @@ Plugins['sabtargets'] = {
                 document.getElementById('getTodaysSabs').removeEventListener('click',getTodaysSabs,false);
         });      
     }
-}
- 
+});

@@ -1,6 +1,6 @@
-
-Page.armory = {
-    
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
         run : function() {
             $("table.table_lines:eq(2)").attr("id","military_effectiveness");
             $("table.table_lines:eq(5)").attr("id","buy_weapons_form");
@@ -481,5 +481,5 @@ Page.armory = {
                 temp.append("<tr><td colspan=2>There are no more upgrades</td></tr>");
             
         }
-        
-}
+    }
+});

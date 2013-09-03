@@ -1,4 +1,6 @@
-Page.base = {
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run: function() {
         this.basePage();
         this.baseLayout();
@@ -151,4 +153,4 @@ Page.base = {
 	}
 
 
-}
+}});

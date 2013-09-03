@@ -1,4 +1,4 @@
-Plugins['fakesabtargets'] = {
+define({
     description : "Fake-Sab targets button added to sidebar"
 	
 	, defaultEnabled : false
@@ -40,4 +40,4 @@ Plugins['fakesabtargets'] = {
 				}
 		});
 	}
-}
+});

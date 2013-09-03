@@ -1,5 +1,6 @@
-var GUI = {
-
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     init: function () {
         this.$popup = $('<div>', { 'id': 'tofu_popup_box' });
 		$('body').append( this.$popup );
@@ -33,4 +34,4 @@ var GUI = {
 	}
 
 }
-
+});

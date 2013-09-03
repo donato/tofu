@@ -1,3 +1,4 @@
+define(['jQuery', 'underscore'], function($,_) {
     function logBase(stats, data, officers) {
         //stats=sa;da;spy;sentry;
         //details=fort;siege;econ;tech;conscription;turns;covertlevel;bonus
@@ -47,7 +48,7 @@
                     });
     }    
 
-    function SendConquestDetails(contype) {
+    function sendConquestDetails(contype) {
         getLux('a=logcon&contype=' + contype);
     }
 
@@ -66,4 +67,13 @@
                         // alert(responseDetails.responseText);
                 });
     }
- 
+
+	return {
+		logBase : logBase,
+		sendLogDetails : sendLogDetails,
+		sendAttackLogDetails : sendAttackLogDetails,
+		logRecon : logRecon,
+		sendConquestDetails : sendConquestDetails,
+		logStats : logStats
+	}
+});

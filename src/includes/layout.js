@@ -1,32 +1,36 @@
-    function makeCollapsable(action) {
+define(['jQuery', 'underscore'], function($,_) {
+
     
-        function collapseTable(table) {
-            var $table = $(table)
-            $table.find(".expando").text("+")
-            $table.addClass("collapsed_table")
-        }
-    
-        function onTableClick(e) {        
-            var $table = $(e.target).closest("table")
+	function collapseTable(table) {
+		var $table = $(table)
+		$table.find(".expando").text("+")
+		$table.addClass("collapsed_table")
+	}
 
-            if ($table.is(".collapsed_table")) {
-                $table.find(".expando").text("-");
-            } else {
-                $table.find(".expando").text("+");
-            }
-            $table.toggleClass("collapsed_table");
+	function onTableClick(e) {        
+		var $table = $(e.target).closest("table")
 
-            saveCollapsed();
-        }
+		if ($table.is(".collapsed_table")) {
+			$table.find(".expando").text("-");
+		} else {
+			$table.find(".expando").text("+");
+		}
+		$table.toggleClass("collapsed_table");
 
-        function saveCollapsed() {
-            var store = [];
-            $("table").each(function(i,e) {
-                if ($(e).is(".collapsed_table"))
-                    store.push(i)
-            });
-            db.put('coltables_' + action, store.join(','));
-        }    
+		saveCollapsed();
+	}
+
+	function saveCollapsed() {
+		var store = [];
+		$("table").each(function(i,e) {
+			if ($(e).is(".collapsed_table"))
+				store.push(i)
+		});
+		db.put('coltables_' + action, store.join(','));
+	} 
+	
+	return function(action) {
+   
         
         $(document).on('click', "table.table_lines > tbody > tr > th", onTableClick)
 
@@ -41,3 +45,4 @@
         var coltables = db.get('coltables_' + action, '').split(',');
         _.map(coltables, function (i) { collapseTable($tables.eq(i)); });
     }
+});

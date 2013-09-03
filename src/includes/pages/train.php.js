@@ -1,4 +1,6 @@
-Page.train = {
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run: function() {
         this.unheldWeapons();
         this.tffChart();
@@ -104,4 +106,4 @@ Page.train = {
             db.put("Tech",tech);
         }
     }
-}
+}});

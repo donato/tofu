@@ -1,5 +1,6 @@
-Page.battlefield = {
-
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
 	statsLoadedId : undefined,
 	allKocids : [],
 	
@@ -188,4 +189,4 @@ Page.battlefield = {
             }
         });
     }
-}
+}});

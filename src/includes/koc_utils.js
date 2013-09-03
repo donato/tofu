@@ -1,4 +1,5 @@
-    // KoC Utils
+define(['jQuery', 'underscore'], function($, _) {
+		
     var db = {        
         // This allows it to store info for different koc ids on same pc
         init: function(kocid) {
@@ -143,7 +144,6 @@
 		return 1;
 	}
 
-
 	function fortBonus(fort) {
 		fort = fort || db.get('fort');
 
@@ -213,3 +213,4 @@
 		return 1;
 	}
 			
+});

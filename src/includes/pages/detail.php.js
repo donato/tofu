@@ -1,7 +1,6 @@
-  
-
-Page.detail = {
-
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run: function() {
         this.showBattleLog();
         // Gold Update on attacks 
@@ -85,4 +84,4 @@ Page.detail = {
 
         sendAttackLogDetails(User.kocnick, "attack", enemy_id, enemy_name, your_damage, enemy_damage, your_losses, enemy_losses, gold_stolen, attack_id, 'now');
     }
-}
+}});

@@ -1,8 +1,6 @@
-
-    //
-    // Conquest Page Functions
-    //
-Page.conquest = {
+define(['jQuery', 'underscore'], function($, _) {
+	return {
+		
     run: function() {
     
         function doConquest() {
@@ -22,4 +20,4 @@ Page.conquest = {
     }
     
 }
-    
+});
