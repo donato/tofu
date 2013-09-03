@@ -7,7 +7,6 @@ Script for the game KingsOfChaos, improving gameplay, tracking player statistics
 ### Setting up your environment for first time
 
 1. Install 
-	* Ruby : http://www.ruby-lang.org/en/downloads/
 	* NodeJS : http://nodejs.org/download/
 	* GitHub Client : https://help.github.com/articles/set-up-git
 2. Make a github.com account.
@@ -21,18 +20,16 @@ When you are ready to submit the changes back to the Master branch, go to github
 
 ### How to build
 	Open a command line window in the local /src/ folder.
-	The first time you do this you will need ot install jshint by typing "npm install jshint -g"
-	After that you can build by typing "ruby build.rb"
+	The first time you do this you will need to install node packages by typing "npm install"
+	After that you can build by typing "grunt"
 	
-	The build script will test your code for some common mistakes, and then build a new tofu.user.js file for you to test!
+	The build script will test your code for some common mistakes, and then build a new tofu-min.user.js file for you to test!
 	
-	For faster development, I recommend you edit the build.rb file to automatically copy the new user script into your Greasemonkey install directory so that you can just refresh FireFox after building.
 
 ### Understanding Code Structure
 There are two folders, the 
     /server/...
     /src/...
-The server folder contains the CSS files, javascript libraries and images which the script will download once upon installation.
-The src folder contains the source which is built using "build.rb"
+The server folder contains the CSS files and images which the script will download once upon installation.
+The src folder is only used to build the minified file.
 
-Although the User Script environment does not give us the luxury of AMD and other cool tools, we still want to program as modularly as possible. Thus we attempt to enforce a rule that each file will be a self contained object.
