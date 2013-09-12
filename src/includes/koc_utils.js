@@ -1,45 +1,9 @@
 define(['jQuery', 'underscore'], function($, _) {
 		
-    var db = {        
-        // This allows it to store info for different koc ids on same pc
-        init: function(kocid) {
-            if (kocid === undefined || kocid === null) {
-				this.id = gmGetValue("lux_last_user",0);
-				return;
-            }
-			gmSetValue("lux_last_user", kocid);
-			this.id = kocid;
-        },
-        get: function(option,def) {
-            option += "_"+this.id;
-            var value = gmGetValue(option, def);
-            if (option.indexOf('gold_')>0) 
-                value = parseInt(value, 10);
-            return value;
-        },
-		getInt: function(option, def) {
-			var ret = this.get(option, def);
-			return parseInt(ret, 10);
-		},
-		getFloat: function(option, def) {
-			var ret = this.get(option, def);
-			return parseFloat(ret, 10);
-		},
-        put: function(option,val) {
-            option += "_"+this.id;
-            gmSetValue(option,val);
-        },
-        del: function(option) {
-            option += "_"+this.id;
-            gmDeleteValue(option);
-        }
-    };
-
-
     var Page = {
 		// This gets extended with each page.
         getCurrentPage:function() {
-            return document.URL.substring(document.URL.indexOf('.com')+5, document.URL.indexOf('.php'));    
+            return document.URL.substring(document.URL.indexOf('.com')+5, document.URL.indexOf('.php'));
         }
         
         , getPlayerGold :function() {
@@ -56,11 +20,10 @@ define(['jQuery', 'underscore'], function($, _) {
     }
 
     function timeToSeconds (time, timeunit) {
-        if (timeunit.match('minute')) { time = time * 60; } 
+        if (timeunit.match('minute'))    { time = time * 60; } 
         else if (timeunit.match('hour')) { time = time * 60*60; } 
-        else if (timeunit.match('day')) { time = time * 60*60*24; }
+        else if (timeunit.match('day'))  { time = time * 60*60*24; }
         else if (timeunit.match('week')) { time = time * 60*60*24*7; }
-        else { time = time; }
         return time;
     }
     
@@ -82,24 +45,6 @@ define(['jQuery', 'underscore'], function($, _) {
         return time;
     }
 
-    function checkOption(opt) {
-        if (db.get(opt, "true") == "true")
-            return true;
-        else
-            return false;
-    }
-
-    function parseResponse(text,key) {
-        var tx = text.split("\t\t");
-        var t;
-        for (t in tx) {
-            var s = tx[t].split("\t");
-            if (s[0] == key)
-                return s[1];
-        }
-        return "";
-    }
-        
     function getTableByHeading(heading) {
         var $table = $("table.table_lines > tbody > tr > th:contains('"+heading+"')");
 		
@@ -146,25 +91,8 @@ define(['jQuery', 'underscore'], function($, _) {
 
 	function fortBonus(fort) {
 		fort = fort || db.get('fort');
-
-		var cb = 0;
-		if (fort == "Camp") cb = 0;
-		if (fort == "Stockade") cb = 1;
-		if (fort == "Rabid") cb = 2;
-		if (fort == "Walled") cb = 3;
-		if (fort == "Towers") cb = 4;
-		if (fort == "Battlements") cb = 5;
-		if (fort == "Portcullis") cb = 6;
-		if (fort == "Boiling Oil") cb = 7;
-		if (fort == "Trenches") cb = 8;
-		if (fort == "Moat") cb = 9;
-		if (fort == "Drawbridge") cb = 10;
-		if (fort == "Fortress") cb = 11;
-		if (fort == "Stronghold") cb = 12;
-		if (fort == "Palace") cb = 13;
-		if (fort == "Keep") cb = 14;
-		if (fort == "Citadel") cb = 15;
-		if (fort == "Hand of God") cb = 16;
+		
+		var cb = _.find(Constants.sieges);
 		cb = Math.pow(1.25,cb);
 		cb = Math.round(cb*1000)/1000;
 		return cb;
@@ -173,22 +101,7 @@ define(['jQuery', 'underscore'], function($, _) {
 	function siegeBonus(siege){
 		siege = siege || db.get('siege');
 
-		var cb = 0;
-		if (siege == "None") cb = 0;
-		if (siege == "Flaming Arrows") cb = 1;
-		if (siege == "Ballistas") cb = 2;
-		if (siege == "Battering Rams") cb = 3;
-		if (siege == "Ladders") cb = 4;
-		if (siege == "Trojan") cb = 5;
-		if (siege == "Catapults") cb = 6;
-		if (siege == "War Elephants") cb = 7;
-		if (siege == "Siege Towers") cb = 8;
-		if (siege == "Trebuchets") cb = 9;
-		if (siege == "Black Powder") cb = 10;
-		if (siege == "Sappers") cb = 11;
-		if (siege == "Dynamite") cb = 12;
-		if (siege == "Greek Fire") cb = 13;
-		if (siege == "Cannons") cb = 14;
+		var cb = _.find(Constants.sieges);
 		cb = Math.pow(1.3,cb);
 		cb = Math.round(cb*1000)/1000;
 		return cb;
