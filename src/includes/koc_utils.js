@@ -106,16 +106,25 @@ define(['jQuery', 'underscore'], function($, _) {
 		return $table.last().parents().eq(2);
     }
 
+	// Since tables often don't have an id, we can make life easier by setting them.
+	function setTableId(index, id) {
+		return $('table.table_lines').eq(index).attr('id', id);
+	}
+	
+	function parseTableColumn($table, column) {
+		return $table.find('tr').find('td:eq('+column+')');
+	}
+	
     function getRowValues(searchText) {
-        var $cells = $("tr:contains('"+searchText+"'):last > td")
+        var $cells = $("tr:contains('"+searchText+"'):last > td");
         
-        var vals = []
+        var vals = [];
         $.each($cells, function (index, val) {
             if (index === 0) return
             vals.push($(val).text().trim())
         });
         
-        return vals
+        return vals;
     }
 
 	function raceBonus(stat, race) {
@@ -144,6 +153,13 @@ define(['jQuery', 'underscore'], function($, _) {
 		return 1;
 	}
 
+	function getWeaponType(weaponName) {
+		if (_.contains(Constants.saWeaps, weaponName)) { return 'sa'; }
+		if (_.contains(Constants.daWeaps, weaponName)) { return 'da'; }
+		if (_.contains(Constants.spyWeaps, weaponName)) { return 'spy'; }
+		if (_.contains(Constants.sentryWeaps, weaponName)) { return 'sentry'; }
+	}
+	
 	function fortBonus(fort) {
 		fort = fort || db.get('fort');
 

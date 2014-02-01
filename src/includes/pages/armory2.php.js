@@ -474,5 +474,5 @@ define(['jQuery', 'underscore'], function($, _) {
                             temp.append("<tr><td colspan=2>There are no more upgrades</td></tr>");
 
                     }
-        }
-});
+            }
+        });
