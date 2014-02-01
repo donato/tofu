@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 			},
 			build: {
 				src: ['src/tofu.user.js'],
-				dest: 'build/tofu.user.js'
+				dest: 'bin/tofu.user.js'
 			}
 		},
 		requirejs: {
