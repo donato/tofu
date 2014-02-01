@@ -33,9 +33,7 @@ define(['jQuery', 'underscore'], function($, _) {
     }    
  
     , checkForUpdate: function(startup) {
-		// version is a global variable created by the build script
         if (db.get("luxbot_version",0) != version) {
-			// We just updated!
             db.put("luxbot_version", version);
             db.put("luxbot_needsUpdate",0);
         }
@@ -45,7 +43,7 @@ define(['jQuery', 'underscore'], function($, _) {
                 $("#getUpdate").click(function() {
                     openTab(Constants.downloadUrl); 
                 });
-            },1000);
+            }, 1000);
             return;
         }
         
@@ -109,7 +107,6 @@ define(['jQuery', 'underscore'], function($, _) {
     , showInitBox: function () {
         
         function initLogin() {
-
             var f_user = $("#_forum_username").val();
             var f_pass = $("#_forum_password").val();
             if (f_pass === '' || f_user === '')
@@ -147,10 +144,8 @@ define(['jQuery', 'underscore'], function($, _) {
             });    
         }
         
-        var welcome ='<h1>Welcome</h1>There is no data for your LuX account.<br /><br />';
-        GUI.displayText(welcome + 'Please login with your <a href="http://www.fearlessforce.net">FF Forums</a> info.<br /><br /> '+
-                    'User: <input type="text" id="_forum_username" value="'+(User.forumName? User.forumName : '')+'"/> Password: <input type="password" id="_forum_password" /> <input type="button" value="Login"'+
-                                    'id="_luxbot_login" /><br />');   
+		var welcomeText = ' GET FROM /templates ';
+        GUI.displayText( welcomeText );   
                                     
         $("#_luxbot_login").click(initLogin);
     

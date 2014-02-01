@@ -14,13 +14,13 @@
 	};
 	
     String.prototype.int = function() {
-        var r = parseInt(this.replace(/,/g,''),10);
+        var r = parseInt(this.replace(/,/g,''), 10);
         if (isNaN(r)) r=-1;
         return r;
     };
 	
     String.prototype.float = function() {
-        var r = parseFloat(this.replace(/[^0-9\.\-]*/g,''),10);
+        var r = parseFloat(this.replace(/[^0-9\.\-]*/g,''), 10);
         if (isNaN(r)) r=-1;
         return r;
     };
@@ -32,7 +32,7 @@
     function to_int(str) {
         str = str.replace(/[^0-9\.\-]/g, '');
         if (str === '') {
-            return '';
+            return -1;
         }
         return parseInt(str, 10);
     }
