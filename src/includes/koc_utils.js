@@ -39,9 +39,8 @@ define(['jQuery', 'underscore'], function($, _) {
         // This gets extended with each page.
         getCurrentPage: function() {
             return document.URL.substring(document.URL.indexOf('.com') + 5, document.URL.indexOf('.php'));
-        }
-
-        ,
+        },
+		
         getPlayerGold: function() {
             var gold = textBetween(document.body.innerHTML, 'Gold:<font color="#250202">', '<');
 
@@ -54,7 +53,7 @@ define(['jQuery', 'underscore'], function($, _) {
             return(gold || 0);
         }
     }
-
+	
     function timeToSeconds(time, timeunit) {
         if(timeunit.match('minute')) {
             time = time * 60;
@@ -256,4 +255,66 @@ define(['jQuery', 'underscore'], function($, _) {
         return 1;
     }
 
+	function raceBonus(stat, race) {
+		race = race || db.get('race');
+		
+		switch(stat) {
+			case 'income' : 
+				if (race =='humans') { return 1.3; }
+				if (race =='dwarves') { return 1.15; }
+				break;
+			case 'sa' : 
+				if (race =='orcs') { return 1.35; }
+				break;
+			case 'da' : 
+				if (race =='orcs') { return 1.2; }
+				if (race =='dwarves') { return 1.4; }
+				break;
+			case 'spy' : 
+				if (race =='humans') { return 1.35; }
+				if (race =='elves') { return 1.45; }
+				break;
+			case 'sentry' : 
+				if (race =='undead') { return 1.35; }
+				break;
+		}
+		return 1;
+	}
+
+	function fortBonus(fort) {
+		fort = fort || db.get('fort');
+		
+		var cb = _.find(Constants.sieges);
+		cb = Math.pow(1.25,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+
+	function siegeBonus(siege){
+		siege = siege || db.get('siege');
+
+		var cb = _.find(Constants.sieges);
+		cb = Math.pow(1.3,cb);
+		cb = Math.round(cb*1000)/1000;
+		return cb;
+	}
+	
+	function covertBonus(level) {
+		level = level || db.getInt('covertlevel',0);
+		
+		return Math.pow(1.6, level);
+	}
+	
+	function upgradeBonus(type, option) {
+		switch (type) {
+			case 'sa':
+				return siegeBonus(option);
+			case 'da':
+				return fortBonus(option);
+			case 'spy':
+			case 'sentry':
+				return covertBonus(option);
+		}
+		return 1;
+	}
 });
