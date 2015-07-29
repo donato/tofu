@@ -1,4 +1,4 @@
-define(function() {
+define([], function() {
 
 	var baseUrl = "http://luxbot.net/bot/";
 	
@@ -12,7 +12,7 @@ define(function() {
 		
 		statsdesc : {0:'Strike Action',1:'Defensive Action',2:'Spy Rating',3:'Sentry Rating',4:'Gold'},
 
-		storedStrings : ['race' 'kocnick','forumName','forumPass','auth','logself'],
+		storedStrings : ['race', 'kocnick','forumName','forumPass','auth','logself'],
 
 		storedNumbers :['kocid','tff','income','sa','da','spy','sentry','spyWeaps','sentryWeaps','daWeaps','saWeaps'],
 		
@@ -62,5 +62,4 @@ define(function() {
 			'Cannons' : 14
 		}
 	}
-
-}});
+});

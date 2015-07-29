@@ -35,11 +35,11 @@ module.exports = function(grunt) {
 					name:'node_modules/almond/almond',
 					baseUrl: '.',
 					include: 'src/main.js',
-					out: 'tofu-min.user.js',
+					out: 'bin/tofu-min.user.js',
 					paths: {
 						'include' : 'src/includes',
 						'jQuery' : 'bower_components/jquery/jquery',
-						'underscore' : 'bower_components/underscore/underscore',
+						'underscore' : 'bower_components/underscore/underscore'
 					},
 					wrap: {
 						// Note: the minifier strips the needed comments so we cannot use this currently
@@ -56,6 +56,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
 	
-	grunt.registerTask('default', ['uglify']);
+	grunt.registerTask('default', ['requirejs', 'uglify']);
 
 };
