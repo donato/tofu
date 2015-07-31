@@ -1,4 +1,4 @@
-define(['jQuery', 'underscore'], function($, _) {
+define(['jquery', 'underscore'], function($, _) {
 
     var db = {
         // This allows it to store info for different koc ids on same pc
@@ -35,7 +35,7 @@ define(['jQuery', 'underscore'], function($, _) {
     };
 
 
-    var Page = {
+    Page = {
         // This gets extended with each page.
         getCurrentPage: function() {
             return document.URL.substring(document.URL.indexOf('.com') + 5, document.URL.indexOf('.php'));

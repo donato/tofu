@@ -1,6 +1,13 @@
 module.exports = function(grunt) {
 
 	grunt.initConfig({
+        'gm-header': {
+            options : {
+                header : 'src/greasemonkey_header.js',
+                globals : 'src/include/gm_wrappers.js',
+                dest: 'bin/tofu.user.js'
+            }
+        },
 		jshint: {
 			options: {
 				jshintrc: 'src/.jshintrc'
@@ -19,43 +26,47 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-		uglify: {
-			options: {
-				compress: false
-			},
-			build: {
-				src: ['src/tofu.user.js'],
-				dest: 'bin/tofu.user.js'
-			}
-		},
-		requirejs: {
-			compile: {
-				options: {
-					almond:true,
-					name:'node_modules/almond/almond',
-					baseUrl: '.',
-					include: 'src/main.js',
-					out: 'bin/tofu-min.user.js',
-					paths: {
-						'include' : 'src/includes',
-						'jQuery' : 'bower_components/jquery/jquery',
-						'underscore' : 'bower_components/underscore/underscore'
-					},
-					wrap: {
-						// Note: the minifier strips the needed comments so we cannot use this currently
-						// startFile: 'src/greasemonkey_header.js',
-					}
-				}
-			}
-		}
+        webpack: {
+            options : {
+                resolve : {
+                    alias : {
+                        underscore : 'lodash'
+                        //underscore : 'underscore/underscore.js',
+                        //jquery : 'jquery/jquery.js'
+                    },
+                    moduleDirectories: [
+                        'src/',
+                    ]
+                }
+            },
+            devel : {
+                entry : {
+                    tofu : './src/main.js'
+                },
+                debug: true,
+                output: {
+                    path: 'bin/',
+                    filename: '[name].user.js'
+                }
+            }
+        }
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.registerTask('gm-header', function() {
+        var options = this.options();
+        var header = grunt.file.read(options.header);
+        var globals = grunt.file.read(options.globals);
+        var bin = grunt.file.read(options.dest);
+
+        grunt.file.write(options.dest, header + globals + bin);
+    });
+
+	grunt.loadNpmTasks('grunt-webpack');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-requirejs');
 	grunt.loadNpmTasks('grunt-contrib-less');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 
-	
-	grunt.registerTask('default', ['requirejs', 'uglify']);
+	grunt.registerTask('default', ['webpack', 'gm-header']);
 
 };

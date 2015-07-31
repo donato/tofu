@@ -1,4 +1,4 @@
-define(['jQuery', 'underscore'], function($,_) {
+define(['jquery', 'underscore'], function($,_) {
     function logBase(stats, data, officers) {
         //stats=sa;da;spy;sentry;
         //details=fort;siege;econ;tech;conscription;turns;covertlevel;bonus

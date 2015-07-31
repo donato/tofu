@@ -1,6 +1,18 @@
-// (window.jQuery, (this._ || _ || unsafeWindow._), document);
-
-require(['jQuery', 'underscore', 'include/buttons', 'include/constants', 'include/control_panel', 'include/gm_wrappers', 'include/gui', 'include/init', 'include/js_utils', 'include/koc_utils', 'include/layout', 'include/logging', 'include/options', 'include/plugin_container'], function($, _) {
+define([
+    'jquery',
+    'underscore',
+    './include/koc_utils',
+    './include/buttons',
+    './include/constants',
+    './include/control_panel',
+    './include/gui',
+    './include/init',
+    './include/js_utils',
+    './include/layout',
+    './include/logging',
+    './include/options',
+    './include/plugin_container'
+], function($, _) {
     "use strict";
 
 	// CSS Styles are loaded as a resource, add to the page

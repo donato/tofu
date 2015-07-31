@@ -1,4 +1,4 @@
-define(['jQuery', 'underscore'], function($, _) {
+define(['jquery', 'underscore'], function($, _) {
 
 	function getDefenderKocid() {
 		return $('[name="defender_id"]:first').val();

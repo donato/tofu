@@ -41,7 +41,7 @@ define([], function() {
 			'Palace' : 13,
 			'Keep' : 14,
 			'Citadel' : 15,
-			'Hand of God' : 16,
+			'Hand of God' : 16
 		},
 		
 		sieges : {

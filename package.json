@@ -14,14 +14,19 @@
   "license": "BSD",
   "readmeFilename": "README.md",
   "devDependencies": {
-    "grunt": "~0.4.1",
-    "less": "~1.4.2",
-    "grunt-contrib-uglify": "~0.2.4",
-    "grunt-contrib-requirejs": "~0.4.1",
-    "grunt-contrib-less": "~0.7.0",
-    "grunt-contrib-jshint": "~0.6.4",
-    "bower": "~1.2.5",
     "almond": "~0.2.6",
-    "js-beautify": "~1.4.2"
+    "bower": "~1.2.5",
+    "grunt": "~0.4.1",
+    "grunt-contrib-jshint": "~0.6.4",
+    "grunt-contrib-less": "~0.7.0",
+    "grunt-contrib-requirejs": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.4",
+    "grunt-webpack": "^1.0.11",
+    "jquery": "^2.1.4",
+    "js-beautify": "~1.4.2",
+    "less": "~1.4.2",
+    "lodash": "^3.10.0",
+    "webpack": "^1.10.5",
+    "webpack-dev-server": "^1.10.1"
   }
 }
