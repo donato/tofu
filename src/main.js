@@ -1,28 +1,29 @@
 define([
     'jquery',
     'underscore',
+    './include/init',
     './include/koc_utils',
     './include/buttons',
     './include/constants',
     './include/control_panel',
     './include/gui',
-    './include/init',
     './include/js_utils',
     './include/layout',
     './include/logging',
     './include/options',
-    './include/plugin_container'
-], function($, _) {
-    "use strict";
+    './include/plugin_container',
+], function($, _, Init, KoC) {
 
 	// CSS Styles are loaded as a resource, add to the page
     gmAddStyle(gmGetResourceText('styles'));
 
-    action = Page.getCurrentPage();
+    action = KoC.Page.getCurrentPage();
 
+    log('action is ' + action);
     User = Init.loadUser(action);
+
     if(!User) {
-        alert("Please go to your Command Center for initialization");
+        alert('Please go to your Command Center for initialization');
         return false;
     }
 
@@ -30,14 +31,16 @@ define([
     ControlPanel.init();
     Init.checkForUpdate(1);
 
+    alert('aituf');
     if(Init.checkUser() === 0) {
         return;
     }
 
     // Every page has its own init. Look at /includes/pages/...
-    if(Page[action]) {
-        Page[action].run();
+    if(KoC.Page[action]) {
+        KoC.Page[action].run();
     }
+    alert('x');
 
     // Plugins want to be run on all pages. Look at /includes/plugins/...
     _.each(Plugins, function(plugin) {
@@ -45,4 +48,6 @@ define([
             plugin.run();
         }
     });
+
+    alert('hai');
 });

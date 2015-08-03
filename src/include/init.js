@@ -1,31 +1,40 @@
-define(['jquery', 'underscore'], function($, _) {
+define([
+    'jquery',
+    'underscore',
+    './koc_utils',
+    './constants'
+], function($, _, KoC, Constants) {
+    var Page = KoC.Page;
+    var db = KoC.db;
+
 	var Init = {
         loadUser : function(action) {
             var kocid;
-            if (action == 'base') {
+            if (action === 'base') {
                 var html = document.body.innerHTML.split("stats.php?id=");
                 html = html[1];
                 kocid = html.slice(0, html.indexOf('"'));
             }
 
             db.init(kocid);
+
             if (db.id === 0) return false;
 
             var userObject = {};
 
             _.map(Constants.storedStrings, function(val) {
                 userObject[val] = db.get(val, '')
-                // log(val + " : " + db.get(val, ''));
-            })
+                 //log(val + " : " + db.get(val, ''));
+            });
 
             _.map(Constants.storedNumbers, function (val) {
                 userObject[val] = db.get(val, 0);
-                // log(val + " : " + db.get(val, 0));
+                 // log(val + " : " + db.get(val, 0));
             });
 
             var d = new Date();
             userObject.time_loaded = d.getTime();
-            userObject.gold = Page.getPlayerGold()
+            userObject.gold = Page.getPlayerGold();
 
             return userObject
         }

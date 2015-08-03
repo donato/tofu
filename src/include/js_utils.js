@@ -12,7 +12,7 @@
     String.prototype.instr = function(strFind){
 		return (this.indexOf(strFind) >= 0);
 	};
-	
+
     String.prototype.int = function() {
         var r = parseInt(this.replace(/,/g,''), 10);
         if (isNaN(r)) r=-1;
@@ -40,7 +40,7 @@
     function remove_delimiters(str) {
         str = str.replace(/[;:&?]/g,'');
         return str;
-    }    
+    }
 
     function textBetween (str,first,second) {
         if (str === null) {
@@ -71,7 +71,7 @@
 			return sValue;
 		};
 	}();
-    
+
 	Math.log10 = function(val) {
 		return Math.log(val)/Math.LN10;
 	}

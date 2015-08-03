@@ -52,7 +52,7 @@ define(['jquery', 'underscore'], function($, _) {
             }
             return(gold || 0);
         }
-    }
+    };
 	
     function timeToSeconds(time, timeunit) {
         if(timeunit.match('minute')) {
@@ -257,24 +257,24 @@ define(['jquery', 'underscore'], function($, _) {
 
 	function raceBonus(stat, race) {
 		race = race || db.get('race');
-		
+
 		switch(stat) {
-			case 'income' : 
+			case 'income' :
 				if (race =='humans') { return 1.3; }
 				if (race =='dwarves') { return 1.15; }
 				break;
-			case 'sa' : 
+			case 'sa' :
 				if (race =='orcs') { return 1.35; }
 				break;
-			case 'da' : 
+			case 'da' :
 				if (race =='orcs') { return 1.2; }
 				if (race =='dwarves') { return 1.4; }
 				break;
-			case 'spy' : 
+			case 'spy' :
 				if (race =='humans') { return 1.35; }
 				if (race =='elves') { return 1.45; }
 				break;
-			case 'sentry' : 
+			case 'sentry' :
 				if (race =='undead') { return 1.35; }
 				break;
 		}
@@ -283,7 +283,7 @@ define(['jquery', 'underscore'], function($, _) {
 
 	function fortBonus(fort) {
 		fort = fort || db.get('fort');
-		
+
 		var cb = _.find(Constants.sieges);
 		cb = Math.pow(1.25,cb);
 		cb = Math.round(cb*1000)/1000;
@@ -298,13 +298,13 @@ define(['jquery', 'underscore'], function($, _) {
 		cb = Math.round(cb*1000)/1000;
 		return cb;
 	}
-	
+
 	function covertBonus(level) {
 		level = level || db.getInt('covertlevel',0);
-		
+
 		return Math.pow(1.6, level);
 	}
-	
+
 	function upgradeBonus(type, option) {
 		switch (type) {
 			case 'sa':
@@ -317,4 +317,9 @@ define(['jquery', 'underscore'], function($, _) {
 		}
 		return 1;
 	}
+
+    return {
+        db: db,
+        Page : Page
+    };
 });
