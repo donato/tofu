@@ -2,8 +2,10 @@ define([
     'jquery',
     'underscore',
     './koc_utils',
-    './constants'
-], function($, _, KoC, Constants) {
+    './constants',
+    './gui',
+    'handlebars-loader!../templates/welcome.html'
+], function($, _, KoC, Constants, GUI, WelcomeTemplate) {
     var Page = KoC.Page;
     var db = KoC.db;
 
@@ -23,13 +25,13 @@ define([
             var userObject = {};
 
             _.map(Constants.storedStrings, function(val) {
-                userObject[val] = db.get(val, '')
-                 //log(val + " : " + db.get(val, ''));
+                userObject[val] = db.get(val, '');
+                 log(val + " : " + db.get(val, ''));
             });
 
             _.map(Constants.storedNumbers, function (val) {
                 userObject[val] = db.get(val, 0);
-                 // log(val + " : " + db.get(val, 0));
+                log(val + " : " + db.get(val, 0));
             });
 
             var d = new Date();
@@ -77,8 +79,10 @@ define([
                 db.put('luxbot_lastcheck', now.toString());
             }
         }
-
         , checkUser: function() {
+            log(User.forumName);
+            log(User.forumPass);
+            log(User.auth);
             if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined
               || User.forumPass === undefined || User.auth === undefined || User.auth === 0
               || User.auth.length !== 32) {
@@ -116,46 +120,55 @@ define([
             function initLogin() {
                 var f_user = $("#_forum_username").val();
                 var f_pass = $("#_forum_password").val();
-                if (f_pass === '' || f_user === '')
+
+                if (f_pass === '' || f_user === '') {
                     return;
+                }
+
+                if (KoC.Page.getCurrentPage() !== "base") { alert("Please visit Command Center and try again.");  return; }
+
                 GUI.displayText("Verifying...<br />");
 
-                get('http://www.kingsofchaos.com/base.php',
-                    function(responseDetails) {
-                            var html = responseDetails.responseText;
-                            var user = textBetween(html,'<a href="stats.php?id=', '</a>');
-                            user = user.split('">');
+                var html = $("body").html();
+                var user = textBetween(html,'<a href="stats.php?id=', '</a>');
+                user = user.split('">' );
 
-                            db.put('kocnick', user[1]);
-                            db.put('kocid', user[0]);
-                            var password = hex_md5(f_pass);
-                            db.put('forumPass', password);
-                            db.put('forumName', f_user);
-                            initVB();
-                    }
-                );
+                db.put('kocnick', user[1]);
+                db.put('kocid', user[0]);
+
+                var password = hex_md5(f_pass);
+                db.put('forumPass', password);
+                db.put('forumName', f_user);
+                initVB();
             }
 
             function initVB() {
-                getLux('&a=vb_login&kocid=' + db.get('kocid')+'&forumname='+db.get('forumName'),
+                log('initvb');
+                log(db.get('kocid'));
+                log(db.get('forumName'));
+                log(db.get('forumPass'));
+
+                getLux('&a=dokken_login&kocid=' + db.get('kocid')+'&username=' + db.get('forumName','')+"&password="+db.get('forumPass'),
                     function(r) {
                         var ret = r.responseText;
-                        if (ret.indexOf("Error") == -1) {
+                        log('ret = ' + ret);
+                        if (ret.indexOf("Error") === -1) {
                             //success
                             db.put('auth', ret);
+
                             alert("Success");
                             GUI.hide();
                         } else {
                             GUI.displayText("There was an error, try refreshing your command center.");
                         }
-                });
+                    }
+                );
             }
 
-            var welcomeText = ' GET FROM /templates ';
+            var welcomeText = WelcomeTemplate({});;
             GUI.displayText( welcomeText );
 
             $("#_luxbot_login").click(initLogin);
-
         }
     };
     return Init;

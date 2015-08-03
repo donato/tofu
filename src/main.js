@@ -3,16 +3,16 @@ define([
     'underscore',
     './include/init',
     './include/koc_utils',
+    './include/gui',
+    './include/control_panel',
     './include/buttons',
     './include/constants',
-    './include/control_panel',
-    './include/gui',
     './include/js_utils',
     './include/layout',
     './include/logging',
     './include/options',
     './include/plugin_container',
-], function($, _, Init, KoC) {
+], function($, _, Init, KoC, GUI, ControlPanel) {
 
 	// CSS Styles are loaded as a resource, add to the page
     gmAddStyle(gmGetResourceText('styles'));
@@ -27,20 +27,24 @@ define([
         return false;
     }
 
+
+    log('init GUI');
     GUI.init();
+    log('init CP');
     ControlPanel.init();
+    log('check for updates');
     Init.checkForUpdate(1);
 
-    alert('aituf');
     if(Init.checkUser() === 0) {
         return;
     }
 
+
     // Every page has its own init. Look at /includes/pages/...
+    log('init page action');
     if(KoC.Page[action]) {
         KoC.Page[action].run();
     }
-    alert('x');
 
     // Plugins want to be run on all pages. Look at /includes/plugins/...
     _.each(Plugins, function(plugin) {

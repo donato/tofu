@@ -1,7 +1,7 @@
 define([], function() {
 
-	var baseUrl = "http://luxbot.net/bot/";
-	
+	var baseUrl = 'donatoborrello.com/bot/';
+
 	return {
 
 		baseUrl     : baseUrl + 'luxbot.php?',

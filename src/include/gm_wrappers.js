@@ -8,10 +8,12 @@
     function gmAddStyle(t)        { GM_addStyle(t); }
 
     function get(address, callback) {
+        log('loading: ' + address);
         GM_xmlhttpRequest({
             method: 'GET',
             url: address,
             onload: function(r) {
+                log(arguments);
                 if (callback) { callback(r); }
             }
         });
@@ -30,18 +32,19 @@
     }
 	
 	function makeUrl(url) {
-		return Constants.baseUrl + '&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+        // TODO : Use constants
+		return '//donatoborrello.com/bot/luxbot.php?'+ 'username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
 	}
 	
 	function getLux(url, callback) {
         var address = makeUrl(url);
         get(address, callback);
     }
-    
+
     function postLux(url, data, callback) {
         post( makeUrl(url), data, callback );
     }
-	
+
     function postLuxJson(url, data, callback) {
 		postLux( url, '&json='+JSON.stringify(data), callback );
     }

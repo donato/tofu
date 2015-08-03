@@ -1,4 +1,4 @@
-define(['./init', 'jquery', 'underscore'], function(Init, $, _) {
+define(['./init', './gui', 'jquery', 'underscore'], function(Init, GUI, $, _) {
 	return {
 
 		init: function () {
