@@ -1,4 +1,7 @@
-define(['jquery', 'underscore'], function($, _) {
+define([
+    'jquery',
+    'underscore'
+], function($, _) {
 
     var db = {
         // This allows it to store info for different koc ids on same pc
@@ -320,6 +323,8 @@ define(['jquery', 'underscore'], function($, _) {
 
     return {
         db: db,
-        Page : Page
+        Page : Page,
+        parseResponse: parseResponse,
+        getTableByHeading: getTableByHeading
     };
 });

@@ -1,6 +1,16 @@
-define(['jquery', 'underscore'], function($, _) {
+define([
+    '../logging',
+    '../constants',
+    '../koc_utils',
+    'jquery',
+    'underscore'
+], function(Logging, Constants, KoC, $, _) {
+
+    var logStats = Logging.logStats;
+    var getTableByHeading = KoC.getTableByHeading;
+    var parseResponse = KoC.parseResponse;
+
 	return {
-		
     run: function() {
         this.enemyid = document.URL.split(/[=&?]/)[2];
 
@@ -53,20 +63,19 @@ define(['jquery', 'underscore'], function($, _) {
 		var self = this;
         var userid = document.URL.substr(document.URL.indexOf('=')+1, 7);
 
-
-        $("#luxstats_reload").live("click",function() {
+        $('#luxstats_reload').on('click',function() {
             self.updateUserInfoS(userid);
         });
-        
-        var offieTable = $("body").find("table:contains('Officers'):last");
+
+        var offieTable = $('body').find("table:contains('Officers'):last");
         offieTable.parent().prepend("<table id='luxstats_info' class='table_lines' width='100%' cellPadding=6 cellSpacing=0><tbody></tbody></table><br />");
         
         $("#luxstats_info>tbody").html('<tr><th colspan="3">LuXBot Info<span id="luxstats_reload" style="cursor:pointer;color:pink;font-size:8pt;float:right">(reload)</span></th></tr>');
-        
-        this.updateUserInfoS(userid);
-    }
 
-    , updateUserInfoS: function(userid) {
+        this.updateUserInfoS(userid);
+    },
+
+    updateUserInfoS: function(userid) {
             getLux('&a=getstats&userid=' + userid,
             function(responseDetails) {
                 var i;
@@ -180,18 +189,18 @@ define(['jquery', 'underscore'], function($, _) {
         
         var $nameTd = $table.find('tr:contains("Name:")').first().find("td").last();
         $nameTd.append(' <a href="http://www.stats.luxbot.net/history.php?playerSearch='+ this.enemyid +'" target="_blank" class="tofu viewHistory">View history</a>');
-    }
+    },
 
-    , nav: function() {
+    nav: function() {
         $("table.officers tr.nav a").click(function() {
             setTimeout(function() {
                 statsPage();
             },100);
-            nav();
+            self.nav();
         });
-    }
+    },
     
-    , stats_getOfficers: function(tolog) {
+    stats_getOfficers: function() {
         var officers = "";
         var rows = $("table.officers>tbody>tr>td>a").parent().parent();
         $(rows).each(function(i,row) {
@@ -205,14 +214,14 @@ define(['jquery', 'underscore'], function($, _) {
         officers = officers.slice(0, -1);
 
         return officers;            
-    }
+    },
 
-    , stats_getAlliances: function(stable) {
-        var name, a
+    stats_getAlliances: function(stable) {
+        var name, a;
         var row = $(stable).find("tr:contains('Alliances:')>td:last").html();
         var allys = row.split('alliances.php?');
         
-        var primary = ''
+        var primary = '';
         var secondary = [];
         for (a in allys) {
             name = textBetween(allys[a],'id=','">');
@@ -224,9 +233,9 @@ define(['jquery', 'underscore'], function($, _) {
                 primary = name;
         }    
         return new Array(primary,secondary);
-    }
+    },
 
-    , statsOnlineCheck: function() {
+    statsOnlineCheck: function() {
 
         var userid = document.URL.split(/[=&?]/)[2];
 
@@ -238,7 +247,7 @@ define(['jquery', 'underscore'], function($, _) {
                 if (parseResponse(tx, "online") !== '') {
                     $(stable).find("tr:contains('Name')").first().find("td:eq(1)").append('&nbsp;<img title="Player is online"  class="_lux_online" src="http://www.luxbot.net/bot/img/online2.gif" />');
                 }
-                
+
                 var msg = parseResponse(tx, "message");
                 if (User.kocid == userid) {
                     //if it is the users stats page, allow them to update
