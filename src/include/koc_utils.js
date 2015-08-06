@@ -325,6 +325,7 @@ define([
         db: db,
         Page : Page,
         parseResponse: parseResponse,
-        getTableByHeading: getTableByHeading
+        getTableByHeading: getTableByHeading,
+        getRowValues : getRowValues
     };
 });

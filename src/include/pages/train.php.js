@@ -1,10 +1,20 @@
-define(['jquery', 'underscore'], function($, _) {
+define([
+    '../buttons',
+    '../koc_utils',
+    'jquery',
+    'underscore'
+], function(Buttons, KoC, $, _) {
+
+    var getRowValues = KoC.getRowValues;
+    var getTableByHeading = KoC.getTableByHeading;
+    var db = KoC.db;
+
 	return {
 		
     run: function() {
         this.unheldWeapons();
         this.tffChart();
-        
+
         //Set up the clickable buttons
 		var buttonsConstraint = function( val, $row ) {
 			var selected = 0;
@@ -13,12 +23,12 @@ define(['jquery', 'underscore'], function($, _) {
 			});
 			var maxCanTrain = to_int(getRowValues("Untrained Soldiers")[0]);
 			return Math.min(val, maxCanTrain - selected);
-		}
-		
+		};
+
         Buttons.init(User.gold, getTableByHeading("Train Your Troops"), 1, buttonsConstraint);
-    }
+    },
     
-	, unheldWeapons : function() {
+	unheldWeapons : function() {
 		function describe(unheld) {
             if (unheld < 0) {
                 return '<span style="color:white">None ('+unheld+')</span>';
@@ -51,9 +61,9 @@ define(['jquery', 'underscore'], function($, _) {
 			.append("<tr><td><b>Defense Weapons&nbsp;</b></td><td>"+User.daWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldDefense+" </td></tr>")
 			.append("<tr><td><b>Spy Weapons&nbsp;</b></td><td>"+User.spyWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSpy +"</td></tr>")
 			.append("<tr><td><b>Sentry Weapons&nbsp;</b></td><td>"+User.sentryWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSentry+" </td></tr>");
-	}
+	},
 	
-    , tffChart: function() {
+    tffChart: function() {
         var $stable = $("table:contains('Train Your Troops')").last();
         $stable.after( $("<table>", { 'id': 'growth', 'class' : 'table_lines'})
 				.append("<tbody><tr><th colspan=3>Growth Stats</th></tr></tbody>")
@@ -94,16 +104,15 @@ define(['jquery', 'underscore'], function($, _) {
 			});        
         }.bind(this));
 
-        var notech = document.body.innerHTML.split('You have no technology');
-        if (notech[1]) {
-            db.put("Tech",1);
-        }
-        else {
-            var tech = document.body.innerHTML.split('(x ');
+        var html = document.body.innerHTML;
+        if (html.indexOf('You have no technology') >= 0) {
+            db.put('Tech', 1);
+        } else {
+            var tech = html('(x ');
             tech = tech[1].split(' ');
             tech = parseFloat(tech[0]);
             tech = Math.floor(tech*100);
-            db.put("Tech",tech);
+            db.put('Tech', tech);
         }
     }
 }});

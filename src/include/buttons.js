@@ -1,4 +1,8 @@
-define(['jquery', 'underscore'], function($, _) {
+define([
+    'jquery',
+    'underscore'
+], function($, _) {
+
 	return {
 		gold : 0,
 		cost_col : 0,
