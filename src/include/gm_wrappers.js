@@ -1,6 +1,9 @@
     function log(s)               { GM_log(s); console.log(s);   }
     function openTab(t)           { GM_openInTab(t); }
-    function gmSetValue(t, t2)    { GM_setValue(t, '' + t2); } // Convert to string for storage
+    function gmSetValue(t, t2)    {
+        // log('storing ' + t + ' ' + t2);
+        GM_setValue(t, '' + t2); // Convert to string for storage
+    }
     function gmDeleteValue(t)     { GM_deleteValue(t); }
     function gmGetValue(t, def)   { return GM_getValue(t, def);}
     function gmGetResourceText(t) { return GM_getResourceText(t); }

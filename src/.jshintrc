@@ -1,8 +1,6 @@
 {
     "maxdepth" : 4,
     "validthis": true,
-    "globalstrict" : false,
-    "laxcomma" : true,
     "laxbreak" : true,
     "eqnull"   : true,
     "debug"    : true,

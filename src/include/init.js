@@ -26,12 +26,11 @@ define([
 
             _.map(Constants.storedStrings, function(val) {
                 userObject[val] = db.get(val, '');
-                 log(val + " : " + db.get(val, ''));
             });
 
             _.map(Constants.storedNumbers, function (val) {
+                log(val + ': '+ db.get(val));
                 userObject[val] = db.get(val, 0);
-                log(val + " : " + db.get(val, 0));
             });
 
             var d = new Date();
@@ -80,9 +79,6 @@ define([
             }
         }
         , checkUser: function() {
-            log(User.forumName);
-            log(User.forumPass);
-            log(User.auth);
             if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined
               || User.forumPass === undefined || User.auth === undefined || User.auth === 0
               || User.auth.length !== 32) {
@@ -143,15 +139,10 @@ define([
             }
 
             function initVB() {
-                log('initvb');
-                log(db.get('kocid'));
-                log(db.get('forumName'));
-                log(db.get('forumPass'));
 
                 getLux('&a=dokken_login&kocid=' + db.get('kocid')+'&username=' + db.get('forumName','')+"&password="+db.get('forumPass'),
                     function(r) {
                         var ret = r.responseText;
-                        log('ret = ' + ret);
                         if (ret.indexOf("Error") === -1) {
                             //success
                             db.put('auth', ret);
