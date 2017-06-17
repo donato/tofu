@@ -113,6 +113,12 @@ define([
         }
 
         , showInitBox: function () {
+            
+            if (KoC.Page.getCurrentPage() !== "base") {
+                $("body").first().prepend('<p style="position:absolute">Visit Command Center to login</p>')
+                return;
+            }
+
 
             function initLogin() {
                 var f_user = $("#_forum_username").val();
@@ -121,8 +127,6 @@ define([
                 if (f_pass === '' || f_user === '') {
                     return;
                 }
-
-                if (KoC.Page.getCurrentPage() !== "base") { alert("Please visit Command Center and try again.");  return; }
 
                 GUI.displayText("Verifying...<br />");
 
