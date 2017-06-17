@@ -1,5 +1,7 @@
 var _ = require('lodash');
 
+var FIREFOX_APP_NAME = 'l7q3zswe.default';
+
 module.exports = function(grunt) {
 
     var paths = {
@@ -21,7 +23,7 @@ module.exports = function(grunt) {
 
     function updateFF() {
         grunt.file.copy(paths.dest,
-                '/Users/donatoborrello/Library/Application Support/Firefox/Profiles/l7q3zswe.default/gm_scripts/ToFu_Script' + '/tofu.user.js');
+                '/Users/donatoborrello/Library/Application Support/Firefox/Profiles/'+FIREFOX_APP_NAME+'/gm_scripts/ToFu_Script' + '/tofu.user.js');
     }
 
     // Webpack plugins are objects with an apply method
@@ -30,7 +32,7 @@ module.exports = function(grunt) {
             compiler.plugin('done', function () {
                 prependFile();
                 grunt.file.copy('bin/tofu.user.js',
-                        '/Users/donatoborrello/Library/Application Support/Firefox/Profiles/l7q3zswe.default/gm_scripts/ToFu_Script' + '/tofu.user.js');
+                        '/Users/donatoborrello/Library/Application Support/Firefox/Profiles/'+FIREFOX_APP_NAME+'/gm_scripts/ToFu_Script' + '/tofu.user.js');
             })
         }
     };
