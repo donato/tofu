@@ -1,4 +1,11 @@
-define(['./init', './gui', 'jquery', 'underscore'], function(Init, GUI, $, _) {
+define([
+	'./init',
+	'raw-loader!../templates/links.html',
+	'./gui',
+	'jquery',
+	'underscore'
+], function(Init, linksHtml, GUI, $, _) {
+	
 	return {
 
 		init: function () {
@@ -10,7 +17,7 @@ define(['./init', './gui', 'jquery', 'underscore'], function(Init, GUI, $, _) {
 
 			$('body').append( this.$controlbox );
 
-			this.$controlbox.click( this.showControlPanel );
+			this.$controlbox.click( this.showControlPanel.bind(this) );
 		}
 
 
@@ -19,8 +26,8 @@ define(['./init', './gui', 'jquery', 'underscore'], function(Init, GUI, $, _) {
 			
 			var panelTabs = [
 				// 'Tab Text', 'id', callback
-				['Show links', 'showlinkbox', ControlPanel.showLinkBox],
-				['Farmlist Setup','showfarmlist', ControlPanel.showFarmList],
+				['Show links', 'showlinkbox', this.showLinkBox.bind(this)],
+				// ['Farmlist Setup','showfarmlist', this.showFarmList.bind(this)],
 				['Check for update', 'checkupdate', Init.checkForUpdate]
 			];
 			
@@ -36,10 +43,7 @@ define(['./init', './gui', 'jquery', 'underscore'], function(Init, GUI, $, _) {
 		}
 
 		, showLinkBox: function () {
-			get(Constants.gitHtml+'links.html', function(r) {
-				alert(r.responseText);
-				$('#tofu_popup_content').html(r.responseText);
-			});
+            $('#tofu_popup_content').html(linksHtml);
 		}
 
 		,  showMessageBox: function() {
