@@ -1,0 +1,19 @@
+{
+  "manifest_version": 2,
+  "name": "Tofu",
+  "version": "0.1",
+  "content_scripts": [{
+    "matches": [
+      "http://donatoborrello.com/*",
+      "http://kingsofchaos.com/*",
+      "http://www.kingsofchaos.com/*"
+    ],
+    "include_globs": [
+      "*kingsofchaos.com/*"
+    ],
+    "js": ["bower_components/jquery/dist/jquery.js", "bin/tofu.user.js"]
+  }],
+  "permissions": [
+    "storage"
+  ]
+}

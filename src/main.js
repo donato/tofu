@@ -6,6 +6,7 @@ define([
     './include/gui',
     './include/control_panel',
     './include/pages',
+    'raw-loader!./css/default.css',
     './include/buttons',
     './include/constants',
     './include/js_utils',
@@ -13,10 +14,10 @@ define([
     './include/logging',
     './include/options',
     './include/plugin_container',
-], function($, _, Init, KoC, GUI, ControlPanel, Pages) {
+], function($, _, Init, KoC, GUI, ControlPanel, Pages, css) {
 
 	// CSS Styles are loaded as a resource, add to the page
-    gmAddStyle(gmGetResourceText('styles'));
+    gmAddStyle(css);
 
     action = KoC.Page.getCurrentPage();
 

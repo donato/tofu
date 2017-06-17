@@ -4,8 +4,9 @@ define([
     './koc_utils',
     './constants',
     './gui',
+    '../libs/hex_md5',
     'handlebars-loader!../templates/welcome.html'
-], function($, _, KoC, Constants, GUI, WelcomeTemplate) {
+], function($, _, KoC, Constants, GUI, empty, WelcomeTemplate) {
     var Page = KoC.Page;
     var db = KoC.db;
 
@@ -80,7 +81,7 @@ define([
         }
         , checkUser: function() {
             if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined
-              || User.forumPass === undefined || User.auth === undefined || User.auth === 0
+              || User.forumPass === undefined || !User.auth
               || User.auth.length !== 32) {
                     Init.showInitBox();
                     return 0;
@@ -143,7 +144,7 @@ define([
                 getLux('&a=dokken_login&kocid=' + db.get('kocid')+'&username=' + db.get('forumName','')+"&password="+db.get('forumPass'),
                     function(r) {
                         var ret = r.responseText;
-                        if (ret.indexOf("Error") === -1) {
+                        if (ret.length === 0 || ret.indexOf("Error") === -1) {
                             //success
                             db.put('auth', ret);
 

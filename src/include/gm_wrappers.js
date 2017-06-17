@@ -1,18 +1,23 @@
-    function log(s)               { GM_log(s); console.log(s);   }
-    function openTab(t)           { GM_openInTab(t); }
-    function gmSetValue(t, t2)    {
+var is_greasemonkey_enabled = false;
+try {
+    GM_getResourceText('abc');
+    is_greasemonkey_enabled = true;
+} catch(e) { }
+
+if (is_greasemonkey_enabled) {
+    var log = function (s)               { GM_log(s); };
+    var openTab = function (t)           { GM_openInTab(t); };
+    var gmSetValue = function(t, t2)    {
         // log('storing ' + t + ' ' + t2);
         GM_setValue(t, '' + t2); // Convert to string for storage
-    }
-    function gmDeleteValue(t)     { GM_deleteValue(t); }
-    function gmGetValue(t, def)   { return GM_getValue(t, def);}
-    function gmGetResourceText(t) { return GM_getResourceText(t); }
-    function gmGetResourceURL(t)  { return GM_getResourceURL(t); }
-    function gmAddStyle(t)        { GM_addStyle(t); }
-
-    function get(address, callback) {
+    };
+    var gmDeleteValue = function(t)     { GM_deleteValue(t); };
+    var gmGetValue = function(t, def)   { return GM_getValue(t, def);};
+    var gmGetResourceText = function(t) { return GM_getResourceText(t); };
+    var gmGetResourceURL = function(t)  { return GM_getResourceURL(t); };
+    var get = function (address, callback) {
         log('loading: ' + address);
-        GM_xmlhttpRequest({
+         GM_xmlhttpRequest({
             method: 'GET',
             url: address,
             onload: function(r) {
@@ -20,9 +25,9 @@
                 if (callback) { callback(r); }
             }
         });
-    }
-    
-    function post(address, data, callback) {
+    };
+
+    var post = function(address, data, callback) {
         GM_xmlhttpRequest({
             method: "POST",
             url: address,
@@ -32,7 +37,32 @@
                 if (callback) { callback(r); }
             }
         });
-    }
+    };
+} else {
+    log = function(s) { console.log(s); };
+    openTab = function(t) { window.open(t, '_blank'); };
+    gmSetValue = function(t, t2) {
+        localStorage.setItem(t, '' + t2); // Convert to string for storage
+    };
+    gmDeleteValue = function(t) { localStorage.removeItem(t); };
+    gmGetValue = function(t, def) { return localStorage.getItem(t, def);};
+    gmGetResourceText = function(t) { return ""; }; // GM_getResourceText(t); };
+    gmGetResourceURL = function(t) { return ""; }; // GM_getResourceURL(t); };
+    get = function(url, callback) {
+        $.get(url, function(text) {
+            // Add nesting to avoid breaking compatibility with GM
+            callback({responseText: text});
+        });
+    };
+    post = function(url, data, callback) {
+        $.post(url, data, callback)
+    };
+}
+
+gmAddStyle = function(text) {
+    $('head').append('<style>' + text + '</style>');
+};
+
 	
 	function makeUrl(url) {
         // TODO : Use constants

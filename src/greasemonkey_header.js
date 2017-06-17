@@ -31,4 +31,4 @@ var User;
 var Page;
 var action;
 
-var version = 0.2;
+var version = "0.10";

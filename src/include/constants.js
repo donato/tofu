@@ -1,6 +1,6 @@
 define([], function() {
 
-	var baseUrl = 'donatoborrello.com/bot/';
+	var baseUrl = 'http://donatoborrello.com/bot/';
 
 	return {
 
