@@ -51,11 +51,12 @@ define([
     log('end page action');
 
     // Plugins want to be run on all pages. Look at /includes/plugins/...
+    /*
     _.each(Plugins, function(plugin) {
         if(PluginHelper.toRun(plugin)) {
             plugin.run();
         }
     });
-
-    alert('hai');
+    */
+    
 });

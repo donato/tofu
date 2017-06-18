@@ -55,7 +55,7 @@ define(['jquery', 'underscore'], function($, _) {
             if ( !kocid ) { return; }
 
 			var gold = to_int( $cols.eq(5).text() );
-			if (name == User.kocnick && User.logself === 0) {
+			if (gold === -1 || name == User.kocnick && User.logself === 0) {
 				gold = '';
 			}
 

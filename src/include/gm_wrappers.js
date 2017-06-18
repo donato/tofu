@@ -55,7 +55,10 @@ if (is_greasemonkey_enabled) {
         });
     };
     post = function(url, data, callback) {
-        $.post(url, data, callback)
+        $.post(url, data, function(text) {
+            // Add nesting to avoid breaking compatibility with GM
+            callback({responseText: text});
+        });
     };
 }
 
