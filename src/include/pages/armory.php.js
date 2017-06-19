@@ -52,7 +52,7 @@ define([
                 var w = {
                     name: $cols[0].innerHTML,
                     type: getWeaponType($cols[0].innerHTML),
-                    quantity: $cols[1].innerHTML,
+                    quantity: parseInt($cols[1].innerHTML),
                     strength: $cols[2].innerHTML
                 };
 
