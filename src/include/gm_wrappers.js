@@ -39,7 +39,7 @@ if (is_greasemonkey_enabled) {
         });
     };
 } else {
-    log = function(s) { console.log(s); };
+    log = console.log;
     openTab = function(t) { window.open(t, '_blank'); };
     gmSetValue = function(t, t2) {
         localStorage.setItem(t, '' + t2); // Convert to string for storage
@@ -69,7 +69,7 @@ gmAddStyle = function(text) {
 	
 	function makeUrl(url) {
         // TODO : Use constants
-		return '//donatoborrello.com/bot/luxbot.php?'+ 'username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+		return '//donatoborrello.com/bot/luxbot.php?'+ 'user='+User.kocnick+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
 	}
 	
 	function getLux(url, callback) {
