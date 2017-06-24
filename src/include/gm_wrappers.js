@@ -45,7 +45,13 @@ if (is_greasemonkey_enabled) {
         localStorage.setItem(t, '' + t2); // Convert to string for storage
     };
     gmDeleteValue = function(t) { localStorage.removeItem(t); };
-    gmGetValue = function(t, def) { return localStorage.getItem(t, def);};
+    gmGetValue = function(t, def) {
+        var item = localStorage.getItem(t);
+        if (item === null) {
+            return def;
+        }
+        return item;
+    };
     gmGetResourceText = function(t) { return ""; }; // GM_getResourceText(t); };
     gmGetResourceURL = function(t) { return ""; }; // GM_getResourceURL(t); };
     get = function(url, callback) {

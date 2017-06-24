@@ -1,16 +1,21 @@
-define(['jquery', 'underscore'], function($, _) {
+define([
+    '../koc_utils',
+    '../logging',
+    'jquery',
+    'underscore'
+], function(Koc, Log, $, _) {
 	return {
 		
     run: function() {
         this.showBattleLog();
         // Gold Update on attacks 
         this.processAttackLogDetail();
-    }
+    },
 
     
-    , showBattleLog : function() {
+    showBattleLog : function() {
         var i;
-        var a = db.get('battlelog', 0);
+        var a = Koc.db.get('battlelog', 0);
         if (a === 0) {
             return;
         } else if (a === 2 || a === 1) {
@@ -46,9 +51,9 @@ define(['jquery', 'underscore'], function($, _) {
                 document.location = document.URL.substr(0, document.URL.indexOf('suspense'));
             }
         }
-    }
+    },
 	
-    , processAttackLogDetail : function() {
+    processAttackLogDetail : function() {
         var gold_stolen, attack_id;
 
         //send specific attack to Lux
@@ -60,28 +65,29 @@ define(['jquery', 'underscore'], function($, _) {
             return;
         }
         
-        var your_damage = textBetween(attackReport, 'Your troops inflict',' damage on the enemy!');
-        var enemy_damage = textBetween(attackReport, 'counter-attack and inflict ', ' damage on your army!');
+        var your_damage = to_int(textBetween(attackReport, 'Your troops inflict',' damage on the enemy!'));
+        var enemy_damage = to_int(textBetween(attackReport, 'counter-attack and inflict ', ' damage on your army!'));
         var enemy_name = attackReport.match(/As (.*)'s army runs from the/);
             enemy_name = enemy_name[1];
-        var your_losses = textBetween(attackReport, 'Your army sustains ', ' casualties');
+        var your_losses = to_int(textBetween(attackReport, 'Your army sustains ', ' casualties'));
 
-        var enemy_losses = textBetween(attackReport, 'The enemy sustains ', ' casualties');
+        var enemy_losses = to_int(textBetween(attackReport, 'The enemy sustains ', ' casualties'));
 
         var enemy_id = $("form > input [name='id']").val();
         enemy_id = textBetween(attackReport, 'name="id" value="', '"');
-        enemy_id = $("input[name='id']").val();
+        enemy_id = to_int($("input[name='id']").val());
         
         if (attackReport.indexOf('You stole') == -1)
             gold_stolen = 'defended';
         else
-            gold_stolen = textBetween(attackReport, 'You stole ', ' gold');
+            gold_stolen = to_int(textBetween(attackReport, 'You stole ', ' gold'));
         
-        if (document.URL.indexOf('&') == -1)
-            attack_id = document.URL.substring(document.URL.indexOf('attack_id=')+10);
-        else
-            attack_id = document.URL.substring(document.URL.indexOf('attack_id=')+10,document.URL.indexOf('&'));
+        if (document.URL.indexOf('&') == -1) {
+            attack_id = to_int(document.URL.substring(document.URL.indexOf('attack_id=')+10));
+        } else {
+            attack_id = to_int(document.URL.substring(document.URL.indexOf('attack_id=') + 10, document.URL.indexOf('&')));
+        }
 
-        sendAttackLogDetails(User.kocnick, "attack", enemy_id, enemy_name, your_damage, enemy_damage, your_losses, enemy_losses, gold_stolen, attack_id, 'now');
+        Log.sendAttackLogDetails(User.kocnick, "attack", enemy_id, enemy_name, your_damage, enemy_damage, your_losses, enemy_losses, gold_stolen, attack_id, 'now');
     }
 }});

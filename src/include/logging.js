@@ -26,7 +26,7 @@ define(['jquery', 'underscore'], function($,_) {
     }
 
 	function sendAttackLogDetails(user, type, oppid, opponent, user_damages, opponent_damages, user_losses, opponent_losses, gold_stolen, logid, time) {
-        getLux( '&a=logattack&type=' + type + '&user=' + user + 
+        getLux( '&a=logattack&type=' + type + 
             '&enemy=' + opponent + ';' + oppid + ';' + opponent_damages + ';' + opponent_losses +
             '&data=' + user_damages + ';' + user_losses + 
             '&gold=' + gold_stolen +

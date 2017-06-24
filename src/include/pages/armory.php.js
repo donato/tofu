@@ -124,11 +124,11 @@ define([
 
             function helper(stat) {
                 var o = {};
-                log(obj[stat] + stat)
-                log(User[stat] + stat)
+                log(obj[stat] + stat);
+                log(User[stat] + stat);
                 var diff = obj[stat] - User[stat];
                 o[stat] = diff;
-                o[stat + 'Percentage'] = (100* diff / User[stat]).toFixed(4);
+                o[stat + 'Percentage'] = (100* diff / User[stat]).toFixed(2);
                 return o;
             }
 
@@ -136,7 +136,6 @@ define([
             log(JSON.stringify(statsDiffObj));
             var html =  ArmoryDiffTemplate(statsDiffObj);
             $("#military_effectiveness").after(html);
-
         },
 
         addBuyButton: function () {
