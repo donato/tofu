@@ -1,6 +1,7 @@
 define([
     'jquery',
     'underscore',
+    './libs/highstock-1.1.5',
     './include/init',
     './include/koc_utils',
     './include/gui',
@@ -14,7 +15,7 @@ define([
     './include/logging',
     './include/options',
     './include/plugin_container',
-], function($, _, Init, KoC, GUI, ControlPanel, Pages, css) {
+], function($, _, _Highcharts, Init, KoC, GUI, ControlPanel, Pages, css) {
 
 	// CSS Styles are loaded as a resource, add to the page
     gmAddStyle(css);

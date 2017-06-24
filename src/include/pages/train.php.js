@@ -24,7 +24,7 @@ define([
 			return Math.min(val, maxCanTrain - selected);
 		};
 
-        Buttons.init(User.gold, Koc.getTableByHeading("Train Your Troops"), 1, buttonsConstraint);
+        Buttons.init(User.gold, KoC.getTableByHeading("Train Your Troops"), 1, buttonsConstraint);
     },
     
 	unheldWeapons : function() {
@@ -107,7 +107,8 @@ define([
         if (html.indexOf('You have no technology') >= 0) {
             db.put('Tech', 1);
         } else {
-            var tech = html('(x ');
+			var table = KoC.getTableByHeading('Technological Development');
+			var tech = table.find('tr').eq(2).text().split('(x ');
             tech = tech[1].split(' ');
             tech = parseFloat(tech[0]);
             tech = Math.floor(tech*100);
