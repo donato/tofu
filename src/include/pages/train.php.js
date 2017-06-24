@@ -6,7 +6,6 @@ define([
 ], function(Buttons, KoC, $, _) {
 
     var getRowValues = KoC.getRowValues;
-    var getTableByHeading = KoC.getTableByHeading;
     var db = KoC.db;
 
 	return {
@@ -25,7 +24,7 @@ define([
 			return Math.min(val, maxCanTrain - selected);
 		};
 
-        Buttons.init(User.gold, getTableByHeading("Train Your Troops"), 1, buttonsConstraint);
+        Buttons.init(User.gold, Koc.getTableByHeading("Train Your Troops"), 1, buttonsConstraint);
     },
     
 	unheldWeapons : function() {
