@@ -1,49 +1,65 @@
-define(['jquery', 'underscore'], function($, _) {
-	return {
+define([
+    './stats.php',
+    '../koc_utils',
+    '../logging',
+    'jquery',
+    'underscore'
+], function(Stats, Koc, Log, $, _) {
+    var db = Koc.db;
+    
+    var str1 = "<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Luxbot Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>";
+    var str2 = "<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Luxbot Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>";
+    
+    return {
+        
 		
     run: function() {
-        this.basePage();
+        this.logBaseStats();
         this.baseLayout();
         this.commandCenterStats();
-        makeCollapsable(action);
-    }
+    },
       
-    , basePage: function() {
+    logBaseStats: function() {
 
-        var stable = $("table:contains('Military Effectiveness')").last();
-        var sa = $(stable).find("tr:contains('Strike Action'):first>td:eq(1)").text();
-        var da = $(stable).find("tr:contains('Defensive Action'):first>td:eq(1)").text();
-        var spy = $(stable).find("tr:contains('Spy Rating'):first>td:eq(1)").text();
-        var sentry = $(stable).find("tr:contains('Sentry Rating'):first>td:eq(1)").text();
+        var $militaryTable = Koc.getTableByHeading('Military Effectiveness');
+        var stats = Koc.parseTableColumn($militaryTable, 1);
+        var sa = stats[0];
+        var da = stats[1];
+        var spy = stats[2];
+        var sentry = stats[3];
 
-        stable = $("table:contains('Military Overview')").last();
-        var fort = $(stable).find("tr:contains('Fortification'):first>td:eq(1)").text();
-        var siege = $(stable).find("tr:contains('Siege Technology'):first>td:eq(1)").text();
-        var economy = $(stable).find("tr:contains('Economy'):first>td:eq(1)").text();
-        var technology = $(stable).find("tr:contains('Technology'):last>td:eq(1)").text();
-        var conscription = $(stable).find("tr:contains('Conscription'):first>td:eq(1)").text();
-        conscription = conscription.substr(0, conscription.indexOf(' soldiers'));
-        var tff = $("body").find("tr:contains('Total Fighting Force'):last>td:eq(1)").text();
-        var turns = $(stable).find("tr:contains('Game Turns'):first>td:eq(1)").text();
-        turns = turns.substr(0,turns.indexOf(" /"));
-        var covertlevel = $(stable).find("tr:contains('Covert Level'):first>td:eq(1)").text();
-        var income = $(stable).find("tr:contains('Projected Income'):first>td:eq(1)").text();
+        var $overviewTable = Koc.getTableByHeading('Military Overview');
+        var dict = Koc.parseTableColumnToDict($overviewTable, 0, 1);
+        var fort = dict['Fortification'];
+        var siege = dict['Siege Technology'];
+        var economy = dict['Economy'];
+        var technology = dict['Technology'];
+        var tech = technology.split('(x ')[1].split(' ')[0];
+        tech = parseFloat(tech);
+        tech = Math.floor(tech*100);
+        var conscription = dict['Conscription'];
+        conscription = to_int(conscription.substr(0, conscription.indexOf(' soldiers')));
+        var turns = dict['Game Turns'];
+        turns = to_int(turns.substr(0,turns.indexOf(" /")));
+        var covertlevel = to_int(dict['Covert Level']);
+        var income = dict['Projected Income'];
         income = income.substr(0,income.indexOf(" Gold")).int();
 
-        var officers = Page.stats.stats_getOfficers(false);
+        var $armyTable = Koc.getTableByHeading('Personnel');
+        var armyDict = Koc.parseTableColumnToDict($armyTable, 0, 1);
+        var tff = to_int(armyDict['Total Fighting Force']);
+        
+        var officers = Stats.stats_getOfficers(false);
 
-        var bonus = textBetween($(".officers>tbody>tr:last").text(), "(x ",")");
+        var bonus = parseFloat(textBetween($(".officers>tbody>tr:last").text(), "(x ",")"));
         
-		// this will help for paging through officers and recording their info
-       // nav();
-        
-        db.put('sa',sa.int());
-        db.put('da',da.int());
-        db.put('spy',spy.int());
-        db.put('sentry',sentry.int());
-        db.put('income',income.int() + "");
-		db.put('technology', technology.float() + "");
-        db.put('tff',tff.int());
+        db.put('sa',sa);
+        db.put('da',da);
+        db.put('spy',spy);
+        db.put('sentry',sentry);
+        db.put('income',income);
+		db.put('technology', tech);
+        db.put('tff', tff);
         db.put('bonus',bonus);
         db.put('fort', fort);
         db.put('siege',siege);
@@ -51,68 +67,78 @@ define(['jquery', 'underscore'], function($, _) {
  
         db.put('race', textBetween($("head>link").eq(3).attr("href"),"css/",".css").toLowerCase());
  
-        logBase(sa.int() + ";"+da.int()+";"+spy.int()+";"+sentry.int(), fort+";"+siege+";"+economy+";"+technology+";"+conscription.int()+";"+turns.int()+";"+covertlevel+";"+bonus, officers);
-    }
+        Log.logBase(sa + ";"+da+";"+spy+";"+sentry, fort+";"+siege+";"+economy+";"+technology+";"+conscription+";"+turns+";"+covertlevel+";"+bonus, officers);
+    },
     
-    , baseLayout: function() {
+    baseLayout: function() {
         var $tbody = $("td.content > table > tbody").last()
         $tbody.attr("id","tbody");
         
         var $cols = $tbody.children("tr").children("td")
-        $cols.children("br").remove()
+        $cols.children("br").remove();
         
-        $cols.first().attr("id", "base_left_col")
-        $cols.last().attr("id", "base_right_col")
+        var $leftCol = $cols.first().attr("id", "base_left_col");
+        var $rightCol = $cols.last().attr("id", "base_right_col");
+        $rightCol.children('p').remove();
         
-        var $military_overview = getTableByHeading("Military Overview")
+        var $military_overview = Koc.getTableByHeading("Military Overview")
                         .addClass("military_overview")
                         .remove()
-        var $military_effectiveness = getTableByHeading("Military Effectiveness")
+        var $military_effectiveness = Koc.getTableByHeading("Military Effectiveness")
                         .addClass("military_effectiveness")
                         .remove()
-        var $personnel = getTableByHeading("Personnel")
-        var $user_info = getTableByHeading("User Info")
+        var $preferences = Koc.getTableByHeading("Preferences").remove();
+        var $logins = Koc.getTableByHeading("Previous Logins").remove();
+        var $personnel = Koc.getTableByHeading("Personnel");
+        var $user_info = Koc.getTableByHeading("User Info")
                         .addClass("user_info")
-        var $recent_attacks = getTableByHeading("Recent Attacks on You")
+        var $recent_attacks = Koc.getTableByHeading("Recent Attacks on You")
                         .addClass("recent_attacks")
                         .remove()
-        var $commander_notice = getTableByHeading("Notice from Commander")
+        var $commander_notice = Koc.getTableByHeading("Notice from Commander")
                         .addClass("commander_notice")
                         .remove()
-        var $grow_army = getTableByHeading("Grow Your Army")
+        var $grow_army = Koc.getTableByHeading("Grow Your Army")
                         .addClass("grow_army")
                         .remove()
-        var $officers = getTableByHeading("Officers")
-                        .remove()
-        $("#base_right_col").prepend('<br /><br />')
-        $("#base_right_col").prepend( this.tbgStats() )
-        $("#base_right_col").prepend('<br /><br />')
-        $("#base_right_col").prepend($military_overview )
-        $("#base_right_col").prepend('<br /><br />')
-        $("#base_right_col").prepend($officers )
-        $("#base_right_col").prepend('<br /><br />')
-        $("#base_right_col").prepend($military_effectiveness )
-        $("#base_left_col").append($recent_attacks )
-        // $("td.content").append($grow_army ) // Causes errors?
-        $(".user_info").after($commander_notice)
+        var $officers = Koc.getTableByHeading("Officers")
+                        .remove();
         
-        //if player is blocking ads, this adds some extra space.
-         $("td.content").parent().children("td").eq(2).attr("width", "50");
-    }
+        $leftCol.append('<br /><br />');
+        $leftCol.append($officers);
+        $leftCol.append('<br /><br />');
+        
+        $rightCol.append($military_effectiveness );
+        $rightCol.append('<br /><br />');
+        $rightCol.append($military_overview );
+        $rightCol.append('<br /><br />');
+        $rightCol.append( this.tbgStats() );
+        $rightCol.append('<br /><br />')
+        $rightCol.append($recent_attacks );
+        $rightCol.append('<br /><br />');
+        // $rightCol.append($grow_army);
+        $rightCol.append($preferences);
+        $rightCol.append($logins);
+        $(".user_info").after($commander_notice);
+        
+        // if player is blocking ads, this adds some extra space.
+        $("td.content").parent().children("td").eq(2).attr("width", "50");
+    },
 	
-    , commandCenterStats: function() {
-        var $tbody = $("#tbody");
+    commandCenterStats: function() {
+        var $tbody = $("tbody").first()
 
-        if (checkOption('option_commandCenterStats'))
-            $tbody.prepend("<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>")
-        else
-            $("tr:contains('Recent Attacks'):last").parent().parent().before("<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Your Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>");
-            getLux("&a=sabstats",
-             function(r) { $("#ff-load").html(""+r.responseText); 
-        }); 
-    }
+        if (Koc.checkOption('option_commandCenterStats')) {
+            $("tr:contains('Personnel'):last").parent().parent().before(str2);
+        } else {
+            $tbody.prepend(str1);
+        }
+        getLux("&a=sabstats", function (r) {
+            $("#ff-load").html("" + r.responseText);
+        });
+    },
 
-	, tbgStats: function() {
+	tbgStats: function() {
 		function percentFormat(value) {
 			value*=100;
 			var decimalPlaces = Math.min(2, Math.floor(Math.log10(value)) );
@@ -130,7 +156,7 @@ define(['jquery', 'underscore'], function($, _) {
 		
 		var html = "";
 		_.each(['sa','da','spy','sentry'], function(stat, i) {
-			var multiplier = upgradeBonus(stat) * raceBonus(stat) * tech * offieBonus;
+			var multiplier = Koc.upgradeBonus(stat) * Koc.raceBonus(stat) * tech * offieBonus;
 			
 			if (stat == 'sa' || stat =='da') { multiplier *= 5; }
 
@@ -151,6 +177,4 @@ define(['jquery', 'underscore'], function($, _) {
 		     + '  </tbody>'
 		     + '</table>';
 	}
-
-
 }});

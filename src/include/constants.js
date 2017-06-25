@@ -56,42 +56,42 @@ define([], function () {
 
         options: ['logself', 'scrollbattlelog', 'turnclock', 'commandCenterStats', 'targets', 'fakesabtargets', 'goldprojection', 'armorygraph', 'armorydiff'],
 
-        fortifications: {
-            'Camp': 0,
-            'Stockade': 1,
-            'Rabid': 2,
-            'Walled': 3,
-            'Towers': 4,
-            'Battlements': 5,
-            'Portcullis': 6,
-            'Boiling Oil': 7,
-            'Trenches': 8,
-            'Moat': 9,
-            'Drawbridge': 10,
-            'Fortress': 11,
-            'Stronghold': 12,
-            'Palace': 13,
-            'Keep': 14,
-            'Citadel': 15,
-            'Hand of God': 16
-        },
+        fortifications: [
+            'Camp',
+            'Stockade',
+            'Rabid',
+            'Walled',
+            'Towers',
+            'Battlements',
+            'Portcullis',
+            'Boiling Oil',
+            'Trenches',
+            'Moat',
+            'Drawbridge',
+            'Fortress',
+            'Stronghold',
+            'Palace',
+            'Keep',
+            'Citadel',
+            'Hand of God'
+        ],
 
-        sieges: {
-            'None': 0,
-            'Flaming Arrows': 1,
-            'Ballistas': 2,
-            'Battering Rams': 3,
-            'Ladders': 4,
-            'Trojan': 5,
-            'Catapults': 6,
-            'War Elephants': 7,
-            'Siege Towers': 8,
-            'Trebuchets': 9,
-            'Black Powder': 10,
-            'Sappers': 11,
-            'Dynamite': 12,
-            'Greek Fire': 13,
-            'Cannons': 14
-        }
+        sieges: [
+            'None',
+            'Flaming Arrows',
+            'Ballistas',
+            'Battering Rams',
+            'Ladders',
+            'Trojan',
+            'Catapults',
+            'War Elephants',
+            'Siege Towers',
+            'Trebuchets',
+            'Black Powder',
+            'Sappers',
+            'Dynamite',
+            'Greek Fire',
+            'Cannons'
+        ]
     }
 });

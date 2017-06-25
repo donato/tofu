@@ -2,6 +2,8 @@ define(['jquery', 'underscore'], function($,_) {
     function logBase(stats, data, officers) {
         //stats=sa;da;spy;sentry;
         //details=fort;siege;econ;tech;conscription;turns;covertlevel;bonus
+        //a=base&stats=1599739;7354;1244639;9023&data=Rabid Pitbulls;War Elephants;None;Salt (x 1.89);160;7008;12;1&officers=
+        //a=base&stats=1599739;7354;1244639;9023&data=Rabid Pitbulls;War Elephants;None;189          ;160;7009;12;1&officers=
                             
         getLux('&a=base' +
                 '&stats=' + stats + 

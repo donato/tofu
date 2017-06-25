@@ -122,6 +122,15 @@ define([
             return to_int($(this).text());
         });
     }
+    function parseTableColumnToDict($table, key, val) {
+        var dict = {};
+        $table.find('tr').each(function(idx, row) {
+            var $row = $(row);
+            var $td = $row.find('td');
+            dict[$td.eq(key).text()] = $td.eq(val).text();
+        });
+        return dict;
+    }
 
     function getRowValues(searchText) {
         var $cells = $("tr:contains('" + searchText + "'):last > td");
@@ -135,47 +144,6 @@ define([
         return vals;
     }
 
-    function raceBonus(stat, race) {
-        race = race || db.get('race');
-
-        switch(stat) {
-        case 'income':
-            if(race == 'humans') {
-                return 1.3;
-            }
-            if(race == 'dwarves') {
-                return 1.15;
-            }
-            break;
-        case 'sa':
-            if(race == 'orcs') {
-                return 1.35;
-            }
-            break;
-        case 'da':
-            if(race == 'orcs') {
-                return 1.2;
-            }
-            if(race == 'dwarves') {
-                return 1.4;
-            }
-            break;
-        case 'spy':
-            if(race == 'humans') {
-                return 1.35;
-            }
-            if(race == 'elves') {
-                return 1.45;
-            }
-            break;
-        case 'sentry':
-            if(race == 'undead') {
-                return 1.35;
-            }
-            break;
-        }
-        return 1;
-    }
 
     function getWeaponType(weaponName) {
         if(_.contains(Constants.saWeaps, weaponName)) {
@@ -196,19 +164,6 @@ define([
         level = level || db.getInt('covertlevel', 0);
 
         return Math.pow(1.6, level);
-    }
-
-    function upgradeBonus(type, option) {
-        switch(type) {
-        case 'sa':
-            return siegeBonus(option);
-        case 'da':
-            return fortBonus(option);
-        case 'spy':
-        case 'sentry':
-            return covertBonus(option);
-        }
-        return 1;
     }
 
 	function raceBonus(stat, race) {
@@ -241,13 +196,13 @@ define([
         if (_.isNumber(i)) {
             return i;
         }
-        return  _.find(Constants.fortifications, i || db.get('fort'));
+        return  _.indexOf(Constants.fortifications, i || db.get('fort'));
     }
     function getSiege(i) {
         if (_.isNumber(i)) {
             return i;
         }
-        return  _.find(Constants.sieges, i || db.get('siege'));
+        return  _.indexOf(Constants.sieges, i || db.get('siege'));
     }
 
     /**
@@ -270,7 +225,7 @@ define([
 		level = level || db.getInt('covertlevel', 0);
 
 		return Math.pow(1.6, level);
-	}
+	};
 
 	function upgradeBonus(type, option) {
 		switch (type) {
@@ -288,10 +243,14 @@ define([
     return {
         db: db,
         Page : Page,
+        checkOption: checkOption,
         parseResponse: parseResponse,
         getTableByHeading: getTableByHeading,
         setTableId: setTableId,
         parseTableColumn: parseTableColumn,
+        parseTableColumnToDict: parseTableColumnToDict,
+        raceBonus: raceBonus,
+        upgradeBonus: upgradeBonus,
         getWeaponType: getWeaponType,
         getRowValues : getRowValues,
         getFort : getFort,
