@@ -1,4 +1,8 @@
-define(['jquery', 'underscore'], function($, _) {
+define([
+	'../koc_utils',
+	'jquery',
+	'underscore'
+], function(Koc, $, _) {
 
 	function getDefenderKocid() {
 		return $('[name="defender_id"]:first').val();
@@ -31,8 +35,8 @@ define(['jquery', 'underscore'], function($, _) {
 					$("#lux_sabbable").append('<td colspan="2" style="font-weight:bold;text-align:center;">Server Error. Contact Admin.</td>');
 				} else {
 					var rt = responseDetails.responseText;
-					var sabInfo = parseResponse(rt, "sabinfo");
-					var hilight = parseResponse(rt, "hilight");
+					var sabInfo = Koc.parseResponse(rt, "sabinfo");
+					var hilight = Koc.parseResponse(rt, "hilight");
 					var userInfo = sabInfo.split(';');
 
 					for (i = 0; i < userInfo.length-1; i+=2) {

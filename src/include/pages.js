@@ -1,4 +1,5 @@
 define([
+    './pages/attack.php',
     './pages/armory.php',
     './pages/base.php',
     './pages/detail.php',
@@ -7,8 +8,9 @@ define([
     './pages/train.php',
     './pages/inteldetail.php',
     './pages/battlefield.php'
-], function(Armory, Base, Detail, Mercs, Stats, Train, IntelDetail, Battlefield) {
+], function(Attack, Armory, Base, Detail, Mercs, Stats, Train, IntelDetail, Battlefield) {
     return {
+        attack: Attack,
         battlefield: Battlefield,
         base: Base,
         detail: Detail,
