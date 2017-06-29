@@ -36,7 +36,6 @@ define([
         var technology = dict['Technology'];
         var tech = technology.split('(x ')[1].split(' ')[0];
         tech = parseFloat(tech);
-        tech = Math.floor(tech*100);
         var conscription = dict['Conscription'];
         conscription = to_int(conscription.substr(0, conscription.indexOf(' soldiers')));
         var turns = dict['Game Turns'];
