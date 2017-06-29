@@ -1,15 +1,19 @@
 define([
 	'./init',
+	'./plugins/targets',
 	'raw-loader!../templates/links.html',
 	'./gui',
 	'jquery',
 	'underscore'
-], function(Init, linksHtml, GUI, $, _) {
+], function(Init, Targets, linksHtml, GUI, $, _) {
 	
 	return {
 
 		init: function () {
 
+			// Until it's togglable, just list them here
+			Targets.run();
+			
 			this.$controlbox = $("<div>", {
 				'id': 'tofu_control_box',
 				'html' : 'Open Control Panel<br>Tofu V.' + version
@@ -18,10 +22,10 @@ define([
 			$('body').append( this.$controlbox );
 
 			this.$controlbox.click( this.showControlPanel.bind(this) );
-		}
+		},
 
 
-		, showControlPanel: function() {
+		showControlPanel: function() {
 			GUI.displayHtml('<div id="tofu_popup_navbar"><ul></ul></div><div id="tofu_popup_content"></div>');
 			
 			var panelTabs = [
@@ -36,17 +40,17 @@ define([
 				$nav.append("<li><a href='javascript:void(0);' id='"+arr[1]+"'>"+arr[0]+"</a></li>");
 				$('#'+arr[1]).click(arr[2]);
 			});
-		}
+		},
 
-		,  toggle: function() {
+		toggle: function() {
 			$("_luxbot_darken").toggle();
-		}
+		},
 
-		, showLinkBox: function () {
+		showLinkBox: function () {
             $('#tofu_popup_content').html(linksHtml);
-		}
+		},
 
-		,  showMessageBox: function() {
+		showMessageBox: function() {
 			if (messages === undefined) {
 				return;
 			}
@@ -63,9 +67,9 @@ define([
 
 			GUI.showMessage('<h3>Messages</h3><table id="_luxbot_messages" width="100%"><tr><th>Show</th><th>Sender</th><th>Subject</th><th>Date</th></tr>' + content + '</table>');
 			document.getElementById("_luxbot_guibox").addEventListener('click', GUI.showMessageDetails, true);
-		}
+		},
 
-		, showMessageDetails: function(event) {
+		showMessageDetails: function(event) {
 			var name = event.target.name;
 			if ( _.isString(name) ) {
 

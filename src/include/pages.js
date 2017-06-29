@@ -11,12 +11,16 @@ define([
 ], function(Attack, Armory, Base, Detail, Mercs, Stats, Train, IntelDetail, Battlefield) {
     return {
         attack: Attack,
-        battlefield: Battlefield,
-        base: Base,
-        detail: Detail,
-        mercs: Mercs,
-        inteldetail: IntelDetail,
         armory: Armory,
+        //attacklog: AttackLog,
+        base: Base,
+        battlefield: Battlefield,
+        //conquest: Conquest,
+        detail: Detail,
+        inteldetail: IntelDetail,
+        //intelfile: IntelFile,
+        mercs: Mercs,
+        //recruit: Recruit,
         train : Train,
         stats : Stats
     };
