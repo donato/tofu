@@ -31,11 +31,8 @@ define([
     }
 
 
-    log('init GUI');
     GUI.init();
-    log('init CP');
-    ControlPanel.init();
-    log('check for updates');
+    ControlPanel.init(action);
     Init.checkForUpdate(1);
 
     if(Init.checkUser() === 0) {

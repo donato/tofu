@@ -7,7 +7,7 @@ return {
 		}
 		var storedAs = 'plugin_enabled_' + str;
 		
-		db.get( storedAs, plugin.defaultEnabled);
+		db.get(storedAs, plugin.defaultEnabled);
 	},
 	
 	onPage : function(str, page) {

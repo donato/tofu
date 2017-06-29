@@ -1,18 +1,26 @@
 define([
 	'./init',
 	'./plugins/targets',
+	'./plugins/recon_request',
 	'raw-loader!../templates/links.html',
 	'./gui',
 	'jquery',
 	'underscore'
-], function(Init, Targets, linksHtml, GUI, $, _) {
+], function(Init, Targets, ReconRequest, linksHtml, GUI, $, _) {
+
+	// Until it's togglable, just list them here
+	var enabled_plugins = [
+		Targets,
+		ReconRequest
+	];
 	
 	return {
 
-		init: function () {
+		init: function (page) {
 
-			// Until it's togglable, just list them here
-			Targets.run();
+			_.each(enabled_plugins, function(plugin) {
+				plugin.run(page)
+			});
 			
 			this.$controlbox = $("<div>", {
 				'id': 'tofu_control_box',
