@@ -9,7 +9,7 @@ if (is_greasemonkey_enabled) {
     var openTab = function (t)           { GM_openInTab(t); };
     var gmSetValue = function(t, t2)    {
         // log('storing ' + t + ' ' + t2);
-        GM_setValue(t, '' + t2); // Convert to string for storage
+        GM_setValue(t, t2);
     };
     var gmDeleteValue = function(t)     { GM_deleteValue(t); };
     var gmGetValue = function(t, def)   { return GM_getValue(t, def);};
@@ -42,7 +42,7 @@ if (is_greasemonkey_enabled) {
     log = console.log;
     openTab = function(t) { window.open(t, '_blank'); };
     gmSetValue = function(t, t2) {
-        localStorage.setItem(t, '' + t2); // Convert to string for storage
+        localStorage.setItem(t, t2);
     };
     gmDeleteValue = function(t) { localStorage.removeItem(t); };
     gmGetValue = function(t, def) {

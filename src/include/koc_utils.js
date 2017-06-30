@@ -28,9 +28,17 @@ define([
             var ret = this.get(option, def);
             return parseFloat(ret, 10);
         },
+        getObject: function(option, def) {
+            option += "_"+ this.id;
+            return JSON.parse(gmGetValue(option, false)) || def;
+        },
         put: function(option, val) {
             option += "_" + this.id;
             gmSetValue(option, val);
+        },
+        putObject: function(option, val) {
+            option += "_"+ this.id;
+            gmSetValue(option, JSON.stringify(val));
         },
         del: function(option) {
             option += "_" + this.id;

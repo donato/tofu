@@ -6,6 +6,7 @@ define([
     './include/koc_utils',
     './include/gui',
     './include/control_panel',
+    './include/plugin_container',
     './include/pages',
     'raw-loader!./css/default.css',
     './include/buttons',
@@ -14,8 +15,7 @@ define([
     './include/layout',
     './include/logging',
     './include/options',
-    './include/plugin_container',
-], function($, _, _Highcharts, Init, KoC, GUI, ControlPanel, Pages, css) {
+], function($, _, _Highcharts, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
 
 	// CSS Styles are loaded as a resource, add to the page
     gmAddStyle(css);
@@ -32,7 +32,7 @@ define([
 
 
     GUI.init();
-    ControlPanel.init(action);
+    ControlPanel.init();
     Init.checkForUpdate(1);
 
     if(Init.checkUser() === 0) {
@@ -49,6 +49,7 @@ define([
     log('end page action');
 
     // Plugins want to be run on all pages. Look at /includes/plugins/...
+    Plugins.run(action);
     /*
     _.each(Plugins, function(plugin) {
         if(PluginHelper.toRun(plugin)) {

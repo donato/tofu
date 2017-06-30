@@ -69,6 +69,7 @@ define([
             db.put('daWeaps', weaponQuantity.da);
             db.put('spyWeaps', weaponQuantity.spy);
             db.put('sentryWeaps', weaponQuantity.sentry);
+            db.putObject('weaponList', weapons);
 
             //postLuxJson('&a=armory', weapons);
         },

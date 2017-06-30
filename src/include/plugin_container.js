@@ -1,5 +1,27 @@
-define(['jquery', 'underscore'], function($,_) {
+define([
+	'jquery',
+	'underscore',
+	'./plugins/targets',
+	'./plugins/recon_request',
+	'./plugins/armory-upgrade-suggestions',
+], function($,_, Targets, ReconRequest, ArmoryUpgradeHelper) {
+
+
+	// Until it's togglable, just list them here
+	var enabled_plugins = [
+		Targets,
+		ArmoryUpgradeHelper,
+		ReconRequest
+	];
+	
 return {
+	run: function(page) {
+		_.each(enabled_plugins, function(plugin) {
+			if (!plugin.enabledPages || _.contains(plugin.enabledPages, page)) {
+				plugin.run(page)
+			}
+		});
+	},
 	isEnabled : function(str) {
 		var plugin = Plugins[str];
 		if (!plugin) {

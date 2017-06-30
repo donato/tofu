@@ -60,7 +60,7 @@ define([], function () {
             'Camp',
             'Stockade',
             'Rabid',
-            'Walled',
+            'Walled Town',
             'Towers',
             'Battlements',
             'Portcullis',
