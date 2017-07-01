@@ -1,10 +1,11 @@
 tofu
 ====
 
-Script for the game KingsOfChaos, improving gameplay, tracking player statistics and connecting users with each other.
+tofu is a pluggable extension to the game KingsOfChaos, improving gameplay, tracking player statistics and connecting users with each other.
 
 ## How to Contribute
 
+Bear in mind that this is the work of several hobbyist coders working together over IRC since 2008.
 
 ### How to build
 ```bash
