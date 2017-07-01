@@ -87,7 +87,6 @@ define([
         showGold: function (json) {
 
             _.each(json, function (obj, id) {
-                log('Trying to load ' + id + ' ' + obj);
                 var GoldTd = $("tr[user_id='" + id + "'] > td").eq(5);
                 GoldTd.text(addCommas(obj['gold']) + ' Gold, ' + obj['update']);
                 GoldTd.css('color', '#aaaaaa');

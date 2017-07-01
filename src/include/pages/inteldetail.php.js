@@ -70,10 +70,7 @@ define([
             postLux('&a=logspy', '&enemy=' + enemy + ';' + enemyid + ';' + 
                 '&data=' + data +
                 '&weapons=' + weaponString +
-                '&logid=' + logid,
-                function(responseDetails) {
-                    log("SendLogDetails Response: "+ responseDetails.responseText);
-                });
+                '&logid=' + logid);
             // TODO: Redo how logging occurs from server
             // Logging.logRecon(enemy, enemyid, logid, gold, data, weapons)
         },
@@ -89,10 +86,7 @@ define([
             var amount = sabtext.between("and destroy ", " of the enemy's");
             var weapon = sabtext.between("of the enemy's ", " stockpile.");
             var logid = String(document.location).substr(String(document.location).indexOf('=') + 1);
-            getLux('&a=logsab&target=' + player + '&weapon=' + weapon + '&amount=' + amount + '&logid=' + logid,
-                function (responseDetails) {
-                    //log(responseDetails.responseText);
-                });
+            getLux('&a=logsab&target=' + player + '&weapon=' + weapon + '&amount=' + amount + '&logid=' + logid);
         }
 
     }

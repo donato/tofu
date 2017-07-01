@@ -54,7 +54,6 @@ define(['jquery', 'underscore'], function($, _) {
             else
                 type="attack";
                 
-            log('type: ' + type +' :: time: ' + time + ' :: enemy: ' + enemy + '('+enemy_id+') :: gold: ' + gold + ' :: enemy_losses: ' + enemy_losses + ' :: your_losses: ' + your_losses + ' ::  enemy_damage: ' + enemy_damage + ' :: your_damage: ' + your_damage + ' :: logid: ' + logid);
             sendAttackLogDetails(User.kocnick, type, enemy_id,  enemy, your_damage, enemy_damage, your_losses, enemy_losses, gold, logid, time);
 
         }

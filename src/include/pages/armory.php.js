@@ -149,8 +149,6 @@ define([
 
             function helper(stat) {
                 var o = {};
-                log(obj[stat] + stat);
-                log(User[stat] + stat);
                 var diff = obj[stat] - User[stat];
                 o[stat] = diff;
                 o[stat + 'Percentage'] = (100* diff / User[stat]).toFixed(2);
@@ -158,7 +156,6 @@ define([
             }
 
             var statsDiffObj = _.extend.apply(null, _.map(['sa', 'da', 'spy', 'sentry'], helper));
-            log(JSON.stringify(statsDiffObj));
             var html =  ArmoryDiffTemplate(statsDiffObj);
             $("#military_effectiveness").after(html);
         },
