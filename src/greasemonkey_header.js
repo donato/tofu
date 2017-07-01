@@ -27,8 +27,8 @@
 // Silver sword icon from here - http://www.iconfinder.com/iconsets/free-silver-button-icons-2#readme
 // For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
 
+
+// This is a global for the makeUrl in gm_wrappers.js 
 var User;
-var Page;
-var action;
 
 var version = "0.10";

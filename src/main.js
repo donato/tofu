@@ -20,9 +20,9 @@ define([
 	// CSS Styles are loaded as a resource, add to the page
     gmAddStyle(css);
 
-    action = KoC.Page.getCurrentPage();
+    var action = KoC.Page.getCurrentPage();
 
-    log('action is ' + action);
+    // This is a global for the makeUrl in gm_wrappers.js 
     User = Init.loadUser(action);
 
     if(!User) {
@@ -30,12 +30,11 @@ define([
         return false;
     }
 
-
     GUI.init();
     ControlPanel.init();
     Init.checkForUpdate(1);
 
-    if(Init.checkUser() === 0) {
+    if(Init.checkUser(User) === 0) {
         return;
     }
 

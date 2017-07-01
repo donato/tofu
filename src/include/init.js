@@ -78,8 +78,8 @@ define([
                 );
                 db.put('luxbot_lastcheck', now.toString());
             }
-        }
-        , checkUser: function() {
+        },
+        checkUser: function(User) {
             if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined
               || User.forumPass === undefined || !User.auth
               || User.auth.length !== 32) {
