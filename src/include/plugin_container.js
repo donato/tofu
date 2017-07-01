@@ -1,16 +1,18 @@
 define([
 	'jquery',
 	'underscore',
+	'./plugins/armory-weapons-tracker',
 	'./plugins/targets',
 	'./plugins/recon_request',
 	'./plugins/armory-upgrade-suggestions',
-], function($,_, Targets, ReconRequest, ArmoryUpgradeHelper) {
+], function($,_, ArmoryWeaponsTracker, Targets, ReconRequest, ArmoryUpgradeHelper) {
 
 
 	// Until it's togglable, just list them here
 	var enabled_plugins = [
 		Targets,
 		ArmoryUpgradeHelper,
+		ArmoryWeaponsTracker,
 		ReconRequest
 	];
 	

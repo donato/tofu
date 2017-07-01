@@ -36,7 +36,7 @@ define([
 
         formatPage: function () {
 
-            var weapons = [];
+            var weapons = {};
             var weaponQuantity = {
                 sa: 0,
                 da: 0,
@@ -57,7 +57,7 @@ define([
                 };
 
                 weaponQuantity[w.type] += w.quantity;
-                weapons.push(w);
+                weapons[w.name] = w;
             });
 
             var stats = parseTableColumn(this.$militaryEffectiveness, 1);
@@ -69,9 +69,33 @@ define([
             db.put('daWeaps', weaponQuantity.da);
             db.put('spyWeaps', weaponQuantity.spy);
             db.put('sentryWeaps', weaponQuantity.sentry);
-            db.putObject('weaponList', weapons);
+            
+            this.updateWeaponsList(weapons);
 
             //postLuxJson('&a=armory', weapons);
+        },
+        
+        updateWeaponsList: function(currentWeapons) {
+            var previousWeapons = db.getObject('weaponsDict', {});
+            var time_difference = Date.now() - db.getTime('armoryWeaponsLastUpdate');
+            var allKeys = _.union(_.keys(currentWeapons), _.keys(previousWeapons));
+            var differences = _.reduce(allKeys, function(memo, weapon) {
+                var oldCount = previousWeapons[weapon].quantity || 0;
+                var newCount = currentWeapons[weapon].quantity || 0;
+                if (oldCount != newCount)
+                    memo.push({
+                        weapon: weapon,
+                        delta: newCount - oldCount,
+                        time: Date.now(),
+                        interval: time_difference});
+                return memo;
+            }, []);
+            
+            var changeLog = db.getObject('weaponsTrackerChangelog', []);
+            db.putObject('weaponsTrackerChangelog', differences.concat(changeLog));
+            
+            db.putTime('armoryWeaponsLastUpdate');
+            db.putObject('weaponsDict', currentWeapons);
         },
 
         showStats: function () {

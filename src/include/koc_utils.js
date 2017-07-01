@@ -36,6 +36,16 @@ define([
             option += "_" + this.id;
             gmSetValue(option, val);
         },
+        // Time in javascript is always unixtime
+        getTime: function(option) {
+            option += "_"+ this.id;
+            var ret = this.get(option, Date.now());
+            return parseInt(ret);
+        },
+        putTime: function(option, val) {
+            option += "_"+ this.id;
+            gmSetValue(option, val);
+        },
         putObject: function(option, val) {
             option += "_"+ this.id;
             gmSetValue(option, JSON.stringify(val));
@@ -251,6 +261,7 @@ define([
     return {
         db: db,
         Page : Page,
+        timeElapsed: timeElapsed,
         checkOption: checkOption,
         parseResponse: parseResponse,
         getTableByHeading: getTableByHeading,

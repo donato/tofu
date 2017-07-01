@@ -12,7 +12,7 @@ define([
         
         enabledPages: ['armory'],
         
-        run: function(User) {
+        run: function() {
             var x = this.buildHtml();
             $("#military_effectiveness").after(x);
         },
@@ -64,11 +64,10 @@ define([
             var valPerIS = da_race_factor * 1000 * 5 * (db.get("Tech", 100) / 100) * (db.get("Offiebonus", 100) / 100);
             var valPerDS = da_race_factor * 256 * 5 * (db.get("Tech", 100) / 100) * (db.get("Offiebonus", 100) / 100);
 
-            var weaps = db.getObject('weaponList');
+            var weaps = db.getObject('weaponsDict', {});
             function getWeapCount(name) {
-                var obj = _.find(weaps, {name: name})
-                if (obj) {
-                    return obj.quantity;
+                if (weaps[name]) {
+                    return weaps[name].quantity
                 }
                 return 0;
             }
