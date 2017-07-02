@@ -24,13 +24,6 @@ define([
             var stats = parseTableColumn(this.$militaryEffectiveness, 1);
             this.armoryDiff(stats);
             this.formatPage();
-
-            // if (checkOption('option_armory_diff')) {
-            // }
-            // if (checkOption('option_armory_graph')) {
-            // this.showStats();
-            // }
-            // this.armory_aat();
             this.addBuyButton();
         },
 
@@ -80,8 +73,8 @@ define([
             var time_difference = Date.now() - db.getTime('armoryWeaponsLastUpdate');
             var allKeys = _.union(_.keys(currentWeapons), _.keys(previousWeapons));
             var differences = _.reduce(allKeys, function(memo, weapon) {
-                var oldCount = previousWeapons[weapon].quantity || 0;
-                var newCount = currentWeapons[weapon].quantity || 0;
+                var oldCount = previousWeapons[weapon] && previousWeapons[weapon].quantity || 0;
+                var newCount = currentWeapons[weapon] && currentWeapons[weapon].quantity || 0;
                 if (oldCount != newCount)
                     memo.push({
                         weapon: weapon,
@@ -94,7 +87,7 @@ define([
             var changeLog = db.getObject('weaponsTrackerChangelog', []);
             db.putObject('weaponsTrackerChangelog', differences.concat(changeLog));
             
-            db.putTime('armoryWeaponsLastUpdate');
+            db.putTime('armoryWeaponsLastUpdate', Date.now());
             db.putObject('weaponsDict', currentWeapons);
         },
 

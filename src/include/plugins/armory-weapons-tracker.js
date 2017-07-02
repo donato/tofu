@@ -16,7 +16,7 @@ define([
         },
 
         sabLogs_init: function () {
-            var $weaponsTable = $('<table id="_lux_sabbed" class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0"><tbody><tr><th colspan=2>Weapon Tracker Log </th></tr><tr><td colspan=2 style="border-bottom:none"><div id="lux_sablogs_2"></div></td></tr></tbody></table>');
+            var $weaponsTable = $('<table id="_lux_sabbed" class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0"><tbody><tr><th colspan=9>Weapon Tracker Log </th></tr><tr><td colspan=2 style="border-bottom:none"><div id="lux_sablogs_2"></div></td></tr></tbody></table>');
             $("#military_effectiveness").before($weaponsTable);
             this.$table = $weaponsTable;
             this.sabLogs_display();
@@ -28,9 +28,12 @@ define([
             var $tbody = this.$table.find('tbody');
             for (i = 0; i < 5 && i < changeLog.length; i++) {
                 var line = changeLog[i];
-                $tbody.append("<tr><td>" + line.weapon + " " + line.delta + "</td><td align=right>" + Koc.timeElapsed(line.time) + "</td></tr>");
+ 
+                var when = Koc.timeElapsed(line.time);
+                var interval = Koc.timeConfidenceFormatter(line.interval);
+                $tbody.append("<tr><td>" + line.weapon + "</td><td>" + line.delta + "</td><td align=right>" + when + "</td><td>"+interval+"</td></tr>");
             }
-            $tbody.append("<tr><td>(<a id='viewSablog'>View All</a>)</td><td>(<a id='clearSablog'>Clear</a>)</td></tr>");
+            $tbody.append("<tr><td>(<a id='viewSablog'>View All</a>)</td><td></td><td></td><td>(<a id='clearSablog'>Clear</a>)</td></tr>");
             var self = this;
             $("#clearSablog").click(function () {
                 self.sabLogs_clear();

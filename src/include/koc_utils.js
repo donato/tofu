@@ -38,17 +38,14 @@ define([
         },
         // Time in javascript is always unixtime
         getTime: function(option) {
-            option += "_"+ this.id;
             var ret = this.get(option, Date.now());
             return parseInt(ret);
         },
         putTime: function(option, val) {
-            option += "_"+ this.id;
-            gmSetValue(option, val);
+            this.put(option, val);
         },
         putObject: function(option, val) {
-            option += "_"+ this.id;
-            gmSetValue(option, JSON.stringify(val));
+            this.put(option, JSON.stringify(val));
         },
         del: function(option) {
             option += "_" + this.id;
@@ -92,21 +89,33 @@ define([
     }
 
     function timeElapsed(time) {
-        var d = new Date()
+        var d = new Date();
         var ds = d.getTime();
-        var timespan = Math.floor((ds - time) / 1000)
-        time = "";
-        if((timespan > 1209600) && (time === "")) time = Math.floor(timespan / 604800) + ' weeks ago';
-        if((timespan > 604800) && (time === "")) time = '1 week ago';
-        if((timespan > 172800) && (time === "")) time = Math.floor(timespan / 86400) + ' days ago';
-        if((timespan > 86400) && (time === "")) time = '1 day ago';
-        if((timespan > 7200) && (time === "")) time = Math.floor(timespan / 3600) + ' hours ago';
-        if((timespan > 3600) && (time === "")) time = '1 hour ago';
-        if((timespan > 120) && (time === "")) time = Math.floor(timespan / 60) + ' minutes ago';
-        if((timespan > 60) && (time === "")) time = '1 minute ago';
-        if((timespan > 1) && (time === "")) time = timespan + ' seconds ago';
-        if(time === "") time = '1 second ago';
-        return time;
+        return millisecondsToEnglish(ds - time) + " ago";
+    }
+
+    function timeConfidenceFormatter(ms) {
+        var timespan = Math.floor(ms / 1000);
+        if(timespan > 604800) return Math.floor(timespan / 604800) + 'w';
+        if(timespan > 86400) return Math.floor(timespan / 86400) + 'd';
+        if(timespan > 3600) return Math.floor(timespan / 3600) + 'h';
+        if(timespan > 60) return Math.floor(timespan / 60) + 'm';
+        if(timespan > 1) return timespan + 's';
+        return '';
+    }
+    
+    function millisecondsToEnglish(ms) {
+        var timespan = Math.floor(ms / 1000);
+        if(timespan > 1209600) return Math.floor(timespan / 604800) + ' weeks';
+        if(timespan > 604800) return '1 week';
+        if(timespan > 172800) return Math.floor(timespan / 86400) + ' days';
+        if(timespan > 86400) return '1 day';
+        if(timespan > 7200) return Math.floor(timespan / 3600) + ' hours';
+        if(timespan > 3600) return '1 hour';
+        if(timespan > 120) return Math.floor(timespan / 60) + ' minutes';
+        if(timespan > 60) return '1 minute';
+        if(timespan > 1) return timespan + ' seconds';
+        return '1 second';
     }
 
     function checkOption(opt) {
@@ -261,6 +270,7 @@ define([
     return {
         db: db,
         Page : Page,
+        timeConfidenceFormatter: timeConfidenceFormatter,
         timeElapsed: timeElapsed,
         checkOption: checkOption,
         parseResponse: parseResponse,
