@@ -1,6 +1,6 @@
 define([
-    '../koc_utils',
-    '../logging',
+    'utils/koc_utils',
+    'plugins/luxbot-logging',
     'jquery',
     'underscore'
 ], function(Koc, Log, $, _) {

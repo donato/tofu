@@ -1,6 +1,6 @@
 define([
-    '../buttons',
-    '../koc_utils',
+    'utils/buttons',
+    'utils/koc_utils',
     'jquery',
     'underscore'
 ], function(Buttons, KoC, $, _) {

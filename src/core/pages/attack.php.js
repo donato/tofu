@@ -1,5 +1,5 @@
 define([
-	'../koc_utils',
+	'utils/koc_utils',
 	'jquery',
 	'underscore'
 ], function(Koc, $, _) {

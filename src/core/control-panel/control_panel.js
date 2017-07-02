@@ -1,7 +1,7 @@
 define([
 	'./init',
-	'raw-loader!../templates/links.html',
-	'./gui',
+	'raw-loader!templates/links.html',
+	'utils/gui',
 	'jquery',
 	'underscore'
 ], function(Init, linksHtml, GUI, $, _) {

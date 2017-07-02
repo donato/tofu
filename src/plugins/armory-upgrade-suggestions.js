@@ -1,6 +1,6 @@
 define([
-    '../gui',
-    '../koc_utils'
+    'utils/gui',
+    'utils/koc_utils'
 ], function(GUI, Koc) {
 
     var db = Koc.db;

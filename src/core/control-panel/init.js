@@ -1,11 +1,11 @@
 define([
     'jquery',
     'underscore',
-    './koc_utils',
-    './constants',
-    './gui',
-    '../libs/hex_md5',
-    'handlebars-loader!../templates/welcome.html'
+    'utils/koc_utils',
+    'utils/constants',
+    'utils/gui',
+    'libs/hex_md5',
+    'handlebars-loader!templates/welcome.html'
 ], function($, _, KoC, Constants, GUI, empty, WelcomeTemplate) {
     var Page = KoC.Page;
     var db = KoC.db;

@@ -1,10 +1,10 @@
 define([
-    '../buttons',
-    '../koc_utils',
+    'utils/buttons',
+    'utils/koc_utils',
     'jquery',
     'underscore',
-    'handlebars-loader!../../templates/armory-buy-button.html',
-    'handlebars-loader!../../templates/armory-diff.html'
+    'handlebars-loader!templates/armory-buy-button.html',
+    'handlebars-loader!templates/armory-diff.html'
 ], function (Buttons, KoC, $, _, BuyButton, ArmoryDiffTemplate) {
 
     var setTableId = KoC.setTableId;

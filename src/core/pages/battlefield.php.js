@@ -1,5 +1,5 @@
 define([
-    '../constants',
+    'utils/constants',
     'jquery',
     'underscore'
 ], function (Constants, $, _) {

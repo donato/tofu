@@ -1,13 +1,13 @@
 define([
-    './pages/attack.php',
-    './pages/armory.php',
-    './pages/base.php',
-    './pages/detail.php',
-    './pages/mercs.php',
-    './pages/stats.php',
-    './pages/train.php',
-    './pages/inteldetail.php',
-    './pages/battlefield.php'
+    './attack.php',
+    './armory.php',
+    './base.php',
+    './detail.php',
+    './mercs.php',
+    './stats.php',
+    './train.php',
+    './inteldetail.php',
+    './battlefield.php'
 ], function(Attack, Armory, Base, Detail, Mercs, Stats, Train, IntelDetail, Battlefield) {
     return {
         attack: Attack,

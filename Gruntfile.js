@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var path = require('path')
 
 var FIREFOX_APP_NAME = 'l7q3zswe.default';
 
@@ -7,8 +8,8 @@ module.exports = function(grunt) {
     var paths = {
         header : 'src/greasemonkey_header.js',
         globals : [
-            'src/include/gm_wrappers.js',
-            'src/include/js_utils.js'
+            'src/core/utils/gm_wrappers.js',
+            'src/core/utils/js_utils.js'
         ],
         dest : 'bin/tofu.user.js'
     };
@@ -65,6 +66,10 @@ module.exports = function(grunt) {
             options : {
                 resolve : {
                     alias : {
+                        utils: path.resolve(__dirname, 'src/core/utils'),
+                        libs: path.resolve(__dirname, 'src/assets/libs'),
+                        templates: path.resolve(__dirname, 'src/templates'),
+                        plugins: path.resolve(__dirname, 'src/plugins'),
                         underscore : 'lodash'
                         //underscore : 'underscore/underscore.js',
                         //jquery : 'jquery/jquery.js'

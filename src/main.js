@@ -1,20 +1,20 @@
 define([
     'jquery',
     'underscore',
-    './libs/highstock-1.1.5',
-    './include/init',
-    './include/koc_utils',
-    './include/gui',
-    './include/control_panel',
-    './include/plugin_container',
-    './include/pages',
+    './assets/libs/highstock-1.1.5',
+    './core/control-panel/init',
+    './core/utils/koc_utils',
+    './core/utils/gui',
+    './core/control-panel/control_panel',
+    './core/control-panel/plugins',
+    './core/pages/pages',
     'raw-loader!./css/default.css',
-    './include/buttons',
-    './include/constants',
-    './include/js_utils',
-    './include/layout',
-    './include/logging',
-    './include/options',
+    './core/utils/buttons',
+    './core/utils/constants',
+    './core/utils/js_utils',
+    './core/utils/layout',
+    './plugins/luxbot-logging',
+    './core/control-panel/options'
 ], function($, _, _Highcharts, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
 
 	// CSS Styles are loaded as a resource, add to the page
