@@ -106,6 +106,8 @@ module.exports = function(grunt) {
         }
 	});
 
+    // function requireAll(r) { r.keys().forEach(r); }
+    // requireAll(require.context('./modules/', true, /\.js$/));
 
 	grunt.loadNpmTasks('grunt-webpack');
     grunt.loadNpmTasks('grunt-contrib-uglify');

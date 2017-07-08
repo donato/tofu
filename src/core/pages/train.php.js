@@ -49,17 +49,23 @@ define([
         var defenseMercs = getTroopCount($stable, "Trained Defense Mercenaries");
 
         $stable.after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='holding' class='table_lines'><tbody><tr><th colspan=3>Troops/Weapons</th></tr><tr><th class='subh'>Troops</th><th  class='subh'>Weapons</th><th align='right' class='subh'>Unhelds</th></tr></tbody></table>");
-        
-        var unheldSpy = describe(User.spyWeaps - spies );
-        var unheldSentry = describe(User.sentryWeaps - sentries );
-        var unheldStrike = describe(User.saWeaps - attackers - attackMercs );
-        var unheldDefense = describe(User.daWeaps - defenders - defenseMercs );
+
+		var weapons = db.getObject('weaponsDict', {});
+		var weaponQuantity = _.reduce(weapons, function(memo, obj) {
+			memo[obj.type] += obj.quantity;
+			return memo;
+		}, {sa:0, da:0, spy:0, sentry:0});
+		
+        var unheldSpy = describe(weaponQuantity.spy - spies );
+        var unheldSentry = describe(weaponQuantity.sentry - sentries );
+        var unheldStrike = describe(weaponQuantity.sa - attackers - attackMercs );
+        var unheldDefense = describe(weaponQuantity.da - defenders - defenseMercs );
 
         $("#holding")
-			.append("<tr><td><b>Strike Weapons&nbsp;</b></td><td>"+User.saWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldStrike+" </td></tr>")
-			.append("<tr><td><b>Defense Weapons&nbsp;</b></td><td>"+User.daWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldDefense+" </td></tr>")
-			.append("<tr><td><b>Spy Weapons&nbsp;</b></td><td>"+User.spyWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSpy +"</td></tr>")
-			.append("<tr><td><b>Sentry Weapons&nbsp;</b></td><td>"+User.sentryWeaps+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSentry+" </td></tr>");
+			.append("<tr><td><b>Strike Weapons&nbsp;</b></td><td>"+weaponQuantity.sa+"&nbsp;&nbsp;</td><td align='right'> "+ unheldStrike+" </td></tr>")
+			.append("<tr><td><b>Defense Weapons&nbsp;</b></td><td>"+weaponQuantity.da+"&nbsp;&nbsp;</td><td align='right'> "+ unheldDefense+" </td></tr>")
+			.append("<tr><td><b>Spy Weapons&nbsp;</b></td><td>"+weaponQuantity.spy+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSpy +"</td></tr>")
+			.append("<tr><td><b>Sentry Weapons&nbsp;</b></td><td>"+weaponQuantity.sentry+"&nbsp;&nbsp;</td><td align='right'> "+ unheldSentry+" </td></tr>");
 	},
 	
     tffChart: function() {

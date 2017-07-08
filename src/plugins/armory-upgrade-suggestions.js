@@ -9,9 +9,9 @@ define([
         description: "Offer upgrade suggestions from the armory",
 
         defaultEnabled: true,
-        
+
         enabledPages: ['armory'],
-        
+
         run: function() {
             var x = this.buildHtml();
             $("#military_effectiveness").after(x);

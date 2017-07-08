@@ -44,7 +44,7 @@ define([], function () {
 
         storedStrings: ['race', 'kocnick', 'forumName', 'forumPass', 'auth', 'logself'],
 
-        storedNumbers: ['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry', 'spyWeaps', 'sentryWeaps', 'daWeaps', 'saWeaps'],
+        storedNumbers: ['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry'],
 
         saWeaps: _.keys(ALL_WEAPONS),
         

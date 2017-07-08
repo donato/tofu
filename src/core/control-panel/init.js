@@ -30,7 +30,6 @@ define([
             });
 
             _.map(Constants.storedNumbers, function (val) {
-                log(val + ': '+ db.get(val));
                 userObject[val] = db.get(val, 0);
             });
 
@@ -39,9 +38,9 @@ define([
             userObject.gold = Page.getPlayerGold();
 
             return userObject
-        }
+        },
 
-        , checkForUpdate: function(startup) {
+        checkForUpdate: function(startup) {
             if (db.get("luxbot_version",0) != version) {
                 db.put("luxbot_version", version);
                 db.put("luxbot_needsUpdate",0);
@@ -79,6 +78,7 @@ define([
                 db.put('luxbot_lastcheck', now.toString());
             }
         },
+
         checkUser: function(User) {
             if (User.forumName === 0 || User.forumPass === 0 || User.forumName === undefined
               || User.forumPass === undefined || !User.auth
@@ -110,15 +110,14 @@ define([
                 return 1;
             }
             return 1;
-        }
+        },
 
-        , showInitBox: function () {
+        showInitBox: function () {
             
             if (KoC.Page.getCurrentPage() !== "base") {
                 $("body").first().prepend('<p style="position:absolute">Visit Command Center to login</p>')
                 return;
             }
-
 
             function initLogin() {
                 var f_user = $("#_forum_username").val();
@@ -161,7 +160,7 @@ define([
                 );
             }
 
-            var welcomeText = WelcomeTemplate({});;
+            var welcomeText = WelcomeTemplate({});
             GUI.displayText( welcomeText );
 
             $("#_luxbot_login").click(initLogin);
