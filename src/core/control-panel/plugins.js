@@ -1,21 +1,16 @@
 define([
 	'jquery',
-	'underscore',
-	'../../plugins/armory-weapons-tracker',
-	'../../plugins/targets',
-	'../../plugins/recon_request',
-	'../../plugins/armory-upgrade-suggestions',
-], function($,_, ArmoryWeaponsTracker, Targets, ReconRequest, ArmoryUpgradeHelper) {
+	'underscore'
+], function($, _) {
 
+	function requireAll(requireContext) {
+		return requireContext.keys().map(requireContext);
+	}
+    // requires and returns all modules that match
 
-	// Until it's togglable, just list them here
-	var enabled_plugins = [
-		Targets,
-		ArmoryUpgradeHelper,
-		ArmoryWeaponsTracker,
-		ReconRequest
-	];
-
+	var enabled_plugins = requireAll(require.context("../../plugins/", true, /^\.\/.*\.js$/));
+    // is an array containing all the matching modules
+	
 	return {
 		run: function(page) {
 			_.each(enabled_plugins, function(plugin) {

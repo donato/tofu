@@ -17,19 +17,19 @@ define([
             this.armoryDiff()
         },
 
-        armoryDiff: function (stats) {
+        armoryDiff: function () {
             var obj = {
-                sa : stats[0],
-                da : stats[1],
-                spy : stats[2],
-                sentry : stats[3]
+                sa : db.get('sa'),
+                da : db.get('da'),
+                spy : db.get('spy'),
+                sentry : db.get('sentry')
             };
 
             function helper(stat) {
                 var o = {};
                 var diff = obj[stat] - User[stat];
                 o[stat] = diff;
-                o[stat + 'Percentage'] = (100* diff / User[stat]).toFixed(2);
+                o[stat + 'Percentage'] = (100 * diff / User[stat]).toFixed(2);
                 return o;
             }
 

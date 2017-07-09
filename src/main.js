@@ -8,13 +8,7 @@ define([
     './core/control-panel/control_panel',
     './core/control-panel/plugins',
     './core/pages/pages',
-    'raw-loader!./css/default.css',
-    './core/utils/buttons',
-    './core/utils/constants',
-    './core/utils/js_utils',
-    './core/utils/layout',
-    './plugins/luxbot-logging',
-    './core/control-panel/options'
+    'raw-loader!./css/default.css'
 ], function($, _, _Highcharts, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
 
 	// CSS Styles are loaded as a resource, add to the page

@@ -22,7 +22,7 @@ define([
             var sellValue = _.reduce(previousWeapons, function(memo, w) {
                 return memo + (w.sellValue * w.quantity);
             }, 0);
-            var retailValue = to_int(sellValue * 10 / 7);
+            var retailValue = Math.floor(sellValue * 10 / 7);
 
             $("input[name='doscrapsell']").each(function (i, e) {
                 var row = $(e).parents("tr").eq(1);

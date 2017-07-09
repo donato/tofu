@@ -69,7 +69,7 @@ module.exports = function(grunt) {
                         utils: path.resolve(__dirname, 'src/core/utils'),
                         libs: path.resolve(__dirname, 'src/assets/libs'),
                         templates: path.resolve(__dirname, 'src/templates'),
-                        plugins: path.resolve(__dirname, 'src/plugins'),
+                        plugins: path.resolve(__dirname, 'src/plugins_disabled'),
                         underscore : 'lodash'
                         //underscore : 'underscore/underscore.js',
                         //jquery : 'jquery/jquery.js'
@@ -106,8 +106,6 @@ module.exports = function(grunt) {
         }
 	});
 
-    // function requireAll(r) { r.keys().forEach(r); }
-    // requireAll(require.context('./modules/', true, /\.js$/));
 
 	grunt.loadNpmTasks('grunt-webpack');
     grunt.loadNpmTasks('grunt-contrib-uglify');
