@@ -7,7 +7,8 @@ define([
     var db = Koc.db;
 
     return {
-        description: "",
+        name: "Armory Diff",
+        description: "See your stats changes since the last visit to armory",
 
         defaultEnabled: true,
 

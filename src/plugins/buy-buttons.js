@@ -9,7 +9,8 @@ define([
     var getTableByHeading = Koc.getTableByHeading;
 
     return {
-        description: "",
+        name: "BetterButtons",
+        description: "Add buttons to auto-fill text boxes with maximum affordable items",
 
         defaultEnabled: true,
 

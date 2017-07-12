@@ -5,6 +5,7 @@ define([
 	function(GUI, Koc) {
 		var db = Koc.db;
 		return {
+			name: "Farming Targets",
 			description: "Targets button added to sidebar",
 
 			defaultEnabled: true,

@@ -7,7 +7,8 @@ define([
     var db = Koc.db;
 
     return {
-        description: "Offer upgrade suggestions from the armory",
+        name: "AAT Calculator",
+        description: "Include total armory value and AAT for your tools",
 
         defaultEnabled: true,
 

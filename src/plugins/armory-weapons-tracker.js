@@ -5,6 +5,7 @@ define([
 
     var db = Koc.db;
     return {
+        name: "Inventory Logger",
         description: "Track changes to weapons over time",
 
         defaultEnabled: true,

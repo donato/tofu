@@ -8,6 +8,7 @@ function(GUI, Koc) {
     
     var requestHtml = '<tr><td align=center colspan=2><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="button" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>';
     return {
+        name: "Recon Requests",
         description: "Recon request system",
 
         defaultEnabled: true,

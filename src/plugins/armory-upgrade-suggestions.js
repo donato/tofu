@@ -6,6 +6,7 @@ define([
     var db = Koc.db;
 
     return {
+        name: "Upgrade Suggestions",
         description: "Offer upgrade suggestions from the armory",
 
         defaultEnabled: true,

@@ -1,10 +1,12 @@
 define([
 	'./init',
+	'./plugins',
 	'raw-loader!templates/links.html',
+	'handlebars-loader!templates/control-panel.html',
 	'utils/gui',
 	'jquery',
 	'underscore'
-], function(Init, linksHtml, GUI, $, _) {
+], function(Init, Plugins, linksHtml, ControlPanelTemplate, GUI, $, _) {
 
 	
 	return {
@@ -23,20 +25,29 @@ define([
 
 
 		showControlPanel: function() {
-			GUI.displayHtml('<div id="tofu_popup_navbar"><ul></ul></div><div id="tofu_popup_content"></div>');
-			
 			var panelTabs = [
-				// 'Tab Text', 'id', callback
-				['Show links', 'showlinkbox', this.showLinkBox.bind(this)],
-				// ['Farmlist Setup','showfarmlist', this.showFarmList.bind(this)],
-				['Check for update', 'checkupdate', Init.checkForUpdate]
+				{id: "showLinkBox", name: "Show Links", action: this.showLinkBox.bind(this)},
+				{id: "checkupdates", name: "Check For Updates", action: Init.checkForUpdate}
 			];
-			
-			var $nav = $('#tofu_popup_navbar > ul');
-			_.each(panelTabs, function(arr) {
-				$nav.append("<li><a href='javascript:void(0);' id='"+arr[1]+"'>"+arr[0]+"</a></li>");
-				$('#'+arr[1]).click(arr[2]);
-			});
+
+			var p = Plugins.getPlugins();
+			var html = ControlPanelTemplate({plugins: p, navLinks: panelTabs});
+			var $div = GUI.displayHtml(html);
+			$div.click(this.onClick.bind(this));
+		},
+		
+		onClick: function(event) {
+			if (event && event.target && event.target.getAttribute('action')) {
+				this[event.target.getAttribute('action')](event);
+			}
+			return false;
+		},
+		
+		togglePlugin: function(event) {
+			log('toggling... ', event.target)
+			var pluginName = event.target.getAttribute('pluginName');
+			Plugins.toggle(pluginName);
+			this.showControlPanel();
 		},
 
 		toggle: function() {
