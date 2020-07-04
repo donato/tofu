@@ -84,7 +84,7 @@ gmAddStyle = function(text) {
     }
 
     function postLux(url, data, callback) {
-        post( makeUrl(url), data, callback );
+        post(makeUrl(url), data, callback );
     }
 
     function postLuxJson(url, data, callback) {

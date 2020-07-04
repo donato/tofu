@@ -28,30 +28,37 @@ define(['jquery', 'underscore'], function($,_) {
     }
 
 	function sendAttackLogDetails(user, type, oppid, opponent, user_damages, opponent_damages, user_losses, opponent_losses, gold_stolen, logid, time) {
-        getLux( '&a=logattack&type=' + type + 
-            '&enemy=' + opponent + ';' + oppid + ';' + opponent_damages + ';' + opponent_losses +
-            '&data=' + user_damages + ';' + user_losses + 
-            '&gold=' + gold_stolen +
-            '&time=' + time +
-            '&logid=' + logid,
-            function(responseDetails) {}
-		);
-    }   
+    getLux( '&a=logattack&type=' + type + 
+        '&enemy=' + opponent + ';' + oppid + ';' + opponent_damages + ';' + opponent_losses +
+        '&data=' + user_damages + ';' + user_losses + 
+        '&gold=' + gold_stolen +
+        '&time=' + time +
+        '&logid=' + logid,
+      function(responseDetails) {});
+  }
 
     function logRecon(enemy, enemyid, logid, gold, data, weapons) {
-        getLux('&a=logRecon&enemy=' + enemy + 
-                                '&enemyid=' + enemyid +
-                                '&logid=' + logid +
-                                '&gold=' + gold +
-                                '&data=' + data + 
-                                '&weapons=' + weapons
-                    , function(responseDetails) {
-                            log("logRecon Response: "+ responseDetails.responseText);
-                    });
+      getLux('&a=logRecon' + 
+          '&enemy=' + enemy + 
+          '&enemyid=' + enemyid +
+          '&logid=' + logid +
+          '&gold=' + gold +
+          '&data=' + data + 
+          '&weapons=' + weapons,
+        function(responseDetails) {
+          log("logRecon Response: "+ responseDetails.responseText);
+        });
     }    
 
     function sendConquestDetails(contype) {
         getLux('a=logcon&contype=' + contype);
+    }
+
+    function logArmory(weapons) {
+      //name:qty:repair;
+      var arrWeapons = Object.values(weapons);
+      var data = arrWeapons.map(weapon => [weapon.name, weapon.quantity, weapon.strength].join(":")).join(';');
+      postLux('&a=armory', '&data=' + data);
     }
 
     function logStats(nick, kocid, chain, palliance, alliances, data, officers) {
@@ -71,11 +78,12 @@ define(['jquery', 'underscore'], function($,_) {
     }
 
 	return {
-		logBase : logBase,
-		sendLogDetails : sendLogDetails,
-		sendAttackLogDetails : sendAttackLogDetails,
-		logRecon : logRecon,
-		sendConquestDetails : sendConquestDetails,
-		logStats : logStats
+    logArmory,
+		logBase,
+		sendLogDetails,
+		sendAttackLogDetails,
+		logRecon,
+		sendConquestDetails,
+		logStats
 	}
 });

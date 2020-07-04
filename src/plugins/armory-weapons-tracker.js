@@ -13,7 +13,32 @@ define([
         enabledPages: ['armory'],
 
         run: function() {
-            this.sabLogs_init();
+          this.updateWeaponsTracker();
+          this.sabLogs_init();
+        },
+      
+        updateWeaponsTracker: function() {
+          var currentWeapons = db.getObject('weapons', {});
+          var previousWeapons = db.getObject('previousWeapons', {});
+          var time_difference = Date.now() - db.getTime('armoryWeaponsLastUpdate');
+          var allKeys = _.union(_.keys(currentWeapons), _.keys(previousWeapons));
+          var differences = _.reduce(allKeys, function(memo, weapon) {
+              var oldCount = previousWeapons[weapon] && previousWeapons[weapon].quantity || 0;
+              var newCount = currentWeapons[weapon] && currentWeapons[weapon].quantity || 0;
+              if (oldCount != newCount)
+                  memo.push({
+                      weapon: weapon,
+                      delta: newCount - oldCount,
+                      time: Date.now(),
+                      interval: time_difference});
+              return memo;
+          }, []);
+          
+          var changeLog = db.getObject('weaponsTrackerChangelog', []);
+          db.putObject('weaponsTrackerChangelog', differences.concat(changeLog));
+          
+          db.putTime('armoryWeaponsLastUpdate', Date.now());
+          db.putObject('previousWeapons', currentWeapons);
         },
 
         sabLogs_init: function () {

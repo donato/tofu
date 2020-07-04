@@ -10,7 +10,8 @@ define([
         name: "AAT Calculator",
         description: "Include total armory value and AAT for your tools",
 
-        defaultEnabled: true,
+        // This is obsolete, since the feature was added to KoC core.
+        defaultEnabled: false,
 
         enabledPages: ['armory'],
 

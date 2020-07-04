@@ -55,22 +55,34 @@ define([
 
 
     Page = {
-        // This gets extended with each page.
-        getCurrentPage: function() {
-            return document.URL.substring(document.URL.indexOf('.com') + 5, document.URL.indexOf('.php'));
-        },
-		
-        getPlayerGold: function() {
-            var gold = textBetween(document.body.innerHTML, 'Gold:<font color="#250202">', '<');
+      // This gets extended with each page.
+      getCurrentPage: function() {
+          return document.URL.substring(document.URL.indexOf('.com') + 5, document.URL.indexOf('.php'));
+      },
+  
+      getPlayerGold: function() {
+          var gold = textBetween(document.body.innerHTML, 'Gold:<font color="#250202">', '<');
 
-            if(gold !== '') {
-                gold = gold.replace('B', '000000000');
-                gold = gold.replace('M', '000000');
-                gold = gold.replace('K', '000');
-                gold = to_int(gold);
-            }
-            return(gold || 0);
-        }
+          if (gold !== '') {
+              gold = gold.replace('B', '000000000');
+              gold = gold.replace('M', '000000');
+              gold = gold.replace('K', '000');
+              gold = to_int(gold);
+          }
+          return(gold || 0);
+      },
+  
+      getPlayerSafe: function() {
+        return to_int(textBetween(document.body.innerHTML, 'Safe:</a>', '</').replace(/<\/?[^>]+(>|$)/g, ""));
+      },
+
+      getPlayerExperience: function() {
+        return to_int(textBetween(document.body.innerHTML, 'Experience:</td>', '</td').replace(/"/g, '').replace(/<\/?[^>]+(>|$)/g, ""));
+      },
+
+      getPlayerTurns: function() {
+        return to_int(textBetween(document.body.innerHTML, 'Turns:</td>', '</td').replace(/"/g, '').replace(/<\/?[^>]+(>|$)/g, ""));
+      },
     };
 	
     function timeToSeconds(time, timeunit) {

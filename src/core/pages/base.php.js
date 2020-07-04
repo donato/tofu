@@ -34,8 +34,6 @@ define([
       var technology = dict['Technology'].substr(0, dict['Technology'].indexOf(' ('));
       var conscription = dict['Conscription'];
       conscription = to_int(conscription.substr(0, conscription.indexOf(' Soldiers')));
-      var turns = dict['Game Turns'];
-      turns = to_int(turns.substr(0,turns.indexOf(" /")));
       var covertlevel = to_int(dict['Covert Level']);
       var sentrylevel = to_int(dict['Sentry Level']);
       var income = dict['Projected Income'];
@@ -55,8 +53,9 @@ define([
       var tff = to_int(armyDict['Total Fighting Force']);
       
       // Other stuff
-      var safe_gold = textBetween(document.body.innerHTML, 'Safe:</a>', '</').replace(/<\/?[^>]+(>|$)/g, "");
-      var experience = textBetween(document.body.innerHTML, 'Experience:</td>', '</td').replace(/"/g, '').replace(/<\/?[^>]+(>|$)/g, "");
+      var turns = Koc.Page.getPlayerTurns();
+      var safe_gold = Koc.Page.getPlayerSafe();
+      var experience = Koc.Page.getPlayerExperience();
       var race = textBetween($("head>link").eq(3).attr("href"),"css/",".css").toLowerCase();
       var officers = Stats.stats_getOfficers(false);
       
