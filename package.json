@@ -17,7 +17,7 @@
     "almond": "~0.2.6",
     "array-flatten": "^2.1.2",
     "async": "^2.6.3",
-    "bower": "~1.2.5",
+    "bower": "~1.8.8",
     "browserify-zlib": "^0.2.0",
     "debug": "^2.6.9",
     "fastparse": "^1.1.2",
