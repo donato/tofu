@@ -6,16 +6,16 @@ define([
 ], function (Koc, Constants, $, _) {
 
   const kocidToRowMap = {};
-
+  // We don't need a set, because only one user can be open at a time
+  let lastOpenedUserInfo;
   return {
-    statsLoadedId: undefined,
-
     run: function () {
       this.handlePage();
     },
 
     // we break this out, so it can be rerun when navigating across pages.
     handlePage() {
+      lastOpenedUserInfo = undefined;
       var $playerRows = $('tr.player');
       var logInfo = this.parseBattlefieldPlayers($playerRows);
       this.handleTreasury(logInfo);
@@ -150,16 +150,19 @@ define([
       var self = this;
       // we can't use $('table.battlefield').on(click, 'a.player', ..) because events are not propagated after click.
       $("a.player").click((event) => {
-        if (String(event.target).indexOf('stats.php') > -1) {
-          var userid = String(event.target).substr(String(event.target).indexOf('=') + 1, 7);
-          if (self.statsLoadedId == userid) {
-            self.statsLoadedId = 0;
-            return;
-          }
-
-          getLux('&a=getstats&userid=' + userid,
-              (response) => this.showUserInfo(response, userid));
+        if (String(event.target).indexOf('stats.php') == -1) {
+          return;
         }
+        var userid = String(event.target).substr(String(event.target).indexOf('=') + 1, 7);
+        // User needs to click on users to close the stats as well. This prevents loading
+        // when user is trying to close.
+        if (userid == lastOpenedUserInfo) {
+          lastOpenedUserInfo = null;
+          return;
+        }
+        lastOpenedUserInfo = userid;
+        getLux('&a=getstats&userid=' + userid,
+            (response) => this.showUserInfo(response, userid));
       });
     },
 
