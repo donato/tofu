@@ -32,7 +32,7 @@
     "jquery": "^2.2.4",
     "js-beautify": "~1.4.2",
     "less": "~1.4.2",
-    "lodash": "^3.10.0",
+    "lodash": "^4.17.15",
     "mime": "^1.6.0",
     "raw-loader": "^0.5.1",
     "util-deprecate": "^1.0.2",
