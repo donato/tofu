@@ -12,7 +12,7 @@
 // @resource    sidebar_sabtargets       https://raw.github.com/donato/tofu/master/src/img/sidebar_sabtargets.gif
 // @resource    sidebar_fakesabtargets   https://raw.github.com/donato/tofu/master/src/img/sidebar_fakesabtargets.gif
 // @resource    icon_sword               https://raw.github.com/donato/tofu/master/src/img/sword.png
-// @resource    styles				     https://raw.github.com/donato/tofu/master/src/css/default.css
+// @resource    styles                   https://raw.github.com/donato/tofu/master/src/css/default.css
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue

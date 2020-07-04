@@ -31,3 +31,7 @@ The build script will test your code for some common mistakes, and then build a 
 2. Select "developer mode" checkbox
 3. Click "Load unpacked extension"
 4. In the dialog select the folder which the manifest.json file is in
+
+## Dev tips
+  * To look at network requests: https://github.com/Tampermonkey/tampermonkey/issues/561
+  * For instant debugging install bin/tofu-dev.user.js

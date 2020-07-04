@@ -5,7 +5,7 @@ define(['jquery', 'underscore'], function($,_) {
         //a=base&stats=1599739;7354;1244639;9023&data=Rabid Pitbulls;War Elephants;None;Salt (x 1.89);160;7008;12;1&officers=
         //a=base&stats=1599739;7354;1244639;9023&data=Rabid Pitbulls;War Elephants;None;189          ;160;7009;12;1&officers=
                             
-        getLux('&a=base' +
+        getLux('&a=base2' +
                 '&stats=' + stats + 
                 '&data=' + data +
                 '&officers=' + officers,

@@ -75,7 +75,7 @@ gmAddStyle = function(text) {
 	
 	function makeUrl(url) {
         // TODO : Use constants
-		return '//donatoborrello.com/bot/luxbot.php?'+ 'user='+User.kocnick+'&username='+User.kocnick+'&password=' + User.forumPass +'&auth=' + User.auth + url;
+		return 'http://donatoborrello.com/bot/luxbot.php?'+ 'username=' + User.kocnick + '&password=' + User.forumPass +'&auth=' + User.auth + url;
 	}
 	
 	function getLux(url, callback) {
