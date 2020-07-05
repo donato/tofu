@@ -44,6 +44,12 @@ module.exports = function(grunt) {
                 dest: 'bin/tofu.user.js'
             }
         },
+    copy: {
+      main: {
+        src: 'src/tofu-dev.user.js',
+        dest: 'bin/tofu-dev.user.js',
+      },
+    },
 		jshint: {
 			options: {
 				jshintrc: 'src/.jshintrc'
@@ -107,16 +113,17 @@ module.exports = function(grunt) {
 	});
 
 
-	grunt.loadNpmTasks('grunt-webpack');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
-	grunt.loadNpmTasks('grunt-contrib-requirejs');
-	grunt.loadNpmTasks('grunt-contrib-less');
-	grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-webpack');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
-    grunt.registerTask('gm-header', prependFile);
-    grunt.registerTask('update-firefox', updateFF);
-    grunt.registerTask('ff', 'update-firefox');
+  grunt.loadNpmTasks('grunt-contrib-requirejs');
+  grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-jshint');
 
-	grunt.registerTask('default', ['webpack', 'gm-header', 'update-firefox']);
+  grunt.registerTask('gm-header', prependFile);
+  grunt.registerTask('update-firefox', updateFF);
+  grunt.registerTask('ff', 'update-firefox');
 
+  grunt.registerTask('default', ['webpack', 'copy', 'gm-header', 'update-firefox']);
 };

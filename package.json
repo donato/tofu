@@ -22,6 +22,7 @@
     "debug": "^2.6.9",
     "fastparse": "^1.1.2",
     "grunt": "~0.4.1",
+    "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "~0.6.4",
     "grunt-contrib-less": "~0.7.0",
     "grunt-contrib-requirejs": "~0.4.1",
