@@ -1,9 +1,9 @@
 var _ = require('lodash');
 var path = require('path')
 
-var FIREFOX_APP_NAME = 'l7q3zswe.default';
-
 module.exports = function(grunt) {
+
+    var user_config = grunt.file.readJSON('user_config.json');
 
     var paths = {
         header : 'src/greasemonkey_header.js',
@@ -22,18 +22,18 @@ module.exports = function(grunt) {
         grunt.file.write(paths.dest, header + globals.join(' ') + bin);
     }
 
-    function updateFF() {
-        grunt.file.copy(paths.dest,
-                '/Users/donatoborrello/Library/Application Support/Firefox/Profiles/'+FIREFOX_APP_NAME+'/gm_scripts/ToFu_Script' + '/tofu.user.js');
+    function copyFile() {
+        if (user_config.output_file !== '') {
+            grunt.file.copy(paths.dest, user_config.output_file);
+        }
     }
 
-    // Webpack plugins are objects with an apply method
+    // webpack plugins are objects with an apply method
     var afterWebpackBuild = {
         apply: function (compiler) {
             compiler.plugin('done', function () {
                 prependFile();
-                grunt.file.copy('bin/tofu.user.js',
-                        '/Users/donatoborrello/Library/Application Support/Firefox/Profiles/'+FIREFOX_APP_NAME+'/gm_scripts/ToFu_Script' + '/tofu.user.js');
+                copyFile();
             })
         }
     };
@@ -122,8 +122,7 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.registerTask('gm-header', prependFile);
-  grunt.registerTask('update-firefox', updateFF);
-  grunt.registerTask('ff', 'update-firefox');
+  grunt.registerTask('update-local', copyFile);
 
-  grunt.registerTask('default', ['webpack', 'copy', 'gm-header', 'update-firefox']);
+  grunt.registerTask('default', ['webpack', 'copy', 'gm-header', 'update-local']);
 };
