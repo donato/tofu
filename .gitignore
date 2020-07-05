@@ -3,3 +3,5 @@ bin
 node_modules
 bower_components
 package-lock.json
+user_config.json
+
