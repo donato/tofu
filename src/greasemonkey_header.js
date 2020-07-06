@@ -4,8 +4,6 @@
 // @version         0.20121110
 // @include         http://*kingsofchaos.com/*
 // @exclude         http://*kingsofchaos.com/chat/*
-// @require         https://raw.github.com/donato/tofu/master/src/libs/jquery-1.8.3.min.js
-// @require         https://raw.github.com/donato/tofu/master/src/libs/underscore-1.4.2.min.js
 // @require         https://raw.github.com/donato/tofu/master/src/libs/hex_md5.js
 // @require         https://raw.github.com/donato/tofu/master/src/libs/highstock-1.1.5.js
 // @resource    sidebar_targets          https://raw.github.com/donato/tofu/master/src/img/sidebar_targets.gif

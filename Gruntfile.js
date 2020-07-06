@@ -77,8 +77,6 @@ module.exports = function(grunt) {
                         templates: path.resolve(__dirname, 'src/templates'),
                         plugins: path.resolve(__dirname, 'src/plugins_disabled'),
                         underscore : 'lodash'
-                        //underscore : 'underscore/underscore.js',
-                        //jquery : 'jquery/jquery.js'
                     },
                     moduleDirectories: [
                         'src/',

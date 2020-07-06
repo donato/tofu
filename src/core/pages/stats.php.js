@@ -36,7 +36,7 @@ define([
             var tff = to_int($(stable).find("tr:contains('Army Size:')>td:last").html().trim());
             var morale = $(stable).find("tr:contains('Army Morale:')>td:last").text().trim();
             var chain = $(stable).find("tr:contains('Chain Name:')>td:last");
-            if ($(chain).size() > 0)
+            if ($(chain).length > 0)
                 chain = $(chain).html().trim();
             else 
                 chain = "";

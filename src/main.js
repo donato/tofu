@@ -1,7 +1,6 @@
 define([
     'jquery',
     'underscore',
-    './assets/libs/highstock-1.1.5',
     './core/control-panel/init',
     './core/utils/koc_utils',
     './core/utils/gui',
@@ -9,7 +8,7 @@ define([
     './core/control-panel/plugins',
     './core/pages/pages',
     'raw-loader!./css/default.css'
-], function($, _, _Highcharts, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
+], function($, _, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
 
 	// CSS Styles are loaded as a resource, add to the page
     gmAddStyle(css);

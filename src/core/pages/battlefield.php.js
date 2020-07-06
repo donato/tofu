@@ -119,7 +119,7 @@ define([
 
       // It may take koc a second to unload the previous id and load the new one
       var $container = $('tr.profile').find("form[action='writemail.php']").closest('tbody');
-      if ($container.size() < 1) {
+      if ($container.length < 1) {
         this.showInfoTimeout = setTimeout(() => this.showUserInfo(response, userid), 100);
         return;
       }
@@ -168,14 +168,14 @@ define([
 
     addClickEventsForNavigation: function() {
       var $nav = $("tr.nav");
-      if ($nav.size()) {
+      if ($nav.length) {
         var q = $nav.find('a');
         var self = this;
         q.on('click', () => {
           setTimeout(() => this.handlePage(), 1000);
         });
         
-        if (q.size() > 1) {
+        if (q.length > 1) {
           q[1].accessKey = 'c';
           q[0].accessKey = 'x';
         } else {

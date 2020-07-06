@@ -15,7 +15,7 @@ define(['jquery', 'underscore'], function($, _) {
 			return textBetween(x, ">","<");
         }
         
-        for (var i = 2; i < $rows.size()-1; i++) {
+        for (var i = 2; i < $rows.length - 1; i++) {
 			var gold, enemy_id, enemy;
             var rawData = $rows.eq(i).html().split("<td");
 

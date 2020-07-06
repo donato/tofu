@@ -22,7 +22,6 @@
         "GM_xmlhttpRequest",
         "GM_openInTab",
         "GM_log",
-        "Highcharts",
         "_",
         "hex_md5"   // One of ours
     ]

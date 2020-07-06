@@ -75,39 +75,39 @@ define([
 		);
         $("#growth").append("<tr><td><div id='container' style='height:250px'></div></td></tr>");
         
-        getLux('&a=trainStats',function(a) {
-			var chart = new Highcharts.StockChart({
-				chart : {
-					renderTo : 'container',
-					zoom : 'none'
-				},
-				navigator : {
-					enabled : true
-				},
-				scrollbar : {
-					enabled : false
-				},
-				yAxis: {
-					min: 0
-					// startOnTick: false,
-					// endOnTick: false    
-				},
-				rangeSelector: {
-					enabled: false
-				},
-				title : {
-					text : 'Total Fighting Force'
-				},
-				
-				series : [{
-					name : 'Army Size',
-					data : $.parseJSON(a.responseText),
-					tooltip: {
-						valueDecimals: 0
-					}
-				}]
-			});        
-        }.bind(this));
+        getLux('&a=trainStats', (a) => {
+          // var chart = new Highcharts.StockChart({
+          // 	chart : {
+          // 		renderTo : 'container',
+          // 		zoom : 'none'
+          // 	},
+          // 	navigator : {
+          // 		enabled : true
+          // 	},
+          // 	scrollbar : {
+          // 		enabled : false
+          // 	},
+          // 	yAxis: {
+          // 		min: 0
+          // 		// startOnTick: false,
+          // 		// endOnTick: false    
+          // 	},
+          // 	rangeSelector: {
+          // 		enabled: false
+          // 	},
+          // 	title : {
+          // 		text : 'Total Fighting Force'
+          // 	},
+            
+          // 	series : [{
+          // 		name : 'Army Size',
+          // 		data : $.parseJSON(a.responseText),
+          // 		tooltip: {
+          // 			valueDecimals: 0
+          // 		}
+          // 	}]
+          // });        
+        });
 
         var html = document.body.innerHTML;
         if (html.indexOf('You have no technology') >= 0) {

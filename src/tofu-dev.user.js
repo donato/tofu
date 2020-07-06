@@ -4,9 +4,6 @@
 // @version 		99.99.99
 // @include			https://*kingsofchaos.com/*
 // @exclude			https://*kingsofchaos.com/chat/*
-// @require         http://donatoborrello.com/koc/bot/require/jquery-1.8.3.min.js
-// @require         http://donatoborrello.com/koc/bot/require/underscore-1.4.2.min.js
-// @require         http://donatoborrello.com/koc/bot/require/highstock-1.1.5.js
 // @require         http://donatoborrello.com/koc/bot/require/hex_md5.js
 // @grant       GM_getValue
 // @grant       GM_setValue
