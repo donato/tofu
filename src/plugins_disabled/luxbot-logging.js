@@ -61,21 +61,31 @@ define(['jquery', 'underscore'], function($,_) {
       postLux('&a=armory', '&data=' + data);
     }
 
-    function logStats(nick, kocid, chain, palliance, alliances, data, officers) {
-        //data = comid;race;rank;highest_rank;tff;morale;fortifications;treasury
-        getLux('&a=stats' +
-                            '&nick=' + nick +
-                            '&kocid=' + kocid +
-                            '&chain='+chain+
-                            '&palliance=' + palliance + 
-                            '&alliances=' + alliances + 
-                            '&data=' + data +
-                            '&officers=' + officers,
-                function(responseDetails) {
-                        log("LogStats: "+ responseDetails.responseText);
-                        // alert(responseDetails.responseText);
-                });
-    }
+  function logStats(kocid, logInfo, officers) {
+    //data = comid;race;rank;highest_rank;tff;morale;fortifications;treasury
+    const data = [
+      logInfo.commanderId,
+      logInfo.race,
+      logInfo.rank,
+      logInfo.highestRank,
+      logInfo.tff,
+      logInfo.morale,
+      logInfo.fort,
+      logInfo.treasury
+    ];
+    getLux('&a=stats' +
+          '&nick=' + logInfo.name +
+          '&kocid=' + kocid +
+          '&chain='+ logInfo.chain+
+          '&palliance=' + logInfo.primaryAlliance + 
+          '&alliances=' + logInfo.secondaryAlliances + 
+          '&data=' + data.join(';') +
+          '&officers=' + officers,
+        function(responseDetails) {
+          log("LogStats: "+ responseDetails.responseText);
+          // alert(responseDetails.responseText);
+        });
+  }
 
   return {
     logArmory,

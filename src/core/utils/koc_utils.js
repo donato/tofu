@@ -161,12 +161,19 @@ define([
             return to_int($(this).text());
         });
     }
+
+    /*
+     * @param {!jQuery<Table>} $table
+     * @param {number} keyColumn
+     * @param {number} valColumn
+     * @return {{string:string}}
+     */
     function parseTableColumnToDict($table, key, val) {
         var dict = {};
         $table.find('tr').each(function(idx, row) {
             var $row = $(row);
             var $td = $row.find('td');
-            dict[$td.eq(key).text()] = $td.eq(val).text();
+            dict[$td.eq(key).text().trim()] = $td.eq(val).text().trim();
         });
         return dict;
     }
