@@ -35,4 +35,4 @@ The build script will test your code for some common mistakes, and then build a 
 
 ## Dev tips
   * To look at network requests: https://github.com/Tampermonkey/tampermonkey/issues/561
-  * For instant debugging run ```grunt copy``` then install ```bin/tofu-dev.user.js``` as your script. Modify file path as needed
+  * For instant debugging run ```grunt``` then install ```bin/tofu-dev.user.js``` as your script. Modify file path as needed

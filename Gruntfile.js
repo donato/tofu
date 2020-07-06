@@ -125,7 +125,6 @@ module.exports = function(grunt) {
 
 
   grunt.loadNpmTasks('grunt-webpack');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.loadNpmTasks('grunt-contrib-requirejs');
@@ -135,5 +134,5 @@ module.exports = function(grunt) {
   grunt.registerTask('gm-header', prependFile);
   grunt.registerTask('update-local', copyFile);
 
-  grunt.registerTask('default', ['webpack', 'copy', 'gm-header', 'update-local']);
+  grunt.registerTask('default', ['copy', 'webpack',  'gm-header', 'update-local']);
 };
