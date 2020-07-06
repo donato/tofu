@@ -30,7 +30,7 @@
     "grunt-webpack": "^1.0.18",
     "handlebars": "^3.0.8",
     "handlebars-loader": "^1.7.1",
-    "jquery": "^2.2.4",
+    "jquery": "^3.5.1",
     "js-beautify": "~1.4.2",
     "less": "~1.4.2",
     "lodash": "^3.10.0",
