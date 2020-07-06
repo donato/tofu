@@ -84,7 +84,7 @@ define([
         return to_int(textBetween(document.body.innerHTML, 'Turns:</td>', '</td').replace(/"/g, '').replace(/<\/?[^>]+(>|$)/g, ""));
       },
     };
-	
+  
     function timeToSeconds(time, timeunit) {
         if(timeunit.match('minute')) {
             time = time * 60;
@@ -205,31 +205,31 @@ define([
         return Math.pow(1.6, level);
     }
 
-	function raceBonus(stat, race) {
-		race = race || db.get('race');
+  function raceBonus(stat, race) {
+    race = race || db.get('race');
 
-		switch(stat) {
-			case 'income' :
-				if (race =='humans') { return 1.3; }
-				if (race =='dwarves') { return 1.15; }
-				break;
-			case 'sa' :
-				if (race =='orcs') { return 1.35; }
-				break;
-			case 'da' :
-				if (race =='orcs') { return 1.2; }
-				if (race =='dwarves') { return 1.4; }
-				break;
-			case 'spy' :
-				if (race =='humans') { return 1.35; }
-				if (race =='elves') { return 1.45; }
-				break;
-			case 'sentry' :
-				if (race =='undead') { return 1.35; }
-				break;
-		}
-		return 1;
-	}
+    switch(stat) {
+      case 'income' :
+        if (race =='humans') { return 1.3; }
+        if (race =='dwarves') { return 1.15; }
+        break;
+      case 'sa' :
+        if (race =='orcs') { return 1.35; }
+        break;
+      case 'da' :
+        if (race =='orcs') { return 1.2; }
+        if (race =='dwarves') { return 1.4; }
+        break;
+      case 'spy' :
+        if (race =='humans') { return 1.35; }
+        if (race =='elves') { return 1.45; }
+        break;
+      case 'sentry' :
+        if (race =='undead') { return 1.35; }
+        break;
+    }
+    return 1;
+  }
 
     function getFort(i) {
         if (_.isNumber(i)) {
@@ -260,24 +260,24 @@ define([
         return cb;
     }
 
-	function covertBonus(level) {
-		level = level || db.getInt('covertlevel', 0);
+  function covertBonus(level) {
+    level = level || db.getInt('covertlevel', 0);
 
-		return Math.pow(1.6, level);
-	};
+    return Math.pow(1.6, level);
+  };
 
-	function upgradeBonus(type, option) {
-		switch (type) {
-			case 'sa':
-				return siegeBonus(option);
-			case 'da':
-				return fortBonus(option);
-			case 'spy':
-			case 'sentry':
-				return covertBonus(option);
-		}
-		return 1;
-	}
+  function upgradeBonus(type, option) {
+    switch (type) {
+      case 'sa':
+        return siegeBonus(option);
+      case 'da':
+        return fortBonus(option);
+      case 'spy':
+      case 'sentry':
+        return covertBonus(option);
+    }
+    return 1;
+  }
 
     return {
         db: db,

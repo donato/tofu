@@ -39,7 +39,7 @@ module.exports = function(grunt) {
         }
     };
 
-	grunt.initConfig({
+  grunt.initConfig({
         'gm-header': {
             options : {
                 dest: 'bin/tofu.user.js'
@@ -51,24 +51,24 @@ module.exports = function(grunt) {
         dest: 'bin/tofu-dev.user.js',
       },
     },
-		jshint: {
-			options: {
-				jshintrc: 'src/.jshintrc'
-			},
-			beforeconcat : ['Gruntfile.js', 'src/includes/*.js', 'src/includes/**/*.js']
-			//afterconcat : ['tofu.user.js']
-		},
-		less: {
-			options: {
-				report:'min'
-				// paths: ['server/css']
-			},
-			development: {
-				files: {
-					'server/css/default.css' : 'server/css/default.less'
-				}
-			}
-		},
+    jshint: {
+      options: {
+        jshintrc: 'src/.jshintrc'
+      },
+      beforeconcat : ['Gruntfile.js', 'src/includes/*.js', 'src/includes/**/*.js']
+      //afterconcat : ['tofu.user.js']
+    },
+    less: {
+      options: {
+        report:'min'
+        // paths: ['server/css']
+      },
+      development: {
+        files: {
+          'server/css/default.css' : 'server/css/default.less'
+        }
+      }
+    },
         webpack: {
             options : {
                 resolve : {
@@ -121,7 +121,7 @@ module.exports = function(grunt) {
                 keepalive: true
             }
         }
-	});
+  });
 
 
   grunt.loadNpmTasks('grunt-webpack');

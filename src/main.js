@@ -10,7 +10,7 @@ define([
     'raw-loader!./css/default.css'
 ], function($, _, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
 
-	// CSS Styles are loaded as a resource, add to the page
+  // CSS Styles are loaded as a resource, add to the page
     gmAddStyle(css);
 
     var action = KoC.Page.getCurrentPage();

@@ -22,10 +22,10 @@ npm install
 # Run build
 grunt
 
-```	
+```  
 
 The build script will test your code for some common mistakes, and then build a new tofu-min.user.js in the /bin/ folder for you to test!
-	
+  
 
 ## How to run as Chrome Extension
 1. Go to chrome://extensions url

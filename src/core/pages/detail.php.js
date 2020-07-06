@@ -4,8 +4,8 @@ define([
     'jquery',
     'underscore'
 ], function(Koc, Log, $, _) {
-	return {
-		
+  return {
+    
     run: function() {
         this.showBattleLog();
         // Gold Update on attacks 
@@ -52,7 +52,7 @@ define([
             }
         }
     },
-	
+  
     processAttackLogDetail : function() {
         var gold_stolen, attack_id;
 

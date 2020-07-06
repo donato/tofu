@@ -72,13 +72,13 @@ gmAddStyle = function(text) {
     $('head').append('<style>' + text + '</style>');
 };
 
-	
-	function makeUrl(url) {
+  
+  function makeUrl(url) {
         // TODO : Use constants
-		return 'http://donatoborrello.com/bot/luxbot.php?'+ 'username=' + User.kocnick + '&password=' + User.forumPass +'&auth=' + User.auth + url;
-	}
-	
-	function getLux(url, callback) {
+    return 'http://donatoborrello.com/bot/luxbot.php?'+ 'username=' + User.kocnick + '&password=' + User.forumPass +'&auth=' + User.auth + url;
+  }
+  
+  function getLux(url, callback) {
         var address = makeUrl(url);
         get(address, callback);
     }
@@ -88,5 +88,5 @@ gmAddStyle = function(text) {
     }
 
     function postLuxJson(url, data, callback) {
-		postLux( url, '&json='+JSON.stringify(data), callback );
+    postLux( url, '&json='+JSON.stringify(data), callback );
     }

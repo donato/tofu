@@ -10,7 +10,7 @@ define([
     var Page = KoC.Page;
     var db = KoC.db;
 
-	var Init = {
+  var Init = {
         loadUser : function(action) {
             var kocid;
             if (action === 'base') {

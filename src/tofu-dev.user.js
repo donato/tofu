@@ -1,9 +1,9 @@
 // ==UserScript==
-// @name		    Tofu dev
-// @description		KoC LuXBot Script
-// @version 		99.99.99
-// @include			https://*kingsofchaos.com/*
-// @exclude			https://*kingsofchaos.com/chat/*
+// @name        Tofu dev
+// @description    KoC LuXBot Script
+// @version     99.99.99
+// @include      https://*kingsofchaos.com/*
+// @exclude      https://*kingsofchaos.com/chat/*
 // @require         http://donatoborrello.com/koc/bot/require/hex_md5.js
 // @grant       GM_getValue
 // @grant       GM_setValue

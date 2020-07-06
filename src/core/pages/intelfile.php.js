@@ -1,5 +1,5 @@
 define(['jquery', 'underscore'], function($, _) {
-	return {
-		
+  return {
+    
     run: function() { }
 }});

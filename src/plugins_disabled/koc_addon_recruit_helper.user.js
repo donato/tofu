@@ -4,9 +4,9 @@
 // @namespace      http://*kingsofchaos.com/*
 // @description    Help in recruiting : Remember messages sent to users and when they were sent etc.
 // @include        http://*kingsofchaos.com/*
-// @exclude		   http://www.kingsofchaos.com/confirm.login.php*
-// @exclude		   http://*.kingsofchaos.com/index.php*
-// @exclude		   http://*.kingsofchaos.com/error.php*
+// @exclude       http://www.kingsofchaos.com/confirm.login.php*
+// @exclude       http://*.kingsofchaos.com/index.php*
+// @exclude       http://*.kingsofchaos.com/error.php*
 // ==/UserScript==
 
 var CurrentURL = document.URL;

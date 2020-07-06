@@ -1,30 +1,30 @@
     String.prototype.trim = function () {
-		return this.replace(/^\s+|\s+$/g, '');
-	};
-	
+    return this.replace(/^\s+|\s+$/g, '');
+  };
+  
     String.prototype.between = function(first,second) {
             var x = this.indexOf(first) + first.length;
             var z = this.substring(x);
             var y = z.indexOf(second);
             return z.substring(z,y);
     };
-	
+  
     String.prototype.instr = function(strFind){
-		return (this.indexOf(strFind) >= 0);
-	};
+    return (this.indexOf(strFind) >= 0);
+  };
 
     String.prototype.int = function() {
         var r = parseInt(this.replace(/,/g,''), 10);
         if (isNaN(r)) r=-1;
         return r;
     };
-	
+  
     String.prototype.float = function() {
         var r = parseFloat(this.replace(/[^0-9\.\-]*/g,''), 10);
         if (isNaN(r)) r=-1;
         return r;
     };
-	
+  
     Number.prototype.int = function() {
         return this;
     }
@@ -62,16 +62,16 @@
     var addCommas = function () {
         var sRegExp = new RegExp('(-?[0-9]+)([0-9]{3})');
 
-		return function (sValue) {
-			sValue = String(sValue);
-			
-			while(sRegExp.test(sValue)) {
-				sValue = sValue.replace(sRegExp, '$1,$2');
-			}
-			return sValue;
-		};
-	}();
+    return function (sValue) {
+      sValue = String(sValue);
+      
+      while(sRegExp.test(sValue)) {
+        sValue = sValue.replace(sRegExp, '$1,$2');
+      }
+      return sValue;
+    };
+  }();
 
-	Math.log10 = function(val) {
-		return Math.log(val)/Math.LN10;
-	};
+  Math.log10 = function(val) {
+    return Math.log(val)/Math.LN10;
+  };

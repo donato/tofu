@@ -10,7 +10,7 @@ define([
     var getTableByHeading = KoC.getTableByHeading;
     var parseResponse = KoC.parseResponse;
 
-	return {
+  return {
     run: function() {
         this.enemyid = document.URL.split(/[=&?]/)[2];
 
@@ -19,9 +19,9 @@ define([
         this.showLoggedStats();
         this.addStatsPageButtons();
         this.statsOnlineCheck();
-    }
+    },
     
-    , statsPage: function() {
+    statsPage: function() {
         if (document.body.innerHTML.indexOf('Invalid User ID') != -1) {
             logStats('', this.enemyid, '', '','', 'invalid', '');
         } else {
@@ -57,22 +57,22 @@ define([
             this.nav();
             logStats(name, this.enemyid, chain, alliances[0],alliances[1], comid + ";"+race+";"+rank+";"+highest_rank+";"+tff+";"+morale+";"+fort+";"+treasury, officers);
         }
-    }
-  
-    , showLoggedStats: function() {
-		var self = this;
-        var userid = document.URL.substr(document.URL.indexOf('=')+1, 7);
+    },
+    
+    showLoggedStats: function() {
+      var self = this;
+      var userid = document.URL.substr(document.URL.indexOf('=')+1, 7);
 
-        $('#luxstats_reload').on('click',function() {
-            self.updateUserInfoS(userid);
-        });
+      $('#luxstats_reload').on('click',function() {
+          self.updateUserInfoS(userid);
+      });
 
-        var offieTable = $('body').find("table:contains('Officers'):last");
-        offieTable.parent().prepend("<table id='luxstats_info' class='table_lines' width='100%' cellPadding=6 cellSpacing=0><tbody></tbody></table><br />");
-        
-        $("#luxstats_info>tbody").html('<tr><th colspan="3">LuXBot Info<span id="luxstats_reload" style="cursor:pointer;color:pink;font-size:8pt;float:right">(reload)</span></th></tr>');
+      var offieTable = $('body').find("table:contains('Officers'):last");
+      offieTable.parent().prepend("<table id='luxstats_info' class='table_lines' width='100%' cellPadding=6 cellSpacing=0><tbody></tbody></table><br />");
+      
+      $("#luxstats_info>tbody").html('<tr><th colspan="3">LuXBot Info<span id="luxstats_reload" style="cursor:pointer;color:pink;font-size:8pt;float:right">(reload)</span></th></tr>');
 
-        this.updateUserInfoS(userid);
+      this.updateUserInfoS(userid);
     },
 
     updateUserInfoS: function(userid) {
@@ -137,24 +137,24 @@ define([
             }
             continue;
         }
-		
+    
         statstable.rows[allianceindex].cells[0].innerHTML = '<b>Alliances (' + alliances.length + '):</b>';
         statstable.rows[allianceindex].cells[1].innerHTML = pri_alliance + '<br><div id="_luxbot_alliances">' + sec_alliances.join(', ') + '</div><a id="expandAlliances"> + Show Secondary</a>';
 
-		$("body").on('click', '#expandAlliances', function(){
-			var q = document.getElementById('_luxbot_alliances');
-			q.style.display = 'none';
-			q.style.visibility = 'hidden';
-			q.nextSibling.id = 'collapseAlliances';
-			q.nextSibling.innerHTML = ' + Show Secondary';
-		});
-		$("body").on('click', '#collapseAlliances', function(){
-			var q = document.getElementById('_luxbot_alliances');
-			q.style.display = 'block';
-			q.style.visibility = 'visible';
-			q.nextSibling.id = 'expandAlliances';
-			q.nextSibling.innerHTML = ' - Hide Secondary'
-		});
+    $("body").on('click', '#expandAlliances', function(){
+      var q = document.getElementById('_luxbot_alliances');
+      q.style.display = 'none';
+      q.style.visibility = 'hidden';
+      q.nextSibling.id = 'collapseAlliances';
+      q.nextSibling.innerHTML = ' + Show Secondary';
+    });
+    $("body").on('click', '#collapseAlliances', function(){
+      var q = document.getElementById('_luxbot_alliances');
+      q.style.display = 'block';
+      q.style.visibility = 'visible';
+      q.nextSibling.id = 'expandAlliances';
+      q.nextSibling.innerHTML = ' - Hide Secondary'
+    });
     }
     
 

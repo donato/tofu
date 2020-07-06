@@ -1,6 +1,6 @@
 define(['jquery', 'underscore'], function($, _) {
-	return {
-		
+  return {
+    
     run : function() {
         var defendedRows = $("td.content > table.attacklog > tbody > tr");
         this.attackLogHelper(defendedRows,0);
@@ -12,11 +12,11 @@ define(['jquery', 'underscore'], function($, _) {
 
     , attackLogHelper: function ($rows, shift ) {
         function betweenTags (x) {
-			return textBetween(x, ">","<");
+      return textBetween(x, ">","<");
         }
         
         for (var i = 2; i < $rows.length - 1; i++) {
-			var gold, enemy_id, enemy;
+      var gold, enemy_id, enemy;
             var rawData = $rows.eq(i).html().split("<td");
 
             if (rawData[3].indexOf("(not active)") === -1) {
@@ -33,7 +33,7 @@ define(['jquery', 'underscore'], function($, _) {
             else 
                 gold = goldTemp[1].int();
 
-			// For specific indexes, grab data between > and <
+      // For specific indexes, grab data between > and <
             rawData = _.map(rawData, betweenTags );
             var time = rawData[1];
             var timeunit = rawData[2];
@@ -46,9 +46,9 @@ define(['jquery', 'underscore'], function($, _) {
             time = timeToSeconds(time,timeunit);
             if(!enemy_id) {
                 enemy_id=":invalid";//DONATO, Check this before release
-			}
-			
-		    // If it is an attack/raid on you, then you were Defending
+      }
+      
+        // If it is an attack/raid on you, then you were Defending
             if(type.indexOf("attack") != -1 || type.indexOf("raid")!=-1) 
                 type="defend";
             else

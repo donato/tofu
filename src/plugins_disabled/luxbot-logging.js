@@ -27,7 +27,7 @@ define(['jquery', 'underscore'], function($,_) {
                     });
     }
 
-	function sendAttackLogDetails(user, type, oppid, opponent, user_damages, opponent_damages, user_losses, opponent_losses, gold_stolen, logid, time) {
+  function sendAttackLogDetails(user, type, oppid, opponent, user_damages, opponent_damages, user_losses, opponent_losses, gold_stolen, logid, time) {
     getLux( '&a=logattack&type=' + type + 
         '&enemy=' + opponent + ';' + oppid + ';' + opponent_damages + ';' + opponent_losses +
         '&data=' + user_damages + ';' + user_losses + 
@@ -77,13 +77,13 @@ define(['jquery', 'underscore'], function($,_) {
                 });
     }
 
-	return {
+  return {
     logArmory,
-		logBase,
-		sendLogDetails,
-		sendAttackLogDetails,
-		logRecon,
-		sendConquestDetails,
-		logStats
-	}
+    logBase,
+    sendLogDetails,
+    sendAttackLogDetails,
+    logRecon,
+    sendConquestDetails,
+    logStats
+  }
 });
