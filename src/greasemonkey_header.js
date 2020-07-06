@@ -5,7 +5,6 @@
 // @include         http://*kingsofchaos.com/*
 // @exclude         http://*kingsofchaos.com/chat/*
 // @require         https://raw.github.com/donato/tofu/master/src/libs/hex_md5.js
-// @require         https://raw.github.com/donato/tofu/master/src/libs/highstock-1.1.5.js
 // @resource    sidebar_targets          https://raw.github.com/donato/tofu/master/src/img/sidebar_targets.gif
 // @resource    sidebar_sabtargets       https://raw.github.com/donato/tofu/master/src/img/sidebar_sabtargets.gif
 // @resource    sidebar_fakesabtargets   https://raw.github.com/donato/tofu/master/src/img/sidebar_fakesabtargets.gif

@@ -40,7 +40,7 @@ define([
 				if (self.settings[plugin.name].isEnabled === false) {
 					return;
 				}
-				if (!plugin.enabledPages || _.contains(plugin.enabledPages, page)) {
+				if (!plugin.enabledPages || _.includes(plugin.enabledPages, page)) {
 					plugin.run(page)
 				}
 			});

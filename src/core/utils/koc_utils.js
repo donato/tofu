@@ -185,16 +185,16 @@ define([
 
 
     function getWeaponType(weaponName) {
-        if(_.contains(Constants.saWeaps, weaponName)) {
+        if(_.includes(Constants.saWeaps, weaponName)) {
             return 'sa';
         }
-        if(_.contains(Constants.daWeaps, weaponName)) {
+        if(_.includes(Constants.daWeaps, weaponName)) {
             return 'da';
         }
-        if(_.contains(Constants.spyWeaps, weaponName)) {
+        if(_.includes(Constants.spyWeaps, weaponName)) {
             return 'spy';
         }
-        if(_.contains(Constants.sentryWeaps, weaponName)) {
+        if(_.includes(Constants.sentryWeaps, weaponName)) {
             return 'sentry';
         }
     }

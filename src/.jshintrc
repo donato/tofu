@@ -8,9 +8,9 @@
     "asi"      : true,
     "jquery"   : true,
     "maxerr"   : 10000,
-	"sub"      : true,    // may remove later
-	"browser"  : false,   // may remove later
-	"smarttabs": true,    // may remove later
+    "sub"      : true,    // may remove later
+    "browser"  : false,   // may remove later
+    "smarttabs": true,    // may remove later
     "multistr" : true,    // will remove later
     "predef"   : [
         "GM_getResourceText",
