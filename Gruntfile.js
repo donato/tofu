@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var path = require('path')
+var webpack = require('webpack')
 
 module.exports = function(grunt) {
 
@@ -78,8 +79,9 @@ module.exports = function(grunt) {
                         plugins: path.resolve(__dirname, 'src/plugins_disabled'),
                         underscore : 'lodash'
                     },
-                    moduleDirectories: [
-                        'src/',
+                    modules: [
+                      'node_modules',
+                      'src',
                     ]
                 }
             },
@@ -87,21 +89,32 @@ module.exports = function(grunt) {
                 entry : {
                     tofu : './src/main.js'
                 },
-                debug: true,
+                plugins: [
+                  new webpack.LoaderOptionsPlugin({
+                         debug: true
+                       })
+                ],
                 output: {
-                    path: 'bin/',
+                    path: path.resolve(__dirname, 'bin'),
                     filename: '[name].user.js'
-                }
+                },
+                mode: "development",
             },
             watch : {
                 entry : {
                     tofu : './src/main.js'
                 },
-                debug: true,
-                output: {
-                    path: 'bin/',
+                plugins: [
+                  new webpack.LoaderOptionsPlugin({
+                         debug: true
+                       })
+                ],
+                  output: {
+                    path: path.resolve(__dirname, 'bin'),
                     filename: '[name].user.js'
                 },
+                mode: "development",
+
                 plugins : [ afterWebpackBuild ],
                 watch: true,
                 failOnError: false,
