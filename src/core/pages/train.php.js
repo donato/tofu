@@ -113,8 +113,8 @@ define([
         if (html.indexOf('You have no technology') >= 0) {
             db.put('Tech', 1);
         } else {
-      var table = KoC.getTableByHeading('Technological Development');
-      var tech = table.find('tr').eq(2).text().split('(x ');
+            var table = KoC.getTableByHeading('Technological Development');
+            var tech = table.find('tr').eq(2).text().split('(x ');
             tech = tech[1].split(' ');
             tech = parseFloat(tech[0]);
             tech = Math.floor(tech*100);

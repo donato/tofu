@@ -59,10 +59,10 @@ define([
     },
 
     getPlugins: function() {
-      var plugins = _.map(allPlugins, function(p) {
+      var plugins = _.map(allPlugins, (p) => {
         p.isEnabled = this.settings[p.name].isEnabled;
         return p;
-      }, this);
+      });
       return plugins;
     }
   }

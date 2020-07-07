@@ -26,9 +26,6 @@ define([
       // This needs to be done every time because the links are reset
       this.addClickEventsForUsers();
       this.addClickEventsForNavigation();
-
-      // I think this feature has been banned. May try to appeal the ruling.
-      // this.onlineUsers(kocids);
     },
 
     parseBattlefieldPlayers: function($playerRows) {
@@ -92,24 +89,6 @@ define([
               var $user_td = $row.children('td').eq(2);
               $user_td.append('<a href="http://www.kingsofchaos.com/attack.php?id=' + kocid + '"><img title="Stats are out of date" class="_lux_needs_update" src="http://donatoborrello.com/bot/img/luxupdate.gif" /></a>');
             }
-          });
-    },
-
-    onlineUsers: function (kocids) {
-      getLux('&a=bf_online&u=' + kocids,
-          function (r) {
-            var players = r.responseText.split(';');
-            var i;
-            for (i = 0; i < players.length; i++) {
-                if (players[i] === '') {
-                    continue;
-                }
-                var s = players[i].split(':');
-                var id = s[0];
-                var $row = kocidToRowMap[id];
-                var $user_td = $row.children('td').eq(2);
-                $user_td.append(' <sup style="color:0066CC">Online</sup>');
-              }
           });
     },
 
