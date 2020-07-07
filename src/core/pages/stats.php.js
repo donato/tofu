@@ -7,7 +7,6 @@ define([
 ], function(Logging, Constants, Koc, $, _) {
 
     var getTableByHeading = Koc.getTableByHeading;
-    var parseResponse = Koc.parseResponse;
 
   return {
     run: function() {
@@ -21,7 +20,7 @@ define([
       }
       var officers = this.getOfficers();
       Logging.logStats(this.pageKocid, logInfo, officers);
-
+      this.insertTableSlots();
       // this.logOfficers();
       // this.addIncomeCalc(race, tff);
       // this.nav();
@@ -29,7 +28,6 @@ define([
       // this.collapseAllianceInfoS();
       // this.showLoggedStats();
       // this.addStatsPageButtons();
-      // this.statsOnlineCheck();
     },
     
     /** Parses the main info, everything except the officers. */
@@ -76,6 +74,13 @@ define([
       }
     },
     
+    insertTableSlots() {
+      // experimenting with the idea of providing a bunch of slots for places to put
+      // ui elements and letting users drag/drop the table to wherever they want it.
+      const $uiTables = $('td[width="50%"]').children('table');
+      $uiTables.after('<div class="lux_table_slot">');
+    },
+
     showLoggedStats: function() {
       var self = this;
       var userid = document.URL.substr(document.URL.indexOf('=')+1, 7);
@@ -232,33 +237,5 @@ define([
 
       return officers;            
     },
-    
-    // statsOnlineCheck: function() {
 
-    //     var userid = document.URL.split(/[=&?]/)[2];
-
-    //     getLux('&a=stats_online&u=' + userid,
-    //         function(r) {
-    //             var stable = $("table:contains('User Stats')").last();
-    //             var tx = r.responseText;
-    //         //alert("hello");
-    //             if (parseResponse(tx, "online") !== '') {
-    //                 $(stable).find("tr:contains('Name')").first().find("td:eq(1)").append('&nbsp;<img title="Player is online"  class="_lux_online" src="http://www.luxbot.net/bot/img/online2.gif" />');
-    //             }
-
-    //             var msg = parseResponse(tx, "message");
-    //             if (User.kocid == userid) {
-    //                 //if it is the users stats page, allow them to update
-    //                 $(stable).find("tr:contains('Fortifications')").after("<tr><td colspan=2><center><textarea id='aaa' style='width:360px;height:100px;'>"+msg+"</textarea><br /><input type='button' value='Update' id='lux_updateMessage' /></center></td></tr>");
-    //                 $("#lux_updateMessage").click(function() {
-    //                     postLux('&a=set_message', '&msg=' + $("#aaa").val());                    
-    //                 });
-    //             }
-    //             else {
-    //                 if (msg !== '') {
-    //                     $(stable).find("tr:contains('Fortifications')").after("<tr><td colspan=2><center><textarea style='width:50%'>"+msg+"</textarea></center></td></tr>");
-    //                 }
-    //             }
-    //         });
-    // }
 }});
