@@ -11,11 +11,11 @@ define([
     './battlefield.php'
 ], function(Armory, Attack, AttackLog, Base, Detail, Mercs, Stats, Train, IntelDetail, Battlefield) {
     return {
-        armory: Armory,
-        attack: Attack,
-        attacklog: AttackLog,
-        base: Base,
-        battlefield: Battlefield,
+        armory: Armory, // Verified
+        attack: Attack, // Working, not cleaned
+        attacklog: AttackLog,  // Verified
+        base: Base, // Verified
+        battlefield: Battlefield, // Verified
         //conquest: Conquest,
         detail: Detail,
         inteldetail: IntelDetail,
@@ -23,6 +23,6 @@ define([
         mercs: Mercs,
         //recruit: Recruit,
         train : Train,
-        stats : Stats
+        stats : Stats // Verified
     };
 });

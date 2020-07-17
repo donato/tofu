@@ -8,7 +8,9 @@ define([
 
   return {
     run: function() {
-      this.pageKocid = document.URL.split(/[=&?]/)[2];
+
+      this.pageKocid = Koc.Page.getCurrentPageId();
+
       this.insertTableSlots();
 
       const $infoTable = $("table:contains('Army Size')").last();
@@ -36,7 +38,8 @@ define([
         name = name.split('[MAXED]')[0];
       }
       var rank = to_int(dict['Rank:']);
-      var primaryAllianceId = dict['element']['Alliances:'].find('a').first().attr('href').split('id=')[1];
+      const primaryAllianceLink = dict['element']['Alliances:'].find('a').first().attr('href');
+      var primaryAllianceId = primaryAllianceLink ? primaryAllianceLink.split('id=')[1] : '';
       // Example race: "Humans | Let's hunt some Orcs!"
       var race = dict['Race:'].split(' | ')[0];
       // Example highestRank: "600 / 2 hours ago"

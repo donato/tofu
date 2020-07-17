@@ -60,6 +60,11 @@ define([
           return document.URL.substring(document.URL.indexOf('.com') + 5, document.URL.indexOf('.php'));
       },
   
+      getCurrentPageId: function() {
+        const url = new URL(document.URL);
+        return url.searchParams.get('id');
+      },
+
       getPlayerGold: function() {
           var gold = textBetween(document.body.innerHTML, 'Gold:<font color="#250202">', '<');
 
