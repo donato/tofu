@@ -57,7 +57,8 @@ define([
       var safe_gold = Koc.Page.getPlayerSafe();
       var experience = Koc.Page.getPlayerExperience();
       var race = textBetween($("head>link").eq(3).attr("href"),"css/",".css").toLowerCase();
-      var officers = Stats.stats_getOfficers(false);
+      // TODO(donato): Fix officer tracking
+      var officers = ''; //this.getOfficers(false);
       
       // offie bonus feature is disabled
       // var bonus = parseFloat(textBetween($(".officers>tbody>tr:last").text(), "(x ",")")) || 1.0;

@@ -302,11 +302,24 @@ define([
     return href.split('id=')[1]
   }
 
+  function parseLogIdFromLink($link) {
+    if (!$link.is('a')) {
+      $link = $link.find('a');
+    }
+    const href = $link.attr('href');
+    if (!href || href.indexOf('id=') == -1) {
+      return null;
+    }
+    return href.split('id=')[1]
+  }
+
     return {
         db: db,
         Page : Page,
         parseKocIdFromLink,
+        parseLogIdFromLink,
         timeConfidenceFormatter: timeConfidenceFormatter,
+        timeToSeconds,
         timeElapsed: timeElapsed,
         checkOption: checkOption,
         parseResponse: parseResponse,

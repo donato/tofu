@@ -9,20 +9,18 @@ define([
   return {
     run: function() {
       this.pageKocid = document.URL.split(/[=&?]/)[2];
-      var $infoTable = $("table:contains('Army Size')").last();
+      this.insertTableSlots();
 
+      const $infoTable = $("table:contains('Army Size')").last();
       const logInfo = this.parsePage($infoTable);
-
       if (!logInfo) {
         Logging.logStats('', this.pageKocid, '', '','', 'invalid', '');
         return;
       }
       Logging.logStats(this.pageKocid, logInfo, this.getOfficers());
-      this.insertTableSlots();
-      // this.addIncomeCalc(race, tff);
+      
       this.listenForOfficerNavigation(logInfo);
-
-      this.addStatsPageButtons($infoTable, logInfo.name);
+      this.addViewHistoryButton($infoTable, logInfo.name);
     },
     
     /** Parses the main info, everything except the officers. */
@@ -77,14 +75,13 @@ define([
       $uiTables.after('<div class="lux_table_slot">');
     },
     
-    addStatsPageButtons: function($infoTable, name) {
+    addViewHistoryButton: function($infoTable, name) {
       var $nameTd = $infoTable.find('tr:contains("Name:")').first().find("td").last();
       const url = Constants.statsUrl+'/history.php?playerSearch='+ name;
       $nameTd.append('<a href="'+ url +'" target="_blank" class="tofu viewHistory">View history</a>');
     },
 
     listenForOfficerNavigation: function(logInfo) {
-      // We can't bind on the page because they intercept the click events
       $('body').on('DOMNodeInserted', 'table.officers', () => {
         Logging.logStats(this.pageKocid, logInfo, this.getOfficers());
       });
@@ -99,9 +96,5 @@ define([
       });
 
       return _.compact(offieRows).join(';');            
-    },
-
-    logOfficers() {
-
     },
 }});
