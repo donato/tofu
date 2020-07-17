@@ -1,5 +1,6 @@
-define(['jquery', 'underscore'], function($, _) {
+define(['jquery', 'underscore'], function ($, _) {
   return {
-    
-    run: function() { }
-}});
+    // TODO(): Log timestamps for given logids
+    run: function () { }
+  }
+});

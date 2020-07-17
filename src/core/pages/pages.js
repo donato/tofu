@@ -3,26 +3,40 @@ define([
     './attack.php',
     './attacklog.php',
     './base.php',
+    './conquest.php',
     './detail.php',
+    './intelfile.php',
     './mercs.php',
     './stats.php',
-    './train.php',
+    './recruit.php',
+    './training.php',
     './inteldetail.php',
     './battlefield.php'
-], function(Armory, Attack, AttackLog, Base, Detail, Mercs, Stats, Train, IntelDetail, Battlefield) {
+], function(Armory, Attack, AttackLog, Base, Conquest, Detail, IntelFile, Mercs, Stats, Recruit, Training, IntelDetail, Battlefield) {
     return {
-        armory: Armory, // Verified
-        attack: Attack, // Working, not cleaned
-        attacklog: AttackLog,  // Verified
-        base: Base, // Verified
-        battlefield: Battlefield, // Verified
-        //conquest: Conquest,
-        detail: Detail,
-        inteldetail: IntelDetail,
-        //intelfile: IntelFile,
-        mercs: Mercs,
-        //recruit: Recruit,
-        train : Train,
-        stats : Stats // Verified
+      // Verified
+      armory: Armory,
+      attacklog: AttackLog,
+      base: Base,
+      battlefield: Battlefield,
+      conquest: Conquest,
+      intelfile: IntelFile,
+      mercs: Mercs,
+      recruit: Recruit,
+      stats : Stats,
+
+      // Working, not updated
+      attack: Attack,
+
+      // // Not verified
+      // detail: Detail,
+      // inteldetail: IntelDetail,
+      // training : Training,
+
+      // // Not implemented
+      // upgrades: Upgrades,
+      // safe: Safe,
+      // statistics: Statistics,
+      // trade: Trade,
     };
 });
