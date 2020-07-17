@@ -1,6 +1,6 @@
 define([], function () {
-
-    var baseUrl = 'http://donatoborrello.com/bot/';
+  const statsUrl = 'http://donatoborrello.com/stats/';
+  const baseUrl = 'http://donatoborrello.com/bot/';
 
     // name, cost, strength
     var ALL_WEAPONS = {
@@ -33,7 +33,7 @@ define([], function () {
     };
 
     return {
-
+        statsUrl,
         baseUrl: baseUrl + 'luxbot.php?',
         downloadUrl: baseUrl + 'luxbot.user.js',
         versionUrl: baseUrl + 'luxbot.version.php',

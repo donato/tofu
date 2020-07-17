@@ -162,18 +162,23 @@ define([
         });
     }
 
-    /*
+    /**
+     * Useful when a table has a series of key value pairs, for example:
+     *   | Strike Action | 1,000 |
      * @param {!jQuery<Table>} $table
      * @param {number} keyColumn
      * @param {number} valColumn
      * @return {{string:string}}
      */
     function parseTableColumnToDict($table, key, val) {
-        var dict = {};
+        var dict = {
+          'element': {}
+        };
         $table.find('tr').each(function(idx, row) {
             var $row = $(row);
             var $td = $row.find('td');
             dict[$td.eq(key).text().trim()] = $td.eq(val).text().trim();
+            dict['element'][$td.eq(key).text().trim()] = $td.eq(val);
         });
         return dict;
     }
@@ -286,9 +291,21 @@ define([
     return 1;
   }
 
+  function parseKocIdFromLink($link) {
+    if (!$link.is('a')) {
+      $link = $link.find('a');
+    }
+    const href = $link.attr('href');
+    if (!href || href.indexOf('id=') == -1) {
+      return null;
+    }
+    return href.split('id=')[1]
+  }
+
     return {
         db: db,
         Page : Page,
+        parseKocIdFromLink,
         timeConfidenceFormatter: timeConfidenceFormatter,
         timeElapsed: timeElapsed,
         checkOption: checkOption,

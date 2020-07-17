@@ -1,0 +1,18 @@
+<table class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0">
+    <tr>
+        <th>[Lux] Personal Message</th>
+    </tr>
+    <tr>
+      <td>
+        <center>
+          <textarea id="lux_personal_message" style="width:360px;height:100px;">{{ this.message }}</textarea>
+          {{#if this.isSelf}}
+            <br/>
+            <input type="button" value="Update" id="lux_update_message">
+          {{/if}}
+        </center>
+      </td>
+    </tr>
+
+    </tbody>
+</table>
