@@ -8,7 +8,7 @@ define([
   const loggedIds = new Set();
 
   function logTable(aggressor, $table) {
-    columnNames = $table.find('th.subh').map((a,z) => $(z).text()).get();
+    columnNames = $table.find('th.subh').map((idx, element) => $(element).text()).get();
     const nameToIndex = columnNames.reduce((memo, name, idx) => {
       memo[name] = idx;
       return memo;
@@ -20,13 +20,12 @@ define([
 
       const $enemy = $columns.eq(nameToIndex['Enemy']);
       const $result = $columns.eq(nameToIndex['Result']);
-      // TODO(): Begin logging type
       const type = $columns.eq(nameToIndex['Type']).text();
       const enemyLosses = $columns.eq(nameToIndex['Enemy Losses']).text();
       const yourLosses = $columns.eq(nameToIndex['Your Losses']).text();
       const enemyDamage = $columns.eq(nameToIndex['Damage by Enemy']).text();
       const yourDamage = $columns.eq(nameToIndex['Damage by You']).text();
-      // TODO(): Use timestamp instead
+      // TODO(): Use timestamp instead of calculating time.
       const timePart = $columns.eq(0).text();
       const timeUnit = $columns.eq(1).text();
       const time = Koc.timeToSeconds(timePart, timeUnit);
@@ -51,6 +50,8 @@ define([
         return;
       }
       loggedIds.add(logid);
+
+      // TODO(): Begin logging type
       Logging.sendAttackLogDetails(
         User.kocnick, aggressor, enemyId, enemyNick,
         yourDamage, enemyDamage, yourLosses, enemyLosses,
