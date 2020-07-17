@@ -5,26 +5,24 @@ define([
     'underscore'
 ], function (Koc, Log, $, _) {
 
-    var db = Koc.db;
-
     return {
       run: function () {
         const weapons = this.parseInventory();
         Log.logArmory(weapons);
         db.put('weapons', weapons);
+        this.updateMilitaryEffectiveness();
       },
 
-      parseMilitaryEffectiveness: function() {
+      updateMilitaryEffectiveness: function() {
         const $militaryTable = Koc.getTableByHeading('Military Effectiveness');
         const stats = Koc.parseTableColumn($militaryTable, 1);
-        db.put('sa', stats[0]);
-        db.put('da', stats[1]);
-        db.put('spy', stats[2]);
-        db.put('sentry', stats[3]);
+        Koc.db.put('sa', stats[0]);
+        Koc.db.put('da', stats[1]);
+        Koc.db.put('spy', stats[2]);
+        Koc.db.put('sentry', stats[3]);
       },
       
       parseInventory: function () {
-
         var $weaponRows = $("input[name='doscrapsell']").parent().parent().parent().parent().parent().parent();
 
         var weapons = {};
