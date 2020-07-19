@@ -3,4 +3,4 @@ bin
 node_modules
 package-lock.json
 user_config.json
-
+*.code-workspace
