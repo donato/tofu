@@ -27,9 +27,9 @@ define([
 
       // Working, not updated
       attack: Attack,
+      detail: Detail,
 
       // // Not verified
-      // detail: Detail,
       // inteldetail: IntelDetail,
       // training : Training,
 

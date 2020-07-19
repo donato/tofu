@@ -60,9 +60,9 @@ define([
           return document.URL.substring(document.URL.indexOf('.com') + 5, document.URL.indexOf('.php'));
       },
   
-      getCurrentPageId: function() {
+      getCurrentPageId: function(idType = 'id') {
         const url = new URL(document.URL);
-        return url.searchParams.get('id');
+        return url.searchParams.get(idType);
       },
 
       getPlayerGold: function() {
