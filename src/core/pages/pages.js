@@ -20,6 +20,7 @@ define([
       base: Base,
       battlefield: Battlefield,
       conquest: Conquest,
+      inteldetail: IntelDetail,
       intelfile: IntelFile,
       mercs: Mercs,
       recruit: Recruit,
@@ -30,7 +31,6 @@ define([
       detail: Detail,
 
       // // Not verified
-      // inteldetail: IntelDetail,
       // training : Training,
 
       // // Not implemented

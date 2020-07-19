@@ -1,93 +1,121 @@
 define([
-    'plugins/luxbot-logging',
-    'utils/koc_utils',
-    'jquery',
-    'underscore'
+  'plugins/luxbot-logging',
+  'utils/koc_utils',
+  'jquery',
+  'underscore'
 ], function (Logging, Koc, $, _) {
-    
-    return {
+  const map = {};
 
-        //process recons and sabotages
-        run: function () {
-            var text = $("td.content").text();
+  function findValue(key) {
+    return map[key];
+    // const $keyCell = $("table.table_lines td:contains('" + key + "')");
+    // const $valueCell = $keyCell.next();
+    // return $valueCell.text();
+  }
 
-            //notice for sabotages it says "your spies" for recon "your spy"
-            if (text.indexOf('Your spy') == -1) {
-                this.processSabotage(text);
-            } else {
-                this.processRecon(text);
-            }
-        },
+  function findInt(key) {
+    return to_int(findValue(key));
+  }
 
-        processRecon: function (text) {
+  /**
+   * Note: for sabotages it says "your spies" for recon "your spy"
+   */
+  function isSabotage(pageText) {
+    return text.indexOf('Your spy') == -1;
+  }
 
-            if (text.indexOf('As he gets closer, one of the sentries spots him and sounds the alarm.') != -1) {
-                return;
-            }
+  return {
+    //process recons and sabotages
+    run: function () {
+      $("table.table_lines tr td:first-child").each((a, b) => {
+        $cell = $(b);
+        $value = $cell.next().text();
+        map[$.trim($cell.text())] = $value;
+      });
+      const logid = Koc.Page.getCurrentPageId('report_id');
+      var enemyId = $("input[name='id']").val();
+      var text = $("td.content").text();
 
+      if (isSabotage(text)) {
+        this.processSabotage(enemyId, logid, text);
+      } else {
+        this.processRecon(enemyId, logid, text);
+      }
+    },
 
-            var enemy = text.between("your spy sneaks into ", "'s camp");
-            var enemyid = $("input[name='id']").val();
-            var logid = String(document.location).substr(String(document.location).indexOf('=') + 1);
-            var stable = $("table:contains('Treasury')").last();
-            var gold = to_int($(stable).find("tr>td").text());
+    processRecon: function (enemyId, logid, text) {
+      if (text.indexOf('As he gets closer, one of the sentries spots him and sounds the alarm.') != -1) {
+        return;
+      }
 
-            // Order is important here when sending logs to the server
-            var rowsToGrab = [
-                ["Strike Action", 0],
-                ["Defensive Action", 0],
-                ["Spy Rating", 0],
-                ["Sentry Rating", 0],
-                ["Mercenaries", 0],
-                ["Mercenaries", 1],
-                ["Mercenaries", 2],
-                ["Soldiers", 0],
-                ["Soldiers", 1],
-                ["Soldiers", 2],
-                ["Covert Skill", 0],
-                ["Covert Operatives", 0],
-                ["Attack Turns", 0],
-                ["Unit Production", 0]
-            ];
+      var enemyNick = text.between("your spy sneaks into ", "'s camp");
+      const $goldTable = Koc.getTableByHeading('Treasury');
+      const treasuryGold = to_int($goldTable.find('tr').eq(1).text());
+      const safeGold = to_int($goldTable.find('tr').eq(3).text());
+      // Order is important here when sending logs to the server
+      var rows = [
+        findInt("Strike Action"),
+        findInt("Defensive Action"),
+        findInt("Spy Rating"),
+        findInt("Sentry Rating"),
+        findInt("Attack Mercenaries:"),
+        findInt("Defense Mercenaries:"),
+        findInt("Untrained Mercenaries:"),
+        findInt("Attack Soldiers:"),
+        findInt("Defense Soldiers:"),
+        findInt("Untrained:"),
+        findInt("Covert Skill:"),
+        findInt("Experience:"),
+        findInt("Attack Turns:"),
+        findInt("Unit Production:"),
+        treasuryGold,
+        findInt("Covert Spies:"),
+        findInt("Sentries:"),
+        findInt("Sentry Skill:"),
+        safeGold,
+        findInt("Experience Per Turn:"),
+      ];
 
-            var data = _.map(rowsToGrab, function(tuple) {
-                let [name, idx] = tuple;
-                var val = Koc.getRowValues(name)[idx];
-                return val.replace(/\?\?\?/g, '').replace(/,/g, '');
-            });
-            data = data.join(";") + ";" + gold;
+      const sanitizedRows = rows.map(r => {
+        if (r == -1) return '';
+        return r;
+      });
+      const data = sanitizedRows.join(";");
+      const siege = findValue('Siege Technology:');
+      const economy = findValue('Economy:');
+      const technology = findValue('Technology:');
 
-            stable = $("table:contains('Weapons')").last();
-            var weap_rows = $(stable).find("tbody>tr>td").parent();
-            var weap_array = _.map(weap_rows, function(row) {
-                let $row = $(row);
-                var r = $row.text().split("\n");
-                var g = r[1].trim() + ":" + r[2].trim() + ":" + r[3].trim() + ":" + r[4].trim();
-                return g;
-            });
-            var weaponString = weap_array.join(';').replace(/\?\?\?/g, '').replace(/,/g, '');
+      const stable = $("table:contains('Weapons')").last();
+      var weap_rows = $(stable).find("tbody>tr>td").parent();
+      var weap_array = _.map(weap_rows, function (row) {
+        let $row = $(row);
+        var r = $row.text().split("\n");
+        var g = r[1].trim() + ":" + r[2].trim() + ":" + r[3].trim() + ":" + r[4].trim();
+        return g;
+      });
+      var weaponString = weap_array.join(';').replace(/\?\?\?/g, '').replace(/,/g, '');
+      // TODO: Redo how logging occurs from server
+      Logging.logRecon(enemyNick, enemyId, siege, economy, technology, data, weaponString, logid);
+    },
 
-            postLux('&a=logspy', '&enemy=' + enemy + ';' + enemyid + ';' + 
-                '&data=' + data +
-                '&weapons=' + weaponString +
-                '&logid=' + logid);
-            // TODO: Redo how logging occurs from server
-            // Logging.logRecon(enemy, enemyid, logid, gold, data, weapons)
-        },
-        
-        processSabotage: function (sabtext) {
-            if (sabtext.indexOf('Your spies successfully enter') == -1) {
-                //turned illegal
-                //  history.back();
-                return;
-            }
+    processSabotage: function (enemyId, logId, sabtext) {
+      if (!sabtext || sabtext.indexOf('Your covert team has successfully') == -1) {
+        // failed sabotage
+        return;
+      }
+      // Nothing to sabotage because the weapon was already taken
+      if (sabtext.indexOf('your spies cannot find a') != -1) {
+        return;
+      }
+      var enemyNick = textBetween(sabtext, ' infiltrated ', '\'s armory');
+      //var targetAmount = to_int(textBetween(sabtext, 'attempt to sabotage ', ' of'));
+      var targetWeapon = textBetween(sabtext, 'weapons of type ', '.');
+      var sabbedAmount = to_int(textBetween(sabtext, 'successful in destroying ', ' of '));
+      var leftAmount = to_int(textBetween(sabtext, 'now has ', ' left.'));
+      var goldStolen = to_int(textBetween(sabtext, 'steal ', ' Gold'));
+      var experience = to_int(textBetween(sabtext, 'gained ', ' Experience'));
 
-            var player = sabtext.between("successfully enter ", "'s armory");
-            var amount = sabtext.between("and destroy ", " of the enemy's");
-            var weapon = sabtext.between("of the enemy's ", " stockpile.");
-            var logid = String(document.location).substr(String(document.location).indexOf('=') + 1);
-            getLux('&a=logsab&target=' + player + '&weapon=' + weapon + '&amount=' + amount + '&logid=' + logid);
-        }
-
+      Logging.logSabotage(enemyNick, targetWeapon, sabbedAmount, leftAmount, goldStolen, experience, logId);
     }
+  };
 });

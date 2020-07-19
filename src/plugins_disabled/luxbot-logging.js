@@ -37,19 +37,33 @@ define(['jquery', 'underscore'], function($,_) {
       function(responseDetails) {});
   }
 
-    function logRecon(enemy, enemyid, logid, gold, data, weapons) {
-      getLux('&a=logRecon' + 
-          '&enemy=' + enemy + 
-          '&enemyid=' + enemyid +
-          '&logid=' + logid +
-          '&gold=' + gold +
-          '&data=' + data + 
-          '&weapons=' + weapons,
+  // TODO(): Avoid using this weird semi-colon structure, use json
+  function logRecon(
+    enemyNick, enemyId, siege, economy, technology, data, weaponstring, logid) {
+      postLux('&a=intel',
+          '&enemy=' + enemyNick + ';' + enemyId + ';' + siege + ';' + economy + ';' + technology +
+          '&data=' + data +
+          '&weapons=' + weaponstring +
+          '&officers=' + '' +
+          '&logid=' + logid,
         function(responseDetails) {
-          log("logRecon Response: "+ responseDetails.responseText);
+            GM_log("log recon Response: "+ responseDetails.responseText);
+            // alert(responseDetails.responseText);
         });
     }    
 
+    function logSabotage(enemyNick, targetWeapon, sabbedAmount, leftAmount, goldStolen, experience, logId) {
+      getLux('&a=logsab' +
+          '&target=' + enemyNick +
+          '&weapon=' + targetWeapon +
+          '&amount=' + sabbedAmount + 
+          '&left=' + leftAmount +
+          '&gold=' + goldStolen +
+          '&exp=' + experience +
+          '&logid=' + logId,
+      function (responseDetails) {});
+    }
+    
     function sendConquestDetails(contype) {
         getLux('a=logcon&contype=' + contype);
     }
@@ -90,6 +104,7 @@ define(['jquery', 'underscore'], function($,_) {
   return {
     logArmory,
     logBase,
+    logSabotage,
     sendLogDetails,
     sendAttackLogDetails,
     logRecon,
