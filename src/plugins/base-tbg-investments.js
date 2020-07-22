@@ -4,7 +4,7 @@ define([
 ], function (Koc, MessageTemplate) {
 
   const db = Koc.db;
-  
+
   return {
     name: "Base TBG Investment Forecast",
     description: "Show how much your stats would grow if you invest your TBG in one stat.",
@@ -18,12 +18,6 @@ define([
     },
 
     tbgStats: function (slot) {
-      function percentFormat(value) {
-        value *= 100;
-        var decimalPlaces = Math.min(2, Math.floor(Math.log10(value)));
-
-        return (Math.round(value * 1000) / 1000).toFixed(2 - decimalPlaces);
-      }
 
       var income = db.getInt('income');
       var tech = parseFloat(db.get('technology'));
@@ -42,8 +36,8 @@ define([
 
         var currentStat = db.getInt(stat);
         rows += '  <tr>'
-          + '    <td> ' + Label[i] + '&nbsp;</td><td>' + addCommas(Math.floor(hourlyValue)) + ' <span class="supplemental">(' + percentFormat(hourlyValue / currentStat) + '%)</span> &nbsp;</td>'
-          + '    <td>' + addCommas(Math.floor(24 * hourlyValue)) + ' <span class="supplemental">(' + percentFormat((24 * hourlyValue) / currentStat) + '%)</span> </td>'
+          + '    <td> ' + Label[i] + '&nbsp;</td><td>' + addCommas(Math.floor(hourlyValue)) + ' <span class="supplemental">(' + Koc.formatPercentChange(hourlyValue / currentStat) + ')</span> &nbsp;</td>'
+          + '    <td>' + addCommas(Math.floor(24 * hourlyValue)) + ' <span class="supplemental">(' + Koc.formatPercentChange((24 * hourlyValue) / currentStat) + ')</span> </td>'
           + '  </tr>';
       });
       const html = '<table class="table_lines" width="100%" cellpadding="6">'

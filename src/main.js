@@ -22,37 +22,24 @@ define([
     alert('Please go to your Command Center for initialization');
     return false;
   }
-
+  const pluginManager = new Plugins();
   GUI.init();
-  ControlPanel.init();
+  const controlPanel = new ControlPanel(pluginManager);
+  controlPanel.init();
   Init.checkForUpdate(1);
 
   if (Init.checkUser(User) === 0) {
     return;
   }
 
-  // experimenting with the idea of providing a bunch of slots for places to put
-  // ui elements and letting users drag/drop the table to wherever they want it.
-  const $uiTables = $('.table_lines');
-  $uiTables.after('<div class="lux_table_slot">');
-  const $uiSlots = $uiTables.find('.lux_table_slots');
-  
   // Every page has its own init. Look at /includes/pages/...
   log('init page action');
   if (Pages[action]) {
     log('Page action found for ' + action);
-    Pages[action].run(action, $uiSlots);
+    Pages[action].run(action);
   }
   log('end page action');
 
   // Plugins want to be run on all pages. Look at /includes/plugins/...
-  Plugins.run(action);
-  /*
-  _.each(Plugins, function(plugin) {
-      if(PluginHelper.toRun(plugin)) {
-          plugin.run();
-      }
-  });
-  */
-
+  pluginManager.run(action);
 });
