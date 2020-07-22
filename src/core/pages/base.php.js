@@ -7,15 +7,10 @@ define([
 ], function (Koc, Upgrades, Log, $, _) {
   const db = Koc.db;
 
-  const str1 = "<tr id='ff-stats'><td colspan='2'><table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Luxbot Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table></td></tr>";
-  const str2 = "<table class='table_lines' cellpadding=6 width='100%'><tbody><tr><th colspan='2' align='center'>Luxbot Statistics</th></tr><tr><td id='ff-load'></td></tr></tbody></table>";
-
   return {
 
     run: function () {
       this.logBaseStats();
-      this.commandCenterStats();
-      this.tbgStats();
     },
 
     logBaseStats: function () {
@@ -28,8 +23,8 @@ define([
 
       var $overviewTable = Koc.getTableByHeading('Military Overview');
       var dict = Koc.parseTableColumnToDict($overviewTable, 0, 1);
-      var fort = dict['Fortification'].substr(0, dict['Fortification'].indexOf(' ('));
-      var siege = dict['Siege'].substr(0, dict['Siege'].indexOf(' ('));
+      var fortName = dict['Fortification'].substr(0, dict['Fortification'].indexOf(' ('));
+      var siegeName = dict['Siege'].substr(0, dict['Siege'].indexOf(' ('));
       var economy = dict['Economy'].substr(0, dict['Economy'].indexOf(' ('));
       const technologyName = dict['Technology'].substr(0, dict['Technology'].indexOf(' ('));
       const techDetails = Upgrades.technological_development.find((obj) => obj.name == technologyName);
@@ -74,76 +69,23 @@ define([
       db.put('technology', techBonus);
       db.put('tff', tff);
       db.put('bonus', bonus);
-      db.put('fort', fort);
-      db.put('siege', siege);
+      db.put('fort', fortName);
+      db.put('siege', siegeName);
       db.put('covertlevel', covertlevel);
       db.put('sentrylevel', sentrylevel);
       db.put('race', race);
-      const weaponStats = [sa.int(), da.int(), spy.int(), sentry.int()];
-      const otherStats = [
-        fort, siege, economy, technologyName, conscription.int(), turns.int(), covertlevel.int(), bonus,
-        attackMercs.int(), defenseMercs.int(), untrainedMercs.int(), attackers.int(), defenders.int(),
-        untrained.int(), safe_gold.int(), exp_per_turn.int(), sentrylevel.int(), spies.int(), sentries.int(), experience.int()
-      ];
+
       // Example inputs:
       //  stats=1037189702;46790709;650248517;111360121
       //  data=Stronghold;Cannons;Hunting;Printing;6400;20000;15;;723;33;0;58080;20475;5090;77975887;3;13;12052;8455;12174
       //  officers=
-
+      const weaponStats = [sa.int(), da.int(), spy.int(), sentry.int()];
+      const otherStats = [
+        fortName, siegeName, economy, technologyName, conscription.int(), turns.int(), covertlevel.int(), bonus,
+        attackMercs.int(), defenseMercs.int(), untrainedMercs.int(), attackers.int(), defenders.int(),
+        untrained.int(), safe_gold.int(), exp_per_turn.int(), sentrylevel.int(), spies.int(), sentries.int(), experience.int()
+      ];
       Log.logBase(weaponStats.join(';'), otherStats.join(';'), officers);
-    },
-
-    commandCenterStats: function() {
-      var $tbody = $("tbody").first()
-
-      if (Koc.checkOption('option_commandCenterStats')) {
-        $("tr:contains('Personnel'):last").parent().parent().before(str2);
-      } else {
-        $tbody.prepend(str1);
-      }
-      getLux("&a=sabstats", function (r) {
-        $("#ff-load").html("" + r.responseText);
-      });
-    },
-
-    tbgStats: function() {
-      function percentFormat(value) {
-        value *= 100;
-        var decimalPlaces = Math.min(2, Math.floor(Math.log10(value)));
-
-        return (Math.round(value * 1000) / 1000).toFixed(2 - decimalPlaces);
-      }
-
-      var income = db.getInt('income');
-      var tech = parseFloat(db.get('technology'));
-      var offieBonus = parseFloat(db.getFloat('bonus'));
-
-      var Label = ["Strike Action", "Defensive Action", "Spy", "Sentry"];
-      var costs = [450000, 200000, 1000000, 1000000];
-      var strengths = [600, 256, 1000, 1000]
-      var rows = "";
-      _.each(['sa', 'da', 'spy', 'sentry'], function (stat, i) {
-        var multiplier = Koc.upgradeBonus(stat) * Koc.raceBonus(stat) * tech * offieBonus;
-
-        if (stat == 'sa' || stat == 'da') { multiplier *= 5; }
-
-        var hourlyValue = (income * 60 / costs[i]) * strengths[i] * multiplier;
-
-        var currentStat = db.getInt(stat);
-        rows += '  <tr>'
-          + '    <td> ' + Label[i] + '&nbsp;</td><td>' + addCommas(Math.floor(hourlyValue)) + ' <span class="supplemental">(' + percentFormat(hourlyValue / currentStat) + '%)</span> &nbsp;</td>'
-          + '    <td>' + addCommas(Math.floor(24 * hourlyValue)) + ' <span class="supplemental">(' + percentFormat((24 * hourlyValue) / currentStat) + '%)</span> </td>'
-          + '  </tr>';
-      });
-      var $tbody = $("td.content > table > tbody").last();
-      const html = '<table class="table_lines" width="100%" cellpadding="6">'
-        + '  <tbody>'
-        + '    <tr><th colspan=3>Investment Profile </th></tr>'
-        + '    <tr><th class="subh">&nbsp;&nbsp;&nbsp;</th><th class="subh">1 Hour&nbsp;</th><th class="subh">1 Day</th></tr>'
-        + rows
-        + '  </tbody>'
-        + '</table>';
-      $tbody.append(html);
     }
   }
 });

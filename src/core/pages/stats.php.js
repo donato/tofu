@@ -10,9 +10,7 @@ define([
     run: function() {
 
       this.pageKocid = Koc.Page.getCurrentPageId();
-
-      this.insertTableSlots();
-
+      
       const $infoTable = $("table:contains('Army Size')").last();
       const logInfo = this.parsePage($infoTable);
       if (!logInfo) {
@@ -69,13 +67,6 @@ define([
         fort,
         chain,
       }
-    },
-    
-    insertTableSlots() {
-      // experimenting with the idea of providing a bunch of slots for places to put
-      // ui elements and letting users drag/drop the table to wherever they want it.
-      const $uiTables = $('td[width="50%"]').children('table');
-      $uiTables.after('<div class="lux_table_slot">');
     },
     
     addViewHistoryButton: function($infoTable, name) {

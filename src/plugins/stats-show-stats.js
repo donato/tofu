@@ -12,14 +12,12 @@ define([
 
     enabledPages: ['stats'],
 
-    run: function (page) {
-      this.showLoggedStats();
+    run: function (page, $uiSlots) {
+      this.showLoggedStats($uiSlots.eq(7));
     },
 
-    showLoggedStats: function () {
-      var self = this;
+    showLoggedStats: function ($insertLocation) {
       var userid = document.URL.split(/[=&?]/)[2];
-      var $insertLocation = $('.lux_table_slot').eq(6);
 
       const html = StatsTemplate({
         rows: [

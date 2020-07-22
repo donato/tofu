@@ -10,13 +10,12 @@ define([
     
     enabledPages: ['stats'],
 
-    run: function(page) {
-      this.statsPage();
+    run: function(page, $uiSlots) {
+      this.statsPage($uiSlots.eq(4));
     },
 
-    statsPage: function() {
+    statsPage: function($insertLocation) {
       var userid = document.URL.split(/[=&?]/)[2];
-      var $insertLocation = $('.lux_table_slot').eq(3);
       getLux('&a=stats_online&u=' + userid, (r) => {
         var message = '';
         if (r.responseText) {

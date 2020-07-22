@@ -31,12 +31,17 @@ define([
     return;
   }
 
-
+  // experimenting with the idea of providing a bunch of slots for places to put
+  // ui elements and letting users drag/drop the table to wherever they want it.
+  const $uiTables = $('.table_lines');
+  $uiTables.after('<div class="lux_table_slot">');
+  const $uiSlots = $uiTables.find('.lux_table_slots');
+  
   // Every page has its own init. Look at /includes/pages/...
   log('init page action');
   if (Pages[action]) {
     log('Page action found for ' + action);
-    Pages[action].run();
+    Pages[action].run(action, $uiSlots);
   }
   log('end page action');
 
