@@ -41,9 +41,9 @@ define([
         },
 
         checkForUpdate: function(startup) {
-            if (db.get("luxbot_version",0) != version) {
+            if (db.get("luxbot_version", 0) != version) {
                 db.put("luxbot_version", version);
-                db.put("luxbot_needsUpdate",0);
+                db.put("luxbot_needsUpdate", 0);
             }
             if (startup === 1 && db.get("luxbot_needsUpdate",0) === 1) {
                 setTimeout(function() {

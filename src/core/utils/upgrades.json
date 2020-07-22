@@ -1,0 +1,1129 @@
+{
+  "fortification": [
+    {
+      "level": 0,
+      "name": "Camp",
+      "cost": 0,
+      "cost_unit": "Gold",
+      "multiplier": 1.0,
+      "category": "fortification"
+    },
+    {
+      "level": 1,
+      "name": "Stockade",
+      "cost": 50000,
+      "cost_unit": "Gold",
+      "multiplier": 1.25,
+      "category": "fortification"
+    },
+    {
+      "level": 2,
+      "name": "Rabid Pitbulls",
+      "cost": 100000,
+      "cost_unit": "Gold",
+      "multiplier": 1.63,
+      "category": "fortification"
+    },
+    {
+      "level": 3,
+      "name": "Walled Town",
+      "cost": 200000,
+      "cost_unit": "Gold",
+      "multiplier": 2.07,
+      "category": "fortification"
+    },
+    {
+      "level": 4,
+      "name": "Towers",
+      "cost": 400000,
+      "cost_unit": "Gold",
+      "multiplier": 2.64,
+      "category": "fortification"
+    },
+    {
+      "level": 5,
+      "name": "Battlements",
+      "cost": 800000,
+      "cost_unit": "Gold",
+      "multiplier": 3.37,
+      "category": "fortification"
+    },
+    {
+      "level": 6,
+      "name": "Portcullis",
+      "cost": 1600000,
+      "cost_unit": "Gold",
+      "multiplier": 4.3,
+      "category": "fortification"
+    },
+    {
+      "level": 7,
+      "name": "Boiling Oil",
+      "cost": 3200000,
+      "cost_unit": "Gold",
+      "multiplier": 5.48,
+      "category": "fortification"
+    },
+    {
+      "level": 8,
+      "name": "Trenches",
+      "cost": 6400000,
+      "cost_unit": "Gold",
+      "multiplier": 6.98,
+      "category": "fortification"
+    },
+    {
+      "level": 9,
+      "name": "Moat",
+      "cost": 12800000,
+      "cost_unit": "Gold",
+      "multiplier": 8.9,
+      "category": "fortification"
+    },
+    {
+      "level": 10,
+      "name": "Drawbridge",
+      "cost": 25600000,
+      "cost_unit": "Gold",
+      "multiplier": 11.35,
+      "category": "fortification"
+    },
+    {
+      "level": 11,
+      "name": "Fortress",
+      "cost": 51200000,
+      "cost_unit": "Gold",
+      "multiplier": 14.47,
+      "category": "fortification"
+    },
+    {
+      "level": 12,
+      "name": "Stronghold",
+      "cost": 102400000,
+      "cost_unit": "Gold",
+      "multiplier": 18.46,
+      "category": "fortification"
+    },
+    {
+      "level": 13,
+      "name": "Palace",
+      "cost": 204800000,
+      "cost_unit": "Gold",
+      "multiplier": 23.53,
+      "category": "fortification"
+    },
+    {
+      "level": 14,
+      "name": "Keep",
+      "cost": 409600000,
+      "cost_unit": "Gold",
+      "multiplier": 30.0,
+      "category": "fortification"
+    },
+    {
+      "level": 15,
+      "name": "Citadel",
+      "cost": 819200000,
+      "cost_unit": "Gold",
+      "multiplier": 38.25,
+      "category": "fortification"
+    },
+    {
+      "level": 16,
+      "name": "Hand Of God",
+      "cost": 1638400000,
+      "cost_unit": "Gold",
+      "multiplier": 48.77,
+      "category": "fortification"
+    }
+  ],
+  "siege": [
+    {
+      "level": 1,
+      "name": "Flaming Arrow",
+      "cost": 50000,
+      "cost_unit": "Gold",
+      "multiplier": 1.3,
+      "category": "siege"
+    },
+    {
+      "level": 2,
+      "name": "Ballista",
+      "cost": 100000,
+      "cost_unit": "Gold",
+      "multiplier": 1.69,
+      "category": "siege"
+    },
+    {
+      "level": 3,
+      "name": "Battering Ram",
+      "cost": 200000,
+      "cost_unit": "Gold",
+      "multiplier": 2.2,
+      "category": "siege"
+    },
+    {
+      "level": 4,
+      "name": "Ladders",
+      "cost": 400000,
+      "cost_unit": "Gold",
+      "multiplier": 2.86,
+      "category": "siege"
+    },
+    {
+      "level": 5,
+      "name": "Trojan Horse",
+      "cost": 800000,
+      "cost_unit": "Gold",
+      "multiplier": 3.71,
+      "category": "siege"
+    },
+    {
+      "level": 6,
+      "name": "Catapults",
+      "cost": 1600000,
+      "cost_unit": "Gold",
+      "multiplier": 4.83,
+      "category": "siege"
+    },
+    {
+      "level": 7,
+      "name": "War Elephants",
+      "cost": 3200000,
+      "cost_unit": "Gold",
+      "multiplier": 6.27,
+      "category": "siege"
+    },
+    {
+      "level": 8,
+      "name": "Siege Towers",
+      "cost": 6400000,
+      "cost_unit": "Gold",
+      "multiplier": 8.16,
+      "category": "siege"
+    },
+    {
+      "level": 9,
+      "name": "Trebuchets",
+      "cost": 12800000,
+      "cost_unit": "Gold",
+      "multiplier": 10.6,
+      "category": "siege"
+    },
+    {
+      "level": 10,
+      "name": "Black Powder",
+      "cost": 25600000,
+      "cost_unit": "Gold",
+      "multiplier": 13.79,
+      "category": "siege"
+    },
+    {
+      "level": 11,
+      "name": "Sappers",
+      "cost": 51200000,
+      "cost_unit": "Gold",
+      "multiplier": 17.92,
+      "category": "siege"
+    },
+    {
+      "level": 12,
+      "name": "Dynamite",
+      "cost": 102400000,
+      "cost_unit": "Gold",
+      "multiplier": 23.3,
+      "category": "siege"
+    },
+    {
+      "level": 13,
+      "name": "Greek Fire",
+      "cost": 204800000,
+      "cost_unit": "Gold",
+      "multiplier": 30.29,
+      "category": "siege"
+    },
+    {
+      "level": 14,
+      "name": "Cannons",
+      "cost": 409600000,
+      "cost_unit": "Gold",
+      "multiplier": 39.37,
+      "category": "siege"
+    }
+  ],
+  "covert_skill": [
+    {
+      "level": 1,
+      "name": "Peeping Tom",
+      "cost": 17500,
+      "cost_unit": "Gold",
+      "multiplier": 1.4,
+      "category": "covert_skill"
+    },
+    {
+      "level": 2,
+      "name": "Scout",
+      "cost": 35000,
+      "cost_unit": "Gold",
+      "multiplier": 1.96,
+      "category": "covert_skill"
+    },
+    {
+      "level": 3,
+      "name": "Informer",
+      "cost": 70000,
+      "cost_unit": "Gold",
+      "multiplier": 2.74,
+      "category": "covert_skill"
+    },
+    {
+      "level": 4,
+      "name": "Operative",
+      "cost": 140000,
+      "cost_unit": "Gold",
+      "multiplier": 3.84,
+      "category": "covert_skill"
+    },
+    {
+      "level": 5,
+      "name": "Slueth",
+      "cost": 280000,
+      "cost_unit": "Gold",
+      "multiplier": 5.38,
+      "category": "covert_skill"
+    },
+    {
+      "level": 6,
+      "name": "Snoop",
+      "cost": 560000,
+      "cost_unit": "Gold",
+      "multiplier": 7.53,
+      "category": "covert_skill"
+    },
+    {
+      "level": 7,
+      "name": "Counterspy",
+      "cost": 1120000,
+      "cost_unit": "Gold",
+      "multiplier": 10.54,
+      "category": "covert_skill"
+    },
+    {
+      "level": 8,
+      "name": "Observer",
+      "cost": 2240000,
+      "cost_unit": "Gold",
+      "multiplier": 14.76,
+      "category": "covert_skill"
+    },
+    {
+      "level": 9,
+      "name": "Mole",
+      "cost": 4480000,
+      "cost_unit": "Gold",
+      "multiplier": 20.66,
+      "category": "covert_skill"
+    },
+    {
+      "level": 10,
+      "name": "Raven",
+      "cost": 8960000,
+      "cost_unit": "Gold",
+      "multiplier": 28.93,
+      "category": "covert_skill"
+    },
+    {
+      "level": 11,
+      "name": "Bagnman",
+      "cost": 17920000,
+      "cost_unit": "Gold",
+      "multiplier": 40.5,
+      "category": "covert_skill"
+    },
+    {
+      "level": 12,
+      "name": "Watcher",
+      "cost": 35840000,
+      "cost_unit": "Gold",
+      "multiplier": 56.69,
+      "category": "covert_skill"
+    },
+    {
+      "level": 13,
+      "name": "Agent",
+      "cost": 71680000,
+      "cost_unit": "Gold",
+      "multiplier": 79.37,
+      "category": "covert_skill"
+    },
+    {
+      "level": 14,
+      "name": "Intelligence",
+      "cost": 143360000,
+      "cost_unit": "Gold",
+      "multiplier": 111.12,
+      "category": "covert_skill"
+    },
+    {
+      "level": 15,
+      "name": "James Bond",
+      "cost": 286720000,
+      "cost_unit": "Gold",
+      "multiplier": 155.57,
+      "category": "covert_skill"
+    },
+    {
+      "level": 16,
+      "name": "All Seeing Eye",
+      "cost": 573440000,
+      "cost_unit": "Gold",
+      "multiplier": 217.8,
+      "category": "covert_skill"
+    },
+    {
+      "level": 17,
+      "name": "Eye Of Sight",
+      "cost": 1146880000,
+      "cost_unit": "Gold",
+      "multiplier": 304.91,
+      "category": "covert_skill"
+    }
+  ],
+  "sentry_skill": [
+    {
+      "level": 1,
+      "name": "Barbed Wire",
+      "cost": 17500,
+      "cost_unit": "Gold",
+      "multiplier": 1.4,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 2,
+      "name": "Pit & Spikes",
+      "cost": 35000,
+      "cost_unit": "Gold",
+      "multiplier": 1.96,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 3,
+      "name": "Traps",
+      "cost": 70000,
+      "cost_unit": "Gold",
+      "multiplier": 2.74,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 4,
+      "name": "Trip Wire",
+      "cost": 140000,
+      "cost_unit": "Gold",
+      "multiplier": 3.84,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 5,
+      "name": "Hidey Hole",
+      "cost": 280000,
+      "cost_unit": "Gold",
+      "multiplier": 5.38,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 6,
+      "name": "Guard Dogs",
+      "cost": 560000,
+      "cost_unit": "Gold",
+      "multiplier": 7.53,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 7,
+      "name": "Lookouts",
+      "cost": 1120000,
+      "cost_unit": "Gold",
+      "multiplier": 10.54,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 8,
+      "name": "Sentry Pavilion",
+      "cost": 2240000,
+      "cost_unit": "Gold",
+      "multiplier": 14.76,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 9,
+      "name": "Shield Wall",
+      "cost": 4480000,
+      "cost_unit": "Gold",
+      "multiplier": 20.66,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 10,
+      "name": "Wolfhound",
+      "cost": 8960000,
+      "cost_unit": "Gold",
+      "multiplier": 28.93,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 11,
+      "name": "Tracking Tactics",
+      "cost": 17920000,
+      "cost_unit": "Gold",
+      "multiplier": 40.5,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 12,
+      "name": "Traps Xxi",
+      "cost": 35840000,
+      "cost_unit": "Gold",
+      "multiplier": 56.69,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 13,
+      "name": "Coffee",
+      "cost": 71680000,
+      "cost_unit": "Gold",
+      "multiplier": 79.37,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 14,
+      "name": "Mystical Eyepatch",
+      "cost": 143360000,
+      "cost_unit": "Gold",
+      "multiplier": 111.12,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 15,
+      "name": "Lavastines Hounds",
+      "cost": 286720000,
+      "cost_unit": "Gold",
+      "multiplier": 155.57,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 16,
+      "name": "Though Shalt Not Be Named",
+      "cost": 573440000,
+      "cost_unit": "Gold",
+      "multiplier": 217.8,
+      "category": "sentry_skill"
+    },
+    {
+      "level": 17,
+      "name": "Defias Brotherhood",
+      "cost": 1146880000,
+      "cost_unit": "Gold",
+      "multiplier": 304.91,
+      "category": "sentry_skill"
+    }
+  ],
+  "increase_conscription": [
+    {
+      "level": 0,
+      "name": "None",
+      "unit_production": 25,
+      "cost": 0,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 1,
+      "name": "Recruitment Stage",
+      "unit_production": 50,
+      "cost": 500000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 2,
+      "name": "Basic Training",
+      "unit_production": 100,
+      "cost": 1000000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 3,
+      "name": "Intermediate Training",
+      "unit_production": 200,
+      "cost": 3120000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 4,
+      "name": "Fort Marcus",
+      "unit_production": 400,
+      "cost": 10480000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 5,
+      "name": "General Admission",
+      "unit_production": 800,
+      "cost": 42000000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 6,
+      "name": "Sword Work",
+      "unit_production": 1600,
+      "cost": 108468000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 7,
+      "name": "Encampment",
+      "unit_production": 3200,
+      "cost": 212680000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 8,
+      "name": "Extensive Bow Work",
+      "unit_production": 6400,
+      "cost": 501340000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    },
+    {
+      "level": 9,
+      "name": "Shield Work",
+      "unit_production": 12800,
+      "cost": 1260000000,
+      "cost_unit": "Gold",
+      "category": "increase_conscription"
+    }
+  ],
+  "technological_development": [
+    {
+      "level": 0,
+      "name": "None",
+      "cost": 0,
+      "cost_unit": "Experience",
+      "multiplier": 1.0,
+      "category": "technological_development"
+    },
+    {
+      "level": 1,
+      "name": "Spear",
+      "cost": 300,
+      "cost_unit": "Experience",
+      "multiplier": 1.05,
+      "category": "technological_development"
+    },
+    {
+      "level": 2,
+      "name": "Fire",
+      "cost": 350,
+      "cost_unit": "Experience",
+      "multiplier": 1.1,
+      "category": "technological_development"
+    },
+    {
+      "level": 3,
+      "name": "Oven",
+      "cost": 400,
+      "cost_unit": "Experience",
+      "multiplier": 1.16,
+      "category": "technological_development"
+    },
+    {
+      "level": 4,
+      "name": "Pottery",
+      "cost": 460,
+      "cost_unit": "Experience",
+      "multiplier": 1.22,
+      "category": "technological_development"
+    },
+    {
+      "level": 5,
+      "name": "Domestication",
+      "cost": 520,
+      "cost_unit": "Experience",
+      "multiplier": 1.28,
+      "category": "technological_development"
+    },
+    {
+      "level": 6,
+      "name": "Copper",
+      "cost": 600,
+      "cost_unit": "Experience",
+      "multiplier": 1.34,
+      "category": "technological_development"
+    },
+    {
+      "level": 7,
+      "name": "Wheel",
+      "cost": 690,
+      "cost_unit": "Experience",
+      "multiplier": 1.41,
+      "category": "technological_development"
+    },
+    {
+      "level": 8,
+      "name": "Writing",
+      "cost": 800,
+      "cost_unit": "Experience",
+      "multiplier": 1.48,
+      "category": "technological_development"
+    },
+    {
+      "level": 9,
+      "name": "Bronze",
+      "cost": 920,
+      "cost_unit": "Experience",
+      "multiplier": 1.55,
+      "category": "technological_development"
+    },
+    {
+      "level": 10,
+      "name": "Irrigation",
+      "cost": 1060,
+      "cost_unit": "Experience",
+      "multiplier": 1.63,
+      "category": "technological_development"
+    },
+    {
+      "level": 11,
+      "name": "Woodworking",
+      "cost": 1210,
+      "cost_unit": "Experience",
+      "multiplier": 1.71,
+      "category": "technological_development"
+    },
+    {
+      "level": 12,
+      "name": "Archery",
+      "cost": 1400,
+      "cost_unit": "Experience",
+      "multiplier": 1.8,
+      "category": "technological_development"
+    },
+    {
+      "level": 13,
+      "name": "Salt",
+      "cost": 1610,
+      "cost_unit": "Experience",
+      "multiplier": 1.89,
+      "category": "technological_development"
+    },
+    {
+      "level": 14,
+      "name": "Sailing",
+      "cost": 1850,
+      "cost_unit": "Experience",
+      "multiplier": 1.98,
+      "category": "technological_development"
+    },
+    {
+      "level": 15,
+      "name": "Masonary",
+      "cost": 2120,
+      "cost_unit": "Experience",
+      "multiplier": 2.08,
+      "category": "technological_development"
+    },
+    {
+      "level": 16,
+      "name": "Forum",
+      "cost": 2440,
+      "cost_unit": "Experience",
+      "multiplier": 2.18,
+      "category": "technological_development"
+    },
+    {
+      "level": 17,
+      "name": "Furnace",
+      "cost": 2810,
+      "cost_unit": "Experience",
+      "multiplier": 2.29,
+      "category": "technological_development"
+    },
+    {
+      "level": 18,
+      "name": "Ironworking",
+      "cost": 3230,
+      "cost_unit": "Experience",
+      "multiplier": 2.41,
+      "category": "technological_development"
+    },
+    {
+      "level": 19,
+      "name": "Library",
+      "cost": 3710,
+      "cost_unit": "Experience",
+      "multiplier": 2.53,
+      "category": "technological_development"
+    },
+    {
+      "level": 20,
+      "name": "Medicine",
+      "cost": 4270,
+      "cost_unit": "Experience",
+      "multiplier": 2.65,
+      "category": "technological_development"
+    },
+    {
+      "level": 21,
+      "name": "Timekeeping",
+      "cost": 4910,
+      "cost_unit": "Experience",
+      "multiplier": 2.79,
+      "category": "technological_development"
+    },
+    {
+      "level": 22,
+      "name": "Market",
+      "cost": 5650,
+      "cost_unit": "Experience",
+      "multiplier": 2.93,
+      "category": "technological_development"
+    },
+    {
+      "level": 23,
+      "name": "Monastary",
+      "cost": 6490,
+      "cost_unit": "Experience",
+      "multiplier": 3.07,
+      "category": "technological_development"
+    },
+    {
+      "level": 24,
+      "name": "Windmill",
+      "cost": 7470,
+      "cost_unit": "Experience",
+      "multiplier": 3.23,
+      "category": "technological_development"
+    },
+    {
+      "level": 25,
+      "name": "Printing",
+      "cost": 8590,
+      "cost_unit": "Experience",
+      "multiplier": 3.39,
+      "category": "technological_development"
+    },
+    {
+      "level": 26,
+      "name": "Civil Code",
+      "cost": 9880,
+      "cost_unit": "Experience",
+      "multiplier": 3.56,
+      "category": "technological_development"
+    },
+    {
+      "level": 27,
+      "name": "Shipbuilding",
+      "cost": 11360,
+      "cost_unit": "Experience",
+      "multiplier": 3.73,
+      "category": "technological_development"
+    },
+    {
+      "level": 28,
+      "name": "Astronomy",
+      "cost": 13060,
+      "cost_unit": "Experience",
+      "multiplier": 3.92,
+      "category": "technological_development"
+    },
+    {
+      "level": 29,
+      "name": "Chemistry",
+      "cost": 15020,
+      "cost_unit": "Experience",
+      "multiplier": 4.12,
+      "category": "technological_development"
+    },
+    {
+      "level": 30,
+      "name": "Gunpowder",
+      "cost": 17270,
+      "cost_unit": "Experience",
+      "multiplier": 4.32,
+      "category": "technological_development"
+    },
+    {
+      "level": 31,
+      "name": "Economics",
+      "cost": 19860,
+      "cost_unit": "Experience",
+      "multiplier": 4.54,
+      "category": "technological_development"
+    },
+    {
+      "level": 32,
+      "name": "Cotton Gin",
+      "cost": 22840,
+      "cost_unit": "Experience",
+      "multiplier": 4.78,
+      "category": "technological_development"
+    },
+    {
+      "level": 33,
+      "name": "Ballistics",
+      "cost": 26270,
+      "cost_unit": "Experience",
+      "multiplier": 5.0,
+      "category": "technological_development"
+    },
+    {
+      "level": 34,
+      "name": "Metallurgy",
+      "cost": 30210,
+      "cost_unit": "Experience",
+      "multiplier": 5.25,
+      "category": "technological_development"
+    },
+    {
+      "level": 35,
+      "name": "Laboratory",
+      "cost": 34740,
+      "cost_unit": "Experience",
+      "multiplier": 5.52,
+      "category": "technological_development"
+    },
+    {
+      "level": 36,
+      "name": "Mechanics",
+      "cost": 39950,
+      "cost_unit": "Experience",
+      "multiplier": 5.79,
+      "category": "technological_development"
+    },
+    {
+      "level": 37,
+      "name": "Textiles",
+      "cost": 45950,
+      "cost_unit": "Experience",
+      "multiplier": 6.08,
+      "category": "technological_development"
+    },
+    {
+      "level": 38,
+      "name": "Thermodynamics",
+      "cost": 52840,
+      "cost_unit": "Experience",
+      "multiplier": 6.39,
+      "category": "technological_development"
+    },
+    {
+      "level": 39,
+      "name": "Steam Engine",
+      "cost": 60760,
+      "cost_unit": "Experience",
+      "multiplier": 6.7,
+      "category": "technological_development"
+    },
+    {
+      "level": 40,
+      "name": "Assembly Line",
+      "cost": 69880,
+      "cost_unit": "Experience",
+      "multiplier": 7.04,
+      "category": "technological_development"
+    },
+    {
+      "level": 41,
+      "name": "Electricity",
+      "cost": 80360,
+      "cost_unit": "Experience",
+      "multiplier": 7.39,
+      "category": "technological_development"
+    }
+  ],
+  "economic_development": [
+    {
+      "level": 1,
+      "name": "Hunting",
+      "cost": 300,
+      "cost_unit": "Experience",
+      "gpm": 300,
+      "category": "economic_development"
+    },
+    {
+      "level": 2,
+      "name": "Farming",
+      "cost": 600,
+      "cost_unit": "Experience",
+      "gpm": 750,
+      "category": "economic_development"
+    },
+    {
+      "level": 3,
+      "name": "Fishing",
+      "cost": 1200,
+      "cost_unit": "Experience",
+      "gpm": 1950,
+      "category": "economic_development"
+    },
+    {
+      "level": 4,
+      "name": "Mining",
+      "cost": 2400,
+      "cost_unit": "Experience",
+      "gpm": 4650,
+      "category": "economic_development"
+    },
+    {
+      "level": 5,
+      "name": "Construction",
+      "cost": 4800,
+      "cost_unit": "Experience",
+      "gpm": 11700,
+      "category": "economic_development"
+    },
+    {
+      "level": 6,
+      "name": "Feudal",
+      "cost": 9600,
+      "cost_unit": "Experience",
+      "gpm": 29250,
+      "category": "economic_development"
+    },
+    {
+      "level": 7,
+      "name": "Trade",
+      "cost": 19200,
+      "cost_unit": "Experience",
+      "gpm": 73200,
+      "category": "economic_development"
+    },
+    {
+      "level": 8,
+      "name": "Exploration",
+      "cost": 38400,
+      "cost_unit": "Experience",
+      "gpm": 183150,
+      "category": "economic_development"
+    },
+    {
+      "level": 9,
+      "name": "Imperial",
+      "cost": 76800,
+      "cost_unit": "Experience",
+      "gpm": 457800,
+      "category": "economic_development"
+    },
+    {
+      "level": 10,
+      "name": "Mercantile",
+      "cost": 153600,
+      "cost_unit": "Experience",
+      "gpm": 1144350,
+      "category": "economic_development"
+    },
+    {
+      "level": 11,
+      "name": "Plantation",
+      "cost": 307200,
+      "cost_unit": "Experience",
+      "gpm": 2861100,
+      "category": "economic_development"
+    },
+    {
+      "level": 12,
+      "name": "Industrial",
+      "cost": 614400,
+      "cost_unit": "Experience",
+      "gpm": 7152600,
+      "category": "economic_development"
+    }
+  ],
+  "increase_experience": [
+    {
+      "level": 1,
+      "xpm": 1,
+      "cost": 50000000,
+      "cost_unit": "Gold",
+      "category": "increase_experience"
+    },
+    {
+      "level": 2,
+      "xpm": 2,
+      "cost": 150000000,
+      "cost_unit": "Gold",
+      "category": "increase_experience"
+    },
+    {
+      "level": 3,
+      "xpm": 3,
+      "cost": 400000000,
+      "cost_unit": "Gold",
+      "category": "increase_experience"
+    },
+    {
+      "level": 4,
+      "xpm": 4,
+      "cost": 600000000,
+      "cost_unit": "Gold",
+      "category": "increase_experience"
+    },
+    {
+      "level": 5,
+      "xpm": 5,
+      "cost": 800000000,
+      "cost_unit": "Gold",
+      "category": "increase_experience"
+    }
+  ],
+  "safe_upgrades": [
+    {
+      "level": 0,
+      "tbg_percent": 5,
+      "cost": 0,
+      "cost_unit": "Experience",
+      "category": "safe_upgrades"
+    },
+    {
+      "level": 1,
+      "tbg_percent": 10,
+      "cost": 5000,
+      "cost_unit": "Experience",
+      "category": "safe_upgrades"
+    },
+    {
+      "level": 2,
+      "tbg_percent": 15,
+      "cost": 7500,
+      "cost_unit": "Experience",
+      "category": "safe_upgrades"
+    },
+    {
+      "level": 3,
+      "tbg_percent": 20,
+      "cost": 17500,
+      "cost_unit": "Experience",
+      "category": "safe_upgrades"
+    },
+    {
+      "level": 4,
+      "tbg_percent": 25,
+      "cost": 25000,
+      "cost_unit": "Experience",
+      "category": "safe_upgrades"
+    },
+    {
+      "level": 5,
+      "tbg_percent": 30,
+      "cost": 40000,
+      "cost_unit": "Experience",
+      "category": "safe_upgrades"
+    }
+  ]
+}
