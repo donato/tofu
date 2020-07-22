@@ -1,9 +1,3 @@
-table.table_lines {
-  width: 100%;
-  border-spacing: 0;
-  border-collapse: collapse;
-  padding: 6px;
-}
 .viewHistory {
   font-size: 6pt;
 }
@@ -57,19 +51,8 @@ table.table_lines {
   display: none;
   visibility: hidden;
 }
-.expando {
-  float: right;
-}
-.collapsed_table > tbody > tr:nth-child(n+2) {
-  visibility: hidden;
-  display: none;
-}
-table.table_lines > tbody > tr > th {
-  cursor: pointer;
-}
-table.table_lines {
-  margin-top: 5px;
-}
+
+
 #container {
   max-width: 500px;
   height: 300px;
