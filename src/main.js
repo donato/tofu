@@ -1,4 +1,5 @@
 define([
+  'templates/coloredspan',
   'jquery',
   'underscore',
   './core/control-panel/init',
@@ -8,7 +9,13 @@ define([
   './core/control-panel/plugins',
   './core/pages/pages',
   'raw-loader!./css/default.css'
-], function ($, _, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
+], function (coloredspan, $, _, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
+
+  // This is the least magical way to get Handlebars helpers running with webpack loaders
+  var Handlebars = require('handlebars/runtime');
+  Handlebars.registerHelper('coloredspan', coloredspan);
+  Handlebars.registerHelper('timeElapsed', KoC.timeElapsed);
+  Handlebars.registerHelper('confidenceInterval', KoC.timeConfidenceFormatter);
 
   // CSS Styles are loaded as a resource, add to the page
   gmAddStyle(css);

@@ -1,0 +1,21 @@
+<table class="table_lines" width="100%" cellspacing="0" cellpadding="6" border="0">
+  <tbody>
+  <tr>
+      <th colspan="4"> Weapon Tracker Log</th>
+  </tr>
+  {{#each rows as |row|}}
+  <tr>
+    <td>{{row.weapon}}</td>
+    <td>{{row.delta}}</td>
+    <td class="time_passed">{{ timeElapsed row.time}}</td>
+    <td>{{ confidenceInterval row.interval}}</td>
+  </tr>
+  {{/each}}
+  <tr>
+    <td>(<a id='viewSablog'>View All</a>)</td>
+    <td></td>
+    <td></td>
+    <td>(<a id='clearSablog'>Clear</a>)</td>
+  </tr>
+  </tbody>
+</table>

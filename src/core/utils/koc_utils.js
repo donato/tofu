@@ -30,7 +30,11 @@ define([
     },
     getObject: function (option, def) {
       option += "_" + this.id;
-      return JSON.parse(gmGetValue(option, false)) || def;
+      const value = gmGetValue(option, def);
+      if (typeof value == 'object') {
+        return value;
+      }
+      return JSON.parse(value);
     },
     put: function (option, val) {
       option += "_" + this.id;

@@ -13,7 +13,7 @@ define([
     enabledPages: ['stats'],
 
     run: function (page, $uiSlots) {
-      this.showLoggedStats($uiSlots.eq(7));
+      this.showLoggedStats($uiSlots.eq(5));
     },
 
     showLoggedStats: function ($insertLocation) {
