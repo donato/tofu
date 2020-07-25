@@ -1,15 +1,22 @@
 define([
   './init',
   'raw-loader!templates/links.html',
-  'handlebars-loader!templates/control-panel.html',
+  'handlebars-loader!templates/control-panel-navbar.html',
+  'handlebars-loader!templates/control-panel-settings.html',
   'utils/gui',
   'jquery',
   'underscore'
-], function (Init, linksHtml, ControlPanelTemplate, GUI, $, _) {
+], function (Init, linksHtml, NavbarTemplate, SettingsTemplate, GUI, $, _) {
 
   class ControlPanel {
     constructor(pluginManager) {
       this.pluginManager = pluginManager;
+      
+      this.tabs = [
+        { id: "showSettings", name: "Settings", action: this.showSettings.bind(this) },
+        { id: "showLinkBox", name: "Show Links", action: this.showLinkBox.bind(this) },
+        { id: "checkupdates", name: "Check For Updates", action: Init.checkForUpdate }
+      ];
     }
 
     init() {
@@ -20,19 +27,18 @@ define([
 
       $('body').append(this.$controlbox);
 
-      this.$controlbox.click(this.showControlPanel.bind(this));
+      this.$controlbox.click(this.showSettings.bind(this));
     }
 
-    showControlPanel() {
-      var panelTabs = [
-        { id: "showLinkBox", name: "Show Links", action: this.showLinkBox.bind(this) },
-        { id: "checkupdates", name: "Check For Updates", action: Init.checkForUpdate }
-      ];
-
-      var p = this.pluginManager.getPlugins();
-      var html = ControlPanelTemplate({ plugins: p, navLinks: panelTabs });
-      var $div = GUI.displayHtml(html);
+    showPage(html) {
+      var menu = NavbarTemplate({navLinks: this.tabs });
+      var $div = GUI.displayHtml(menu + html);
       $div.click(this.onClick.bind(this));
+    }
+
+    showSettings() {
+      var plugins = this.pluginManager.getPlugins();
+      this.showPage(SettingsTemplate({plugins}));
     }
 
     onClick(event) {
@@ -54,7 +60,7 @@ define([
     }
 
     showLinkBox() {
-      $('#tofu_popup_content').html(linksHtml);
+      this.showPage(linksHtml);
     }
 
     showMessageBox() {

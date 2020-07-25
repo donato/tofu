@@ -13,9 +13,9 @@ define([
 
         enabledPages: ['armory'],
 
-        run: function() {
+        run: function(page, $uiSlots) {
             var x = this.buildHtml();
-            $("#military_effectiveness").after(x);
+            $uiSlots.eq(5).after(x);
         },
         buildHtml: function () {
             var bpms, chars, skins, ivs, da_bonus, sa_bonus, da_bonus_new, sa_bonus_new, sa_cost, da_cost, da_sellRow, sa_sellRow;
