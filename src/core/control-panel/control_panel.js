@@ -3,26 +3,28 @@ define([
   'raw-loader!templates/links.html',
   'handlebars-loader!templates/control-panel-navbar.html',
   'handlebars-loader!templates/control-panel-settings.html',
+  'utils/constants',
   'utils/gui',
   'jquery',
   'underscore'
-], function (Init, linksHtml, NavbarTemplate, SettingsTemplate, GUI, $, _) {
+], function (Init, linksHtml, NavbarTemplate, SettingsTemplate, Constants, GUI, $, _) {
+
+  const tabs = [
+    { id: "showSettings", name: "Toggle Features" },
+    { id: "showLinkBox", name: "Show Links"},
+    { id: "checkForUpdates", name: "Check For Updates"}
+  ];
+  var menu = NavbarTemplate({navLinks: tabs});
 
   class ControlPanel {
     constructor(pluginManager) {
       this.pluginManager = pluginManager;
-      
-      this.tabs = [
-        { id: "showSettings", name: "Settings", action: this.showSettings.bind(this) },
-        { id: "showLinkBox", name: "Show Links", action: this.showLinkBox.bind(this) },
-        { id: "checkupdates", name: "Check For Updates", action: Init.checkForUpdate }
-      ];
     }
 
     init() {
       this.$controlbox = $("<div>", {
         'id': 'tofu_control_box',
-        'html': 'Open Control Panel<br>Tofu V.' + version
+        'html': 'Open Control Panel<br>Tofu V.' + Constants.TOFU_VERSION
       });
 
       $('body').append(this.$controlbox);
@@ -31,7 +33,6 @@ define([
     }
 
     showPage(html) {
-      var menu = NavbarTemplate({navLinks: this.tabs });
       var $div = GUI.displayHtml(menu + html);
       $div.click(this.onClick.bind(this));
     }
@@ -39,6 +40,13 @@ define([
     showSettings() {
       var plugins = this.pluginManager.getPlugins();
       this.showPage(SettingsTemplate({plugins}));
+    }
+
+    checkForUpdates() {
+      this.showPage('<p>Checking for updates...</p>');
+      Init.checkForUpdate().then(() => {
+        this.showPage('<p>You are up to date!</p>');
+      });
     }
 
     onClick(event) {
@@ -52,7 +60,7 @@ define([
       log('toggling... ', event.target)
       var pluginName = event.target.getAttribute('pluginName');
       this.pluginManager.toggle(pluginName);
-      this.showControlPanel();
+      this.showSettings();
     }
 
     toggle() {

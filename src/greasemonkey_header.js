@@ -1,15 +1,10 @@
 // ==UserScript==
 // @name            ToFu Script
-// @description     The next generation of Kingsofchaos enhancement
+// @description    KoC LuXBot Script
 // @version         0.20121110
-// @include         http://*kingsofchaos.com/*
-// @exclude         http://*kingsofchaos.com/chat/*
-// @require         https://raw.github.com/donato/tofu/master/src/libs/hex_md5.js
-// @resource    sidebar_targets          https://raw.github.com/donato/tofu/master/src/img/sidebar_targets.gif
-// @resource    sidebar_sabtargets       https://raw.github.com/donato/tofu/master/src/img/sidebar_sabtargets.gif
-// @resource    sidebar_fakesabtargets   https://raw.github.com/donato/tofu/master/src/img/sidebar_fakesabtargets.gif
-// @resource    icon_sword               https://raw.github.com/donato/tofu/master/src/img/sword.png
-// @resource    styles                   https://raw.github.com/donato/tofu/master/src/css/default.css
+// @include      https://*kingsofchaos.com/*
+// @exclude      https://*kingsofchaos.com/chat/*
+// @require         http://donatoborrello.com/koc/bot/require/hex_md5.js
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue
@@ -19,13 +14,8 @@
 // @grant       GM_addStyle
 // @grant       GM_getResourceText
 // @grant       GM_getResourceURL
+// @match       *://raw.github.com/donato/*
 // ==/UserScript==
-
-// Silver sword icon from here - http://www.iconfinder.com/iconsets/free-silver-button-icons-2#readme
-// For information on the development of this through the ages please visit: http://stats.luxbot.net/about.php
-
 
 // This is a global for the makeUrl in gm_wrappers.js 
 var User;
-
-var version = "0.10";

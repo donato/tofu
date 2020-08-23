@@ -9,7 +9,7 @@ define([
         name: "Upgrade Suggestions",
         description: "Offer upgrade suggestions from the armory",
 
-        defaultEnabled: true,
+        defaultEnabled: false,
 
         enabledPages: ['armory'],
 

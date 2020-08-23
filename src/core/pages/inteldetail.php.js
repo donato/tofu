@@ -21,7 +21,7 @@ define([
    * Note: for sabotages it says "your spies" for recon "your spy"
    */
   function isSabotage(pageText) {
-    return text.indexOf('Your spy') == -1;
+    return pageText.indexOf('Your spy') == -1;
   }
 
   return {

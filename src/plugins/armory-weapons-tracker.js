@@ -9,7 +9,7 @@ define([
     name: "Armory Weapons Logger",
     description: "Track changes to weapons over time",
 
-    defaultEnabled: true,
+    defaultEnabled: false,
 
     enabledPages: ['armory'],
 

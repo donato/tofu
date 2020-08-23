@@ -9,7 +9,7 @@ define([
     name: "Base TBG Investment Forecast",
     description: "Show how much your stats would grow if you invest your TBG in one stat.",
 
-    defaultEnabled: true,
+    defaultEnabled: false,
 
     enabledPages: ['base'],
 

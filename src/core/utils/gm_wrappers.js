@@ -69,7 +69,9 @@ if (is_greasemonkey_enabled) {
 }
 
 gmAddStyle = function(text) {
-    $('head').append('<style>' + text + '</style>');
+  const s = document.createElement('style');
+  s.innerHTML = text;
+  document.head.appendChild(s);
 };
 
   

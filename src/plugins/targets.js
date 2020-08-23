@@ -8,7 +8,7 @@ define([
       name: "Farming Targets",
       description: "Targets button added to sidebar",
 
-      defaultEnabled: true,
+      defaultEnabled: false,
 
       run: function () {
         this.addTargetsButton();

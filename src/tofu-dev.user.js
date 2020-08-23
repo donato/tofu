@@ -14,6 +14,8 @@
 // @grant       GM_addStyle
 // @grant       GM_getResourceText
 // @grant       GM_getResourceURL
-// @match       *://raw.github.com/DonatoB/*
+// @match       *://raw.github.com/donato/*
 // @require      file:///Users/donatoborrello/git/tofu/bin/tofu.user.js
 // ==/UserScript==
+
+// // @run-at      document-start

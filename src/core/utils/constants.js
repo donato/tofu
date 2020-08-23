@@ -2,6 +2,9 @@ define([], function () {
   const statsUrl = 'http://donatoborrello.com/stats/';
   const baseUrl = 'http://donatoborrello.com/bot/';
 
+
+  const TOFU_VERSION = "0.10";
+
     // name, cost, strength
     var ALL_WEAPONS = {
         "Knife": {"price": 1000, "str": 1},
@@ -33,6 +36,7 @@ define([], function () {
     };
 
     return {
+      TOFU_VERSION,
         statsUrl,
         baseUrl: baseUrl + 'luxbot.php?',
         downloadUrl: baseUrl + 'luxbot.user.js',

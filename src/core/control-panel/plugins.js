@@ -34,11 +34,6 @@ define([
     return pluginSettings;
   }
 
-  // function isEnabled(name) {
-  //   var storedAs = 'plugin_enabled_' + name;
-  //   db.get(storedAs, plugin.defaultEnabled);
-  // }
-
   var allPlugins = requireAll(require.context("../../plugins/", true, /^\.\/.*\.js$/));
 
   class Plugins {

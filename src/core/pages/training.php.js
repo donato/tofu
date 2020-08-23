@@ -35,7 +35,7 @@ define([
         return '<span style="color:red">' + unheld + '</span>';
       }
       function getTroopCount($table, str) {
-        return $stable
+        return $table
           .find("tr:contains('" + str + "'):first>td:last")
           .html().int();
       }

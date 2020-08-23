@@ -286,7 +286,7 @@
     },
     {
       "level": 5,
-      "name": "Slueth",
+      "name": "Sleuth",
       "cost": 280000,
       "cost_unit": "Gold",
       "multiplier": 5.38,
@@ -334,7 +334,7 @@
     },
     {
       "level": 11,
-      "name": "Bagnman",
+      "name": "Bagman",
       "cost": 17920000,
       "cost_unit": "Gold",
       "multiplier": 40.5,
@@ -512,7 +512,7 @@
     },
     {
       "level": 16,
-      "name": "Though Shalt Not Be Named",
+      "name": "Thou Shalt Not Be Named",
       "cost": 573440000,
       "cost_unit": "Gold",
       "multiplier": 217.8,
@@ -796,7 +796,7 @@
     },
     {
       "level": 23,
-      "name": "Monastary",
+      "name": "Monastery",
       "cost": 6490,
       "cost_unit": "Experience",
       "multiplier": 3.07,

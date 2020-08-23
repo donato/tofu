@@ -35,7 +35,7 @@ define([
     return {
       name: 'Sablist',
       description: "Sab targets button added to sidebar",
-      defaultEnabled: true,
+      defaultEnabled: false,
 
       run: function () {
         this.addSabTargetsButton();

@@ -41,15 +41,13 @@ define([
         },
 
         checkForUpdate: function(startup) {
-            if (db.get("luxbot_version", 0) != version) {
-                db.put("luxbot_version", version);
-                db.put("luxbot_needsUpdate", 0);
-            }
+          return new Promise(resolve => {
             if (startup === 1 && db.get("luxbot_needsUpdate",0) === 1) {
                 setTimeout(function() {
                     $("#_luxbot_gui>ul").append("<li id='getUpdate' style='padding-top:5px;color:yellow'>Get Update!</li>");
                     $("#getUpdate").click(function() {
                         openTab(Constants.downloadUrl);
+                        resolve('');
                     });
                 }, 1000);
                 return;
@@ -57,7 +55,7 @@ define([
 
             var now = new Date();
             var lastCheck = db.get('luxbot_lastcheck', 0);
-
+            const version = Constants.TOFU_VERSION;
             if (startup != 1 || (now - new Date(lastCheck)) > (60*1000)) {
                 get( Constants.versionUrl,
                     function(responseDetails) {
@@ -65,18 +63,20 @@ define([
                         var thisVersion = Number(version.replace(/\./, ''));
                         if (latestVersion > thisVersion) {
                             db.put("luxbot_needsUpdate",1);
-                            db.put("luxbot_version", version);
                             if (startup != 1) {
-                                alert("There is an update!");
+                                resolve("There is an update!");
                                 openTab(Constants.downloadUrl);
                             }
                         } else if (startup !== 1) {
-                            alert("You are up to date!");
+                            resolve("You are up to date!");
                         }
                     }
                 );
                 db.put('luxbot_lastcheck', now.toString());
+                return;
             }
+            resolve('');
+          });
         },
 
         checkUser: function(User) {
@@ -161,9 +161,11 @@ define([
             }
 
             var welcomeText = WelcomeTemplate({});
-            GUI.displayText( welcomeText );
+            GUI.displayText(welcomeText);
 
-            $("#_luxbot_login").click(initLogin);
+            $("#_luxbot_login").click(() => {
+              initLogin();
+            });
         }
     };
     return Init;
