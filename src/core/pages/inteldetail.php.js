@@ -50,8 +50,9 @@ define([
 
       var enemyNick = text.between("your spy sneaks into ", "'s camp");
       const $goldTable = Koc.getTableByHeading('Treasury');
-      const treasuryGold = to_int($goldTable.find('tr').eq(1).text());
-      const safeGold = to_int($goldTable.find('tr').eq(3).text());
+      const treasuryGold = textBetween($goldTable.html(), '<td align="center">',' Gold').replace(/,/g, '').replace(/"/g, '').replace(/<\/?[^>]+(>|$)/g, "");
+      const safeGold = '';
+
       // Order is important here when sending logs to the server
       var rows = [
         findInt("Strike Action"),
