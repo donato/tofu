@@ -1,10 +1,11 @@
 define([
+  'assets/img/luxupdate.gif',
   'utils/koc_utils',
   'utils/constants',
   'utils/gm_wrappers',
   'jquery',
   'underscore'
-], function (Koc, Constants, Grease, $, _) {
+], function (luxUpdateImage, Koc, Constants, Grease, $, _) {
 
   const kocidToRowMap = {};
   // We don't need a set, because only one user can be open at a time
@@ -88,7 +89,7 @@ define([
               var [kocid, rank, name] = players[i].split(':');
               var $row = kocidToRowMap[kocid];
               var $user_td = $row.children('td').eq(2);
-              $user_td.append('<a href="http://www.kingsofchaos.com/attack.php?id=' + kocid + '"><img title="Stats are out of date" class="_lux_needs_update" src="http://donatoborrello.com/bot/img/luxupdate.gif" /></a>');
+              $user_td.append('<a href="http://www.kingsofchaos.com/attack.php?id=' + kocid + '"><img title="Stats are out of date" class="_lux_needs_update" src="'+luxUpdateImage+'" /></a>');
             }
           });
     },

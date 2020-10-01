@@ -1,13 +1,13 @@
 define([
     'jquery',
     'underscore',
+    'md5',
     'utils/koc_utils',
     'utils/constants',
     'utils/gm_wrappers',
     'utils/gui',
-    'libs/hex_md5',
     'handlebars-loader!templates/welcome.html'
-], function($, _, KoC, Constants, Grease, GUI, empty, WelcomeTemplate) {
+], function($, _, md5, KoC, Constants, Grease, GUI, WelcomeTemplate) {
     var Page = KoC.Page;
     var db = KoC.db;
 
@@ -141,7 +141,7 @@ define([
                 db.put('kocnick', user[1]);
                 db.put('kocid', user[0]);
 
-                var password = hex_md5(f_pass);
+                var password = md5(f_pass);
                 db.put('forumPass', password);
                 db.put('forumName', f_user);
                 initVB();

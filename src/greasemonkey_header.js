@@ -4,7 +4,6 @@
 // @version         0.20121110
 // @include      https://*kingsofchaos.com/*
 // @exclude      https://*kingsofchaos.com/chat/*
-// @require         http://donatoborrello.com/koc/bot/require/hex_md5.js
 // @grant       GM_getValue
 // @grant       GM_setValue
 // @grant       GM_deleteValue

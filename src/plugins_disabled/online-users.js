@@ -1,4 +1,7 @@
-define({
+define([
+  'assets/img/online.gif',
+], function (onlineImage) {
+return {
   description : "Show whether players are online",
  
   defaultEnabled : false,
@@ -21,7 +24,7 @@ define({
         var stable = $("table:contains('User Stats')").last();
         var tx = r.responseText;
         if (parseResponse(tx, "online") !== '') {
-          $(stable).find("tr:contains('Name')").first().find("td:eq(1)").append('&nbsp;<img title="Player is online"  class="_lux_online" src="http://www.luxbot.net/bot/img/online2.gif" />');
+          $(stable).find("tr:contains('Name')").first().find("td:eq(1)").append('&nbsp;<img title="Player is online"  class="_lux_online" src="'+luxOnlineImage+'" />');
         }
       });
   },
@@ -43,4 +46,5 @@ define({
             }
         });
   },
+};
 });

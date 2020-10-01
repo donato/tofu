@@ -1,4 +1,5 @@
 define([
+  'assets/img/sabtargets.gif',
   'utils/gui',
   'utils/koc_utils'
 ],
@@ -48,7 +49,7 @@ define([
             'class': 'tofu',
             'id': 'sidebar_sabtargets',
             // 'src': gmGetResourceURL("sidebar_sabtargets")
-            'src': 'http://donatoborrello.com/bot/button_koc_sabtargets.gif'
+            'src': sabTargetsImg
           }));
 
         $sabButton.click(() => this.sabTargetsButton());

@@ -10,8 +10,7 @@ define([
   './core/control-panel/plugins',
   './core/pages/pages',
   'raw-loader!./css/default.css',
-  'core/utils/js_utils', // included just for global values
-], function (coloredspan, $, _, Init, KoC, GUI, Grease, ControlPanel, Plugins, Pages, css, utils) {
+], function (coloredspan, $, _, Init, KoC, GUI, Grease, ControlPanel, Plugins, Pages, css) {
 
   // This is the least magical way to get Handlebars helpers running with webpack loaders
   var Handlebars = require('handlebars/runtime');

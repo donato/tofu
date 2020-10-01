@@ -1,8 +1,9 @@
 define([
-    'utils/gui',
+  'assets/img/targets.gif',
+  'utils/gui',
   'utils/koc_utils'
 ],
-  function(GUI, Koc) {
+  function(targetsImg, GUI, Koc) {
     var db = Koc.db;
     return {
       name: "Farming Targets",
@@ -20,7 +21,7 @@ define([
             'onclick': 'return false;',
             'class': 'tofu',
             'id': 'sidebar_sabtargets',
-            'src': 'http://donatoborrello.com/bot/img/targets.gif'
+            'src': targetsImg
           }));
 
         $button.click(this.showFarmList.bind(this));
