@@ -8,19 +8,15 @@ module.exports = function (grunt) {
 
   var paths = {
     header: 'src/greasemonkey_header.js',
-    globals: [
-      'src/core/utils/gm_wrappers.js',
-      'src/core/utils/js_utils.js'
-    ],
     dest: 'bin/tofu.user.js'
   };
 
+  // TODO(): avoid using prepends for gm wrapper and jsutils
   function prependFile() {
     var header = grunt.file.read(paths.header);
-    var globals = _.map(paths.globals, grunt.file.read);
     var bin = grunt.file.read(paths.dest);
 
-    grunt.file.write(paths.dest, header + globals.join(' ') + bin);
+    grunt.file.write(paths.dest, header + bin);
   }
 
   function copyFile() {
@@ -87,6 +83,16 @@ module.exports = function (grunt) {
           path: path.resolve(__dirname, 'bin'),
           filename: '[name].user.js'
         },
+        module: {
+          rules: [
+            {
+              test: /\.(png|svg|jpg|gif)$/,
+              use: [
+                'base64-inline-loader',
+              ],
+            },
+          ],
+        },
         mode: "development",
       },
       watch: {
@@ -103,6 +109,16 @@ module.exports = function (grunt) {
           filename: '[name].user.js'
         },
         mode: "development",
+        module: {
+          rules: [
+            {
+              test: /\.(png|svg|jpg|gif)$/,
+              use: [
+                'base64-inline-loader',
+              ],
+            },
+          ]
+        },
 
         plugins: [afterWebpackBuild],
         watch: true,
@@ -122,5 +138,6 @@ module.exports = function (grunt) {
   grunt.registerTask('gm-header', prependFile);
   grunt.registerTask('update-local', copyFile);
 
+  grunt.registerTask('release', ['webpack:devel', 'gm-header']);
   grunt.registerTask('default', ['copy', 'webpack', 'gm-header', 'update-local']);
 };
