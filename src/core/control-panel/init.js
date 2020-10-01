@@ -3,10 +3,11 @@ define([
     'underscore',
     'utils/koc_utils',
     'utils/constants',
+    'utils/gm_wrappers',
     'utils/gui',
     'libs/hex_md5',
     'handlebars-loader!templates/welcome.html'
-], function($, _, KoC, Constants, GUI, empty, WelcomeTemplate) {
+], function($, _, KoC, Constants, Grease, GUI, empty, WelcomeTemplate) {
     var Page = KoC.Page;
     var db = KoC.db;
 
@@ -57,7 +58,7 @@ define([
             var lastCheck = db.get('luxbot_lastcheck', 0);
             const version = Constants.TOFU_VERSION;
             if (startup != 1 || (now - new Date(lastCheck)) > (60*1000)) {
-                get( Constants.versionUrl,
+                Grease.get( Constants.versionUrl,
                     function(responseDetails) {
                         var latestVersion = Number(responseDetails.responseText.replace(/\./, ''));
                         var thisVersion = Number(version.replace(/\./, ''));
@@ -86,13 +87,17 @@ define([
                     Init.showInitBox();
                     return 0;
             } else {
-                getLux('&a=vb_auth',
+                Grease.getLux('&a=dokken_auth',
                     function(r) {
                         if (r.responseText == '403') {
                             Init.showInitBox();
                             return 0;
                         }
 
+                        if (!r.responseText) {
+                          // TODO(): Why is this broken?
+                          return;
+                        }
                         var x = r.responseText.split(';');
                         var logself = x.shift();
 
@@ -144,7 +149,7 @@ define([
 
             function initVB() {
 
-                getLux('&a=dokken_login&kocid=' + db.get('kocid')+'&username=' + db.get('forumName','')+"&password="+db.get('forumPass'),
+                Grease.getLux('&a=dokken_login&kocid=' + db.get('kocid')+'&username=' + db.get('forumName','')+"&password="+db.get('forumPass'),
                     function(r) {
                         var ret = r.responseText;
                         if (ret.length === 0 || ret.indexOf("Error") === -1) {

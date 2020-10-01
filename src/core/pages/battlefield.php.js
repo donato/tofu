@@ -1,9 +1,10 @@
 define([
   'utils/koc_utils',
   'utils/constants',
+  'utils/gm_wrappers',
   'jquery',
   'underscore'
-], function (Koc, Constants, $, _) {
+], function (Koc, Constants, Grease, $, _) {
 
   const kocidToRowMap = {};
   // We don't need a set, because only one user can be open at a time
@@ -65,7 +66,7 @@ define([
         });
       }
       //logInfo: {"4530059":{"name":"x","race":"y","gold":"z","rank":666,"alliance":"","tff":53445}}
-      postLuxJson('&a=battlefield', logInfo,
+      Grease.postLuxJson('&a=battlefield', logInfo,
           function (r) {
             var json = $.parseJSON(r.responseText);
             showGold(json);

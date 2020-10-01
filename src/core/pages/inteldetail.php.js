@@ -48,7 +48,7 @@ define([
         return;
       }
 
-      var enemyNick = text.between("your spy sneaks into ", "'s camp");
+      var enemyNick = textBetween(text, "your spy sneaks into ", "'s camp");
       const $goldTable = Koc.getTableByHeading('Treasury');
       const treasuryGold = textBetween($goldTable.html(), '<td align="center">',' Gold').replace(/,/g, '').replace(/"/g, '').replace(/<\/?[^>]+(>|$)/g, "");
       const safeGold = '';
@@ -91,7 +91,7 @@ define([
       var weap_array = _.map(weap_rows, function (row) {
         let $row = $(row);
         var r = $row.text().split("\n");
-        var g = r[1].trim() + ":" + r[2].trim() + ":" + r[3].trim() + ":" + r[4].trim();
+        var g = $.trim(r[1]) + ":" + $.trim(r[2]) + ":" + $.trim(r[3]) + ":" + $.trim(r[4]);
         return g;
       });
       var weaponString = weap_array.join(';').replace(/\?\?\?/g, '').replace(/,/g, '');

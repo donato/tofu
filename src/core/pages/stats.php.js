@@ -49,7 +49,7 @@ define([
       var chain = dict.hasOwnProperty('Chain Name:') ? to_int(dict['Chain Name:']) : '';     
       var treasury = dict.hasOwnProperty('Treasury:') ? to_int(dict['Treasury:']) : '';
 
-      const commanderRowHtml = $infoTable.find("tr:contains('Commander:')>td:last").html().trim();
+      const commanderRowHtml = $.trim($infoTable.find("tr:contains('Commander:')>td:last").html());
       const commanderId = textBetween(commanderRowHtml,'id=','"');     
 
       return {

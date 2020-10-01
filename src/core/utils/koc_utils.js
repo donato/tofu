@@ -1,22 +1,23 @@
 define([
   './constants',
+  './gm_wrappers',
   'jquery',
   'underscore'
-], function (Constants, $, _) {
+], function (Constants, Grease, $, _) {
 
   var db = {
     // This allows it to store info for different koc ids on same pc
     init: function (kocid) {
       if (kocid === undefined || kocid === null) {
-        this.id = gmGetValue("lux_last_user", 0);
+        this.id = Grease.gmGetValue("lux_last_user", 0);
         return;
       }
-      gmSetValue("lux_last_user", kocid);
+      Grease.gmSetValue("lux_last_user", kocid);
       this.id = kocid;
     },
     get: function (option, def) {
       option += "_" + this.id;
-      var value = gmGetValue(option, def);
+      var value = Grease.gmGetValue(option, def);
       if (option.indexOf('gold_') > 0) value = parseInt(value, 10);
       return value;
     },
@@ -30,7 +31,7 @@ define([
     },
     getObject: function (option, def) {
       option += "_" + this.id;
-      const value = gmGetValue(option, def);
+      const value = Grease.gmGetValue(option, def);
       if (typeof value == 'object') {
         return value;
       }
@@ -38,7 +39,7 @@ define([
     },
     put: function (option, val) {
       option += "_" + this.id;
-      gmSetValue(option, val);
+      Grease.gmSetValue(option, val);
     },
     // Time in javascript is always unixtime
     getTime: function (option) {
@@ -53,7 +54,7 @@ define([
     },
     del: function (option) {
       option += "_" + this.id;
-      gmDeleteValue(option);
+      Grease.gmDeleteValue(option);
     }
   };
 
@@ -186,8 +187,9 @@ define([
     $table.find('tr').each(function (idx, row) {
       var $row = $(row);
       var $td = $row.find('td');
-      dict[$td.eq(key).text().trim()] = $td.eq(val).text().trim();
-      dict['element'][$td.eq(key).text().trim()] = $td.eq(val);
+      const k = $.trim($td.eq(key).text());
+      dict[k] = $.trim($td.eq(val).text());
+      dict['element'][k] = $td.eq(val);
     });
     return dict;
   }
@@ -198,7 +200,7 @@ define([
     var vals = [];
     $.each($cells, function (index, val) {
       if (index === 0) return
-      vals.push($(val).text().trim())
+      vals.push($.trim($(val).text()))
     });
 
     return vals;
@@ -338,6 +340,60 @@ define([
       return (value * 100).toFixed(2) + '%';
     }
   }
+
+  // TODO(): Stop modifying string prototype, use a util!
+  String.prototype.int = function () {
+    var r = parseInt(this.replace(/,/g, ''), 10);
+    if (isNaN(r)) r = -1;
+    return r;
+  };
+
+  String.prototype.float = function () {
+    var r = parseFloat(this.replace(/[^0-9\.\-]*/g, ''), 10);
+    if (isNaN(r)) r = -1;
+    return r;
+  };
+
+  Number.prototype.int = function () {
+    return this;
+  }
+
+  function to_int(str) {
+    str = str.replace(/[^0-9\.\-]/g, '');
+    if (str === '') {
+      return -1;
+    }
+    return parseInt(str, 10);
+  }
+
+  function textBetween(str, first, second) {
+    if (str === null) {
+      alert("Unexpected page formatting, please reload.");
+      return "";
+    }
+    var x = str.indexOf(first) + first.length;
+    var z = str.substr(x);
+    var y = z.indexOf(second);
+    return z.substr(z, y);
+  }
+
+  var addCommas = function () {
+    var sRegExp = new RegExp('(-?[0-9]+)([0-9]{3})');
+
+    return function (sValue) {
+      sValue = String(sValue);
+
+      while (sRegExp.test(sValue)) {
+        sValue = sValue.replace(sRegExp, '$1,$2');
+      }
+      return sValue;
+    };
+  }();
+
+  // TODO(): Stop using globals!
+  window.to_int = to_int;
+  window.textBetween = textBetween;
+  window.addCommas = addCommas;
 
   return {
     db,

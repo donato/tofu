@@ -59,7 +59,7 @@ define([
 
         $(".sabbable>span").click(function (e) {
           var t = $(e.target).text();
-          t = t.trim().split(" ");
+          t = $.trim(t).split(" ");
           var count = t.shift().int();
           var weap = t.join(" ");
           weap = weap.substr(0, weap.length - 1);//take off last "s"

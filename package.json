@@ -13,6 +13,7 @@
   "author": "Donato Borrello",
   "license": "BSD",
   "readmeFilename": "README.md",
+  "sideEffects": false,
   "devDependencies": {
     "almond": "~0.2.6",
     "array-flatten": "^2.1.2",

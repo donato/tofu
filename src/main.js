@@ -5,11 +5,13 @@ define([
   './core/control-panel/init',
   './core/utils/koc_utils',
   './core/utils/gui',
+  './core/utils/gm_wrappers',
   './core/control-panel/control_panel',
   './core/control-panel/plugins',
   './core/pages/pages',
-  'raw-loader!./css/default.css'
-], function (coloredspan, $, _, Init, KoC, GUI, ControlPanel, Plugins, Pages, css) {
+  'raw-loader!./css/default.css',
+  'core/utils/js_utils', // included just for global values
+], function (coloredspan, $, _, Init, KoC, GUI, Grease, ControlPanel, Plugins, Pages, css, utils) {
 
   // This is the least magical way to get Handlebars helpers running with webpack loaders
   var Handlebars = require('handlebars/runtime');
@@ -18,7 +20,7 @@ define([
   Handlebars.registerHelper('confidenceInterval', KoC.timeConfidenceFormatter);
 
   // CSS Styles are loaded as a resource, add to the page
-  gmAddStyle(css);
+  Grease.addStyle(css);
 
   var action = KoC.Page.getCurrentPage();
 
