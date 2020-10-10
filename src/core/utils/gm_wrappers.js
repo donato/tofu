@@ -112,9 +112,21 @@ function makeUrl(url) {
     return 'http://donatoborrello.com/bot/luxbot.php?' + 'username=' + User.kocnick + '&password=' + User.forumPass + '&auth=' + User.auth + url;
 }
 
+const MemoizedFetches = new Map();
 function getLux(url, callback) {
     var address = makeUrl(url);
-    get(address, callback);
+    //get(address, callback);
+    if (MemoizedFetches.has(address)) {
+      MemoizedFetches.get(address).then(callback);
+      return;
+    }
+    const promise = new Promise(resolve => {
+      get(address, (response) => {
+        resolve(response);
+      });
+    });
+    MemoizedFetches.set(address, promise);
+    promise.then(callback);
 }
 
 function postLux(url, data, callback) {
