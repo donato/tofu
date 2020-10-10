@@ -1,9 +1,8 @@
 define([
   'assets/img/sabtargets.gif',
   'utils/gui',
-  'utils/koc_utils'
 ],
-  function (GUI, Koc) {
+  function (sabTargetsImg, GUI) {
   
     function getSabTargets() {
       getLux('&a=getsabtargets',

@@ -21,9 +21,8 @@ define([
 
   // TODO(): This has not been reviewed, merely ported from luxbot.
   function getSabInfo(kocid) {
-
-    $(".personnel").before("<table id='lux_sabbable' class='table_lines' width='100%' cellpadding='6' cellSpacing='0'><th colspan='3'>LuXBot Info - Sabbable<span style='float:right;'><a href='http://www.kingsofchaos.com/intelfile.php?asset_id=" + kocid + "'>(Logs)</a></span></th></table>");
-
+    $("td.content form[name=spy]").after(
+      "<table id='lux_sabbable' class='table_lines' width='100%' cellpadding='6' cellSpacing='0'><th colspan='3'>LuXBot Info - Sabbable<span style='float:right;'><a href='http://www.kingsofchaos.com/intelfile.php?asset_id=" + kocid + "'>(Logs)</a></span></th></table>");
     getLux('&a=getsab2&userid=' + kocid,
       function (responseDetails) {
         if (responseDetails.responseText == '403') {
@@ -78,7 +77,11 @@ define([
 
   return {
     run: function () {
-      const kocid = Koc.Page.getCurrentPageId();
+      let kocid = Koc.Page.getCurrentPageId();
+      if (!kocid) {
+        // sometimes the url loses the kocid
+        kocid = Koc.parseKocIdFromLink($('td.content form a').first());
+      }
       addBumpButton();
       getSabInfo(kocid);
       isPlayerMaxed(kocid);
