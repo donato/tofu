@@ -2,8 +2,7 @@ define([
   'utils/buttons',
   'utils/koc_utils',
   'jquery',
-  'underscore'
-], function (Buttons, KoC, $, _) {
+], function (Buttons, KoC, $) {
 
   var getRowValues = KoC.getRowValues;
   var db = KoC.db;
@@ -51,7 +50,7 @@ define([
       $stable.after("<table width='100%' cellspacing='0' cellpadding='6' border='0' id='holding' class='table_lines'><tbody><tr><th colspan=3>Troops/Weapons</th></tr><tr><th class='subh'>Troops</th><th  class='subh'>Weapons</th><th align='right' class='subh'>Unhelds</th></tr></tbody></table>");
 
       var weapons = db.getObject('weaponsDict', {});
-      var weaponQuantity = _.reduce(weapons, function (memo, obj) {
+      var weaponQuantity = weapons.reduce(function (memo, obj) {
         memo[obj.type] += obj.quantity;
         return memo;
       }, { sa: 0, da: 0, spy: 0, sentry: 0 });

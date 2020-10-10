@@ -1,8 +1,7 @@
 define([
   'utils/koc_utils',
   'jquery',
-  'underscore'
-], function (Koc, $, _) {
+], function (Koc, $) {
 
   // requires and returns all modules that match a directory
   function requireAll(requireContext) {
@@ -19,7 +18,7 @@ define([
   function initSettings() {
     var pluginSettings = Koc.db.getObject('pluginSettings', {});
 
-    _.each(allPlugins, function (plugin) {
+    allPlugins.forEach(function (plugin) {
       var p = plugin.name;
       if (pluginSettings[p]) {
         pluginSettings[p].isEnabled = pluginSettings[p].isEnabled;
@@ -43,11 +42,11 @@ define([
     
     run(page) {
       const $uiSlots = insertTableSlots();
-      _.each(allPlugins, (plugin) => {
+      allPlugins.forEach((plugin) => {
         if (this.settings[plugin.name].isEnabled === false) {
           return;
         }
-        if (!plugin.enabledPages || _.includes(plugin.enabledPages, page)) {
+        if (!plugin.enabledPages || plugin.enabledPages.includes(page)) {
           plugin.run(page, $uiSlots)
         }
       });
@@ -60,7 +59,7 @@ define([
     }
 
     getPlugins() {
-      var plugins = _.map(allPlugins, (p) => {
+      var plugins = allPlugins.map((p) => {
         p.isEnabled = this.settings[p.name].isEnabled;
         return p;
       });

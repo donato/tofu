@@ -31,7 +31,6 @@
     "handlebars-loader": "^1.7.1",
     "jquery": "^3.5.1",
     "js-beautify": "~1.4.2",
-    "lodash": "^4.17.20",
     "md5": "^2.3.0",
     "mime": "^1.6.0",
     "raw-loader": "^0.5.1",

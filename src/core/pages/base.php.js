@@ -3,8 +3,7 @@ define([
   'utils/upgrades.json',
   'plugins/luxbot-logging',
   'jquery',
-  'underscore'
-], function (Koc, Upgrades, Log, $, _) {
+], function (Koc, Upgrades, Log, $) {
   const db = Koc.db;
 
   return {

@@ -1,4 +1,4 @@
-define(['jquery', 'underscore'], function($,_) {
+define(['jquery'], function($) {
 return {
 
    showUserOptions: function() {
@@ -53,7 +53,7 @@ return {
  
   , saveUserOptions: function() {
 
-    _.each(Constants.options, function (option) {
+    Constants.options.forEach(function(option) {
       db.put("option_"+option, $("input[name='option_"+option+"']:checked").val());
     });
     

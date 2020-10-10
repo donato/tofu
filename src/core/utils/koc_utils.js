@@ -2,8 +2,7 @@ define([
   './constants',
   './gm_wrappers',
   'jquery',
-  'underscore'
-], function (Constants, Grease, $, _) {
+], function (Constants, Grease, $) {
 
   var db = {
     // This allows it to store info for different koc ids on same pc
@@ -208,16 +207,16 @@ define([
 
 
   function getWeaponType(weaponName) {
-    if (_.includes(Constants.saWeaps, weaponName)) {
+    if (Constants.saWeaps.includes(weaponName)) {
       return 'sa';
     }
-    if (_.includes(Constants.daWeaps, weaponName)) {
+    if (Constants.daWeaps.includes(weaponName)) {
       return 'da';
     }
-    if (_.includes(Constants.spyWeaps, weaponName)) {
+    if (Constants.spyWeaps.includes(weaponName)) {
       return 'spy';
     }
-    if (_.includes(Constants.sentryWeaps, weaponName)) {
+    if (Constants.sentryWeaps.includes(weaponName)) {
       return 'sentry';
     }
   }
@@ -255,16 +254,16 @@ define([
   }
 
   function getFort(i) {
-    if (_.isNumber(i)) {
+    if (Koc.isNumber(i)) {
       return i;
     }
-    return _.indexOf(Constants.fortifications, i || db.get('fort'));
+    return Constants.fortifications.indexOf(i || db.get('fort'));
   }
   function getSiege(i) {
-    if (_.isNumber(i)) {
+    if (Koc.isNumber(i)) {
       return i;
     }
-    return _.indexOf(Constants.sieges, i || db.get('siege'));
+    return Constants.sieges.indexOf(i || db.get('siege'));
   }
 
   /**
@@ -395,9 +394,34 @@ define([
   window.textBetween = textBetween;
   window.addCommas = addCommas;
 
+  function isString(thing) {
+    return typeof thing == 'string';
+  }
+
+  function isNumber(thing) {
+    return typeof thing == 'number';
+  }
+
+  function compact(arr) {
+    return arr.filter((el) => {
+      return el != null;
+    });
+  }
+
+  function union(left, right) {
+    return [...left, ...right];
+  }
+
+  function extend(obj1, obj2) {
+
+  }
   return {
     db,
     Page,
+    isString,
+    isNumber,
+    compact,
+    union,
     formatPercentChange,
     parseKocIdFromLink,
     parseLogIdFromLink,

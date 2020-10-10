@@ -3,8 +3,7 @@ define([
     'utils/constants',
     'utils/koc_utils',
     'jquery',
-    'underscore'
-], function(Logging, Constants, Koc, $, _) {
+], function(Logging, Constants, Koc, $) {
 
   return {
     run: function() {
@@ -89,6 +88,6 @@ define([
         return Koc.parseKocIdFromLink($(element));
       });
 
-      return _.compact(offieRows).join(';');            
+      return Koc.compact(offieRows).join(';');            
     },
 }});

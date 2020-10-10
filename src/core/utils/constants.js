@@ -50,7 +50,7 @@ define([], function () {
 
         storedNumbers: ['kocid', 'tff', 'income', 'sa', 'da', 'spy', 'sentry'],
 
-        saWeaps: _.keys(ALL_WEAPONS),
+        saWeaps: Object.keys(ALL_WEAPONS),
         
         spyWeaps: ['Rope', 'Dirk', 'Cloak', 'Grappling Hook', 'Skeleton Key', 'Nunchaku'],
 

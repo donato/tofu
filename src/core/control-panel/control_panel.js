@@ -6,8 +6,7 @@ define([
   'utils/constants',
   'utils/gui',
   'jquery',
-  'underscore'
-], function (Init, linksHtml, NavbarTemplate, SettingsTemplate, Constants, GUI, $, _) {
+], function (Init, linksHtml, NavbarTemplate, SettingsTemplate, Constants, GUI, $) {
 
   const tabs = [
     { id: "showSettings", name: "Toggle Features" },
@@ -92,7 +91,7 @@ define([
 
     showMessageDetails(event) {
       var name = event.target.name;
-      if (_.isString(name)) {
+      if (Koc.isString(name)) {
 
         getLux('&a=getmessage&id=' + name,
           function (r) {

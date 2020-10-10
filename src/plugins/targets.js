@@ -31,9 +31,6 @@ define([
       },
 
       showFarmList: function () {
-        var farmOptions = _.map(this.formInputs, function (def, key) {
-          return db.get(key, def);
-        });
         var maxDa = db.get("maxDa", 1000);
         var minTff = db.get("minTff", 10);
         var minGold = db.get("minGold", 0);
@@ -125,11 +122,12 @@ define([
             for (i = 0; i < x.length - 1; i++) {
               row = x[i].split(':');
               html += '<tr class="targetTR">' +
-                '<td><a href="/stats.php?id=' + row[1] + '">' + row[0] + '</a></td><td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td>' +
-                '<td align="center">' + row[2] + '</td>'
+                '<td><a href="/stats.php?id=' + row[2] + '">' + row[1] + '</a></td>'
+                + ' <td align="right">' + (row[3]) + '</td><td>(' + row[4] + ')</td>'
+                + '<td align="center">' + row[7] + '</td>'
                 + '<td align="right">'
-                + '<span class="gold">' + row[5] + '</span>'
-                + '<span class="projection" style="display:none;">Projected: ' + row[7] + '</span>' +
+                + '<span class="gold">' + row[8] + '</span>'
+                + '<span class="projection" style="display:none;">Projected: ' + row[8] + '</span>' +
                 '</td>' +
                 '<td align="left">(' + row[6] + ')</td>' +
                 // '<td align="right"><input type="button" value="Attack" style="cursor:pointer" name="_luxbot_targets_t" id="__' + row[1] + '"></td>'+

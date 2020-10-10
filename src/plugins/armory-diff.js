@@ -33,8 +33,10 @@ define([
         o[stat + 'Percentage'] = (100 * diff / User[stat]).toFixed(2);
         return o;
       }
-
-      var statsDiffObj = _.extend.apply(null, _.map(['sa', 'da', 'spy', 'sentry'], helper));
+      const statsDiffObj = {};
+      ['sa', 'da', 'spy', 'sentry'].forEach(value => {
+        statsDiffObj[value] = helper(value);
+      });
       var html = ArmoryDiffTemplate(statsDiffObj);
       $insertLocation.append(html);
     },

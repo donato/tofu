@@ -1,3 +1,3 @@
-define(['underscore'], function(_) {
-        // This is currently part of kocutils
+define([], function() {
+  // This is currently part of kocutils
 });

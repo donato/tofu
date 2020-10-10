@@ -1,8 +1,7 @@
 define([
   'utils/koc_utils',
   'jquery',
-  'underscore'
-], function (Koc, $, _) {
+], function (Koc, $) {
 
   function isPlayerMaxed(kocid) {
     if (document.body.innerHTML.indexOf('Your opponent has already suffered heavy losses today') !== -1) {

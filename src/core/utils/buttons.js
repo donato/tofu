@@ -1,7 +1,6 @@
 define([
     'jquery',
-    'underscore'
-], function($, _) {
+], function($) {
 
   return {
     gold : 0,

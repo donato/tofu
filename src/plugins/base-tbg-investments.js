@@ -27,7 +27,7 @@ define([
       var costs = [450000, 200000, 1000000, 1000000];
       var strengths = [600, 256, 1000, 1000]
       var rows = "";
-      _.each(['sa', 'da', 'spy', 'sentry'], function (stat, i) {
+      ['sa', 'da', 'spy', 'sentry'].forEach(function (stat, i) {
         var multiplier = Koc.upgradeBonus(stat) * Koc.raceBonus(stat) * tech * offieBonus;
 
         if (stat == 'sa' || stat == 'da') { multiplier *= 5; }

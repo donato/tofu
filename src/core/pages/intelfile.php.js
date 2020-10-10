@@ -1,4 +1,4 @@
-define(['jquery', 'underscore'], function ($, _) {
+define([], function () {
   return {
     // TODO(): Log timestamps for given logids
     run: function () { }

@@ -1,13 +1,12 @@
 define([
     'jquery',
-    'underscore',
     'md5',
     'utils/koc_utils',
     'utils/constants',
     'utils/gm_wrappers',
     'utils/gui',
     'handlebars-loader!templates/welcome.html'
-], function($, _, md5, KoC, Constants, Grease, GUI, WelcomeTemplate) {
+], function($, md5, KoC, Constants, Grease, GUI, WelcomeTemplate) {
     var Page = KoC.Page;
     var db = KoC.db;
 
@@ -26,11 +25,11 @@ define([
 
             var userObject = {};
 
-            _.map(Constants.storedStrings, function(val) {
+            Constants.storedStrings.map(function(val) {
                 userObject[val] = db.get(val, '');
             });
 
-            _.map(Constants.storedNumbers, function (val) {
+            Constants.storedNumbers.map(function (val) {
                 userObject[val] = db.get(val, 0);
             });
 
@@ -152,14 +151,14 @@ define([
                 Grease.getLux('&a=dokken_login&kocid=' + db.get('kocid')+'&username=' + db.get('forumName','')+"&password="+db.get('forumPass'),
                     function(r) {
                         var ret = r.responseText;
-                        if (ret.length === 0 || ret.indexOf("Error") === -1) {
+                        if (ret && (ret.length === 0 || ret.indexOf('Error') === -1)) {
                             //success
                             db.put('auth', ret);
 
-                            alert("Success");
+                            alert('Success');
                             GUI.hide();
                         } else {
-                            GUI.displayText("There was an error, try refreshing your command center.");
+                            GUI.displayText('There was an error, try refreshing your command center.');
                         }
                     }
                 );

@@ -1,5 +1,4 @@
-define(['jquery', 'underscore'], function($,_) {
-
+define(['jquery'], function($) {
     
   function collapseTable(table) {
     var $table = $(table)
@@ -43,6 +42,6 @@ define(['jquery', 'underscore'], function($,_) {
         });
         
         var coltables = db.get('coltables_' + action, '').split(',');
-        _.map(coltables, function (i) { collapseTable($tables.eq(i)); });
+        coltables.map(function (i) { collapseTable($tables.eq(i)); });
     }
 });

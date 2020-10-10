@@ -2,8 +2,7 @@ define([
   'plugins/luxbot-logging',
   'utils/koc_utils',
   'jquery',
-  'underscore'
-], function(Logging, Koc, $, _) {
+], function(Logging, Koc, $) {
   // Both tables get reset any time either table is paged between.
   const loggedIds = new Set();
 

@@ -22,8 +22,8 @@ define([
       var currentWeapons = db.getObject('weapons', {});
       var previousWeapons = db.getObject('previousWeapons', {});
       var timeDifference = Date.now() - db.getTime('armoryWeaponsLastUpdate');
-      var allKeys = _.union(_.keys(currentWeapons), _.keys(previousWeapons));
-      var differences = _.reduce(allKeys, function (memo, weapon) {
+      var allKeys = Koc.union(Object.keys(currentWeapons), Object.keys(previousWeapons));
+      var differences = allKeys.reduce(function (memo, weapon) {
         var oldCount = previousWeapons[weapon] && previousWeapons[weapon].quantity || 0;
         var newCount = currentWeapons[weapon] && currentWeapons[weapon].quantity || 0;
         if (oldCount != newCount)

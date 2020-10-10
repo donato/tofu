@@ -1,4 +1,3 @@
-var _ = require('lodash');
 var path = require('path')
 var webpack = require('webpack')
 
@@ -19,18 +18,11 @@ module.exports = function (grunt) {
     grunt.file.write(paths.dest, header + bin);
   }
 
-  function copyFile() {
-    if (user_config.output_file !== '') {
-      grunt.file.copy(paths.dest, user_config.output_file);
-    }
-  }
-
   // webpack plugins are objects with an apply method
   var afterWebpackBuild = {
     apply: function (compiler) {
       compiler.plugin('done', function () {
         prependFile();
-        copyFile();
       })
     }
   };
@@ -62,7 +54,6 @@ module.exports = function (grunt) {
             libs: path.resolve(__dirname, 'src/assets/libs'),
             templates: path.resolve(__dirname, 'src/templates'),
             plugins: path.resolve(__dirname, 'src/plugins_disabled'),
-            underscore: 'lodash'
           },
           modules: [
             'node_modules',
@@ -83,6 +74,7 @@ module.exports = function (grunt) {
           path: path.resolve(__dirname, 'bin'),
           filename: '[name].user.js'
         },
+        devtool: "source-map",
         module: {
           rules: [
             {
@@ -93,7 +85,7 @@ module.exports = function (grunt) {
             },
           ],
         },
-        mode: "development",
+        mode: "production",
       },
       watch: {
         entry: {
@@ -128,16 +120,13 @@ module.exports = function (grunt) {
     }
   });
 
-
   grunt.loadNpmTasks('grunt-webpack');
   grunt.loadNpmTasks('grunt-contrib-copy');
-
   grunt.loadNpmTasks('grunt-contrib-requirejs');
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.registerTask('gm-header', prependFile);
-  grunt.registerTask('update-local', copyFile);
-
+  // grunt.registerTask('release', ['webpack:devel']);
   grunt.registerTask('release', ['webpack:devel', 'gm-header']);
-  grunt.registerTask('default', ['copy', 'webpack', 'gm-header', 'update-local']);
+  grunt.registerTask('default', ['copy', 'webpack:watch' ]);
 };

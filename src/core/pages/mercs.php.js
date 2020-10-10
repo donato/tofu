@@ -1,9 +1,7 @@
 define([
   'utils/buttons',
   'utils/koc_utils',
-  'jquery',
-  'underscore'
-], function (Buttons, Koc, $, _) {
+], function (Buttons, Koc) {
   return {
     run: function () {
       var buttonsConstraint = function (val, $row) {

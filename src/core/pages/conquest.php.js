@@ -1,4 +1,4 @@
-define(['jquery', 'underscore'], function ($, _) {
+define(['jquery'], function ($) {
   return {
     run: function () {
       function doConquest() {

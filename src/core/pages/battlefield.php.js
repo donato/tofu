@@ -4,8 +4,7 @@ define([
   'utils/constants',
   'utils/gm_wrappers',
   'jquery',
-  'underscore'
-], function (luxUpdateImage, Koc, Constants, Grease, $, _) {
+], function (luxUpdateImage, Koc, Constants, Grease, $) {
 
   const kocidToRowMap = {};
   // We don't need a set, because only one user can be open at a time
@@ -22,7 +21,7 @@ define([
       var logInfo = this.parseBattlefieldPlayers($playerRows);
       this.handleTreasury(logInfo);
 
-      var kocids = _.keys(logInfo);
+      var kocids = Object.keys(logInfo);
       this.needsRecon(kocids);
 
       // This needs to be done every time because the links are reset
@@ -59,7 +58,7 @@ define([
 
     handleTreasury: function(logInfo) {
       function showGold(json) {
-        _.each(json, function (obj, id) {
+        json.forEach(function (obj, id) {
           var rowTd = kocidToRowMap[id].find('td').eq(5);
           rowTd.text(addCommas(obj['gold']) + ' Gold, ' + obj['update']);
           rowTd.css('color', '#aaaaaa');

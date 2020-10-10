@@ -2,8 +2,7 @@ define([
   'plugins/luxbot-logging',
   'utils/koc_utils',
   'jquery',
-  'underscore'
-], function (Logging, Koc, $, _) {
+], function (Logging, Koc, $) {
   const map = {};
 
   function findValue(key) {
@@ -88,7 +87,7 @@ define([
 
       const stable = $("table:contains('Weapons')").last();
       var weap_rows = $(stable).find("tbody>tr>td").parent();
-      var weap_array = _.map(weap_rows, function (row) {
+      var weap_array = weap_rows.map(function (row) {
         let $row = $(row);
         var r = $row.text().split("\n");
         var g = $.trim(r[1]) + ":" + $.trim(r[2]) + ":" + $.trim(r[3]) + ":" + $.trim(r[4]);
