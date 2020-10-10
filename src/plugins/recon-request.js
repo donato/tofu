@@ -1,12 +1,13 @@
 define([
   'utils/gui',
-  'utils/koc_utils'
+  'utils/koc_utils',
+  'utils/gm_wrappers',
+  'handlebars-loader!templates/stats-recon-request.html',
 ],
-  function (GUI, Koc) {
+  function (GUI, Koc, Grease, ButtonsTemplate) {
 
     var db = Koc.db;
 
-    var requestHtml = '<tr><td align=center colspan=2><input style="width:100%;" type="button" name="_luxbot_requestRecon" id="_luxbot_requestRecon" value="Request Recon on User"></td><td align=center colspan=2><input style="width:100%;"  type="button" name="_luxbot_viewHistory" id="_luxbot_viewHistory" value="View Player History"></td></tr>';
     return {
       name: "Recon Requests",
       description: "Recon request system",
@@ -17,13 +18,16 @@ define([
         this.initReconRequest();
 
         if (page === "stats") {
-          this.addButtons($uiSlots.eq(4));
+          const opponent = document.getElementsByName('defender_id');
+          const kocid = opponent[0].value;
+          this.addButtons(kocid, $uiSlots.eq(4));
         }
       },
 
-      addButtons($insertLocation) {
-        var $requestButtons = $(requestHtml);
-        $requestButtons.find('#_luxbot_requestRecon').click(this.makeReconRequest)
+      addButtons(kocid, $insertLocation) {
+        var $requestButtons = $(ButtonsTemplate());
+        $requestButtons.find('#_luxbot_requestRecon').click(
+          () => this.makeReconRequest(kocid));
         $insertLocation.append($requestButtons);
       },
 
@@ -38,9 +42,7 @@ define([
         this.toggleReconRequestPopup(db.get('reconRequest') !== 0);
       },
 
-      makeReconRequest: function () {
-        var getopponent = document.getElementsByName('defender_id');
-        var data = getopponent[0].value;
+      makeReconRequest: function (kocid) {
         document.getElementById("_luxbot_requestRecon").disabled = true;
         document.getElementById("_luxbot_requestRecon").style.color = "gray";
         postLux('&a=reconrequest', 'kocid=' + data, function (r, debug) {
