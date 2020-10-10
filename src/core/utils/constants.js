@@ -59,43 +59,5 @@ define([], function () {
         daWeaps: ['Helmet', 'Shield', 'Chainmail', 'Plate Armor', 'Mithril', 'Elven Cloak', 'Gauntlets', 'Heavy Shield', 'Dragonskin', 'Invisibility Shield'],
 
         options: ['logself', 'scrollbattlelog', 'turnclock', 'commandCenterStats', 'targets', 'fakesabtargets', 'goldprojection', 'armorygraph', 'armorydiff'],
-
-        fortifications: [
-            'Camp',
-            'Stockade',
-            'Rabid',
-            'Walled Town',
-            'Towers',
-            'Battlements',
-            'Portcullis',
-            'Boiling Oil',
-            'Trenches',
-            'Moat',
-            'Drawbridge',
-            'Fortress',
-            'Stronghold',
-            'Palace',
-            'Keep',
-            'Citadel',
-            'Hand of God'
-        ],
-
-        sieges: [
-            'None',
-            'Flaming Arrows',
-            'Ballistas',
-            'Battering Rams',
-            'Ladders',
-            'Trojan',
-            'Catapults',
-            'War Elephants',
-            'Siege Towers',
-            'Trebuchets',
-            'Black Powder',
-            'Sappers',
-            'Dynamite',
-            'Greek Fire',
-            'Cannons'
-        ]
     }
 });

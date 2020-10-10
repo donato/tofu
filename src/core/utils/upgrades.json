@@ -135,6 +135,22 @@
       "cost_unit": "Gold",
       "multiplier": 48.77,
       "category": "fortification"
+    },
+    {
+      "level": 17,
+      "name": "Gate of Hell",
+      "cost": 3276800000,
+      "cost_unit": "Gold",
+      "multiplier": 62.18,
+      "category": "fortification"
+    },
+    {
+      "level": 18,
+      "name": "Titans Shield",
+      "cost": 6553600000,
+      "cost_unit": "Gold",
+      "multiplier": 79.28,
+      "category": "fortification"
     }
   ],
   "siege": [
@@ -248,6 +264,30 @@
       "cost": 409600000,
       "cost_unit": "Gold",
       "multiplier": 39.37,
+      "category": "siege"
+    },
+    {
+      "level": 15,
+      "name": "Great Horn",
+      "cost": 819200000,
+      "cost_unit": "Gold",
+      "multiplier": 51.19,
+      "category": "siege"
+    },
+    {
+      "level": 16,
+      "name": "Fists of Thor",
+      "cost": 1638400000,
+      "cost_unit": "Gold",
+      "multiplier": 66.54,
+      "category": "siege"
+    },
+    {
+      "level": 17,
+      "name": "Ringwraiths",
+      "cost": 3276800000,
+      "cost_unit": "Gold",
+      "multiplier": 86.50,
       "category": "siege"
     }
   ],

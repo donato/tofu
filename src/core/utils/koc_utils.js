@@ -1,8 +1,9 @@
 define([
   './constants',
+  'utils/upgrades.json',
   './gm_wrappers',
   'jquery',
-], function (Constants, Grease, $) {
+], function (Constants, Upgrades, Grease, $) {
 
   var db = {
     // This allows it to store info for different koc ids on same pc
@@ -222,8 +223,6 @@ define([
   }
 
   function covertBonus(level) {
-    level = level || db.getInt('covertlevel', 0);
-
     return Math.pow(1.6, level);
   }
 
@@ -253,17 +252,21 @@ define([
     return 1;
   }
 
+  /** Return the level of the upgrade */
   function getFort(i) {
-    if (Koc.isNumber(i)) {
+    if (isNumber(i)) {
       return i;
     }
-    return Constants.fortifications.indexOf(i || db.get('fort'));
+    const name = i || db.get('fort');
+    return Upgrades.fortification.findIndex((o) => o.name == name);
   }
+  /** Return the level of the upgrade */
   function getSiege(i) {
-    if (Koc.isNumber(i)) {
+    if (isNumber(i)) {
       return i;
     }
-    return Constants.sieges.indexOf(i || db.get('siege'));
+    const name = i || db.get('siege');
+    return Upgrades.siege.findIndex((o) => o.name == name);
   }
 
   /**
@@ -282,21 +285,16 @@ define([
     return cb;
   }
 
-  function covertBonus(level) {
-    level = level || db.getInt('covertlevel', 0);
-
-    return Math.pow(1.6, level);
-  };
-
   function upgradeBonus(type, option) {
     switch (type) {
       case 'sa':
-        return siegeBonus(option);
+        return siegeBonus(option || db.get('siege'));
       case 'da':
-        return fortBonus(option);
+        return fortBonus(option || db.get('fort'));
       case 'spy':
+        return covertBonus(option || db.get('covertlevel'));
       case 'sentry':
-        return covertBonus(option);
+        return covertBonus(option || db.get('sentrylevel'));
     }
     return 1;
   }
