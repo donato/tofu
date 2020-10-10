@@ -70,8 +70,10 @@ define([
     
     addViewHistoryButton: function($infoTable, name) {
       var $nameTd = $infoTable.find('tr:contains("Name:")').first().find("td").last();
-      const url = Constants.statsUrl+'/history.php?playerSearch='+ name;
-      $nameTd.append('<a href="'+ url +'" target="_blank" class="tofu viewHistory">View history</a>');
+      const detailsUrl = Constants.statsUrl+'/intel.php?playerSearch='+ name;
+      const historyUrl = Constants.statsUrl+'/history.php?playerSearch='+ name;
+      $nameTd.append('<a href="'+ detailsUrl +'" target="_blank" class="tofu viewHistory">(Recon)</a>');
+      $nameTd.append('<a href="'+ historyUrl +'" target="_blank" class="tofu viewHistory">(History)</a>');
     },
 
     listenForOfficerNavigation: function(logInfo) {
