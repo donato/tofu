@@ -19,25 +19,15 @@ define([
     },
 
     armoryDiff: function ($insertLocation) {
-      var obj = {
-        sa: db.get('sa'),
-        da: db.get('da'),
-        spy: db.get('spy'),
-        sentry: db.get('sentry')
-      };
-
-      function helper(stat) {
-        var o = {};
-        var diff = obj[stat] - User[stat];
+      const previousStats = db.get('previousStats', {});
+      db.put('previousStats', User);
+      const o = {};
+      ['sa', 'da', 'spy', 'sentry'].forEach(stat => {
+        var diff = db.get(stat) - previousStats[stat];
         o[stat] = diff;
-        o[stat + 'Percentage'] = (100 * diff / User[stat]).toFixed(2);
-        return o;
-      }
-      const statsDiffObj = {};
-      ['sa', 'da', 'spy', 'sentry'].forEach(value => {
-        statsDiffObj[value] = helper(value);
+        o[stat + 'Percentage'] = (100 * diff / db.get(stat)).toFixed(2);
       });
-      var html = ArmoryDiffTemplate(statsDiffObj);
+      var html = ArmoryDiffTemplate(o);
       $insertLocation.append(html);
     },
   }

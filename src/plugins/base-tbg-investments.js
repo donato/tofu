@@ -14,7 +14,7 @@ define([
     enabledPages: ['base'],
 
     run: function (page, $uiSlots) {
-      this.tbgStats($uiSlots.eq(4));
+      this.tbgStats($uiSlots.eq(5));
     },
 
     tbgStats: function (slot) {
@@ -24,14 +24,11 @@ define([
       var offieBonus = parseFloat(db.getFloat('bonus'));
 
       var Label = ["Strike Action", "Defensive Action", "Spy", "Sentry"];
-      var costs = [450000, 200000, 1000000, 1000000];
-      var strengths = [600, 256, 1000, 1000]
+      var costs = [450000, 450000, 1000000, 1000000];
+      var strengths = [600, 600, 1000, 1000]
       var rows = "";
       ['sa', 'da', 'spy', 'sentry'].forEach(function (stat, i) {
         var multiplier = Koc.upgradeBonus(stat) * Koc.raceBonus(stat) * tech * offieBonus;
-
-        if (stat == 'sa' || stat == 'da') { multiplier *= 5; }
-
         var hourlyValue = (income * 60 / costs[i]) * strengths[i] * multiplier;
 
         var currentStat = db.getInt(stat);

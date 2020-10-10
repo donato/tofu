@@ -14,7 +14,7 @@ define([
     enabledPages: ['base'],
 
     run: function(page, $uiSlots) {
-      this.banner($uiSlots.eq(2));
+      this.banner($uiSlots.eq(5));
     },
 
     banner: function($slot) {
