@@ -1,7 +1,9 @@
 <div id="tofu_popup_navbar">
-  <ul>
-    {{#each navLinks}}
-    <li><a href='javascript:void(0);' action='{{this.id}}'>{{this.name}}</a></li>
-    {{/each}}
-  </ul>
+  {{#each navLinks}}
+    <button
+      style="float:left;margin:10px;padding:10px;"
+      action='{{this.id}}'>
+      {{this.name}}
+    </button>
+  {{/each}}
 </div>

@@ -15,7 +15,19 @@ define([
       Grease.gmSetValue("lux_last_user", kocid);
       this.id = kocid;
     },
+
+    logout: function() {
+      Constants.storedStrings.forEach((val) => {
+          this.del(val);
+      });
+      // cannot use this.del() because it would prepend the kocid
+      Grease.gmDeleteValue("lux_last_user");
+    },
+
     get: function (option, def) {
+      if (this.id == undefined) {
+        throw 'Luxbot developer warning: db not initialized';
+      }
       option += "_" + this.id;
       var value = Grease.gmGetValue(option, def);
       if (option.indexOf('gold_') > 0) value = parseInt(value, 10);
@@ -123,7 +135,11 @@ define([
     if (timespan > 3600) return Math.floor(timespan / 3600) + 'h';
     if (timespan > 60) return Math.floor(timespan / 60) + 'm';
     if (timespan > 1) return timespan + 's';
-    return '';
+    return Math.floor(ms) + 'ms';
+  }
+
+  function simplifyTime(ms) {
+    return timeConfidenceFormatter(ms);
   }
 
   function millisecondsToEnglish(ms) {
@@ -157,7 +173,6 @@ define([
 
   function getTableByHeading(heading) {
     var $table = $("table.table_lines > tbody > tr > th:contains('" + heading + "')");
-
     return $table.last().parents().eq(2);
   }
 
@@ -356,8 +371,9 @@ define([
   }
 
   function to_int(str) {
-    str = str.replace(/[^0-9\.\-]/g, '');
-    if (str === '') {
+    str = str || '';
+    str = str.replace(/[^0-9\.\-]/g,'');
+    if (str == '') {
       return -1;
     }
     return parseInt(str, 10);
@@ -420,6 +436,7 @@ define([
     isNumber,
     compact,
     union,
+    simplifyTime,
     formatPercentChange,
     parseKocIdFromLink,
     parseLogIdFromLink,

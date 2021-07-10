@@ -40,7 +40,7 @@ define([
       // Example race: "Humans | Let's hunt some Orcs!"
       var race = dict['Race:'].split(' | ')[0];
       // Example highestRank: "600 / 2 hours ago"
-      var highestRank = to_int(dict['Highest Rank:'].split(' / ')[0]);
+      var highestRank = 0; //to_int(dict['Highest Rank:'].split(' / ')[0]);
       var previousAgeRank = dict['Previous Age Rank'];
       var tff = to_int(dict['Army Size:']);
       var morale = to_int(dict['Army Morale:']);

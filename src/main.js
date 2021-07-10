@@ -43,7 +43,12 @@ define([
   log('init page action');
   if (Pages[action]) {
     log('Page action found for ' + action);
-    Pages[action].run(action);
+    try {
+      Pages[action].run(action);
+    } catch (e) {
+      GUI.displayText("bon changed page formatting, and page is erroring on proccessing");
+      console.warn(e);
+    }
   }
   log('end page action');
 

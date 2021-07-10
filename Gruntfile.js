@@ -54,6 +54,7 @@ module.exports = function (grunt) {
             libs: path.resolve(__dirname, 'src/assets/libs'),
             templates: path.resolve(__dirname, 'src/templates'),
             plugins: path.resolve(__dirname, 'src/plugins_disabled'),
+            'jquery': 'jquery-slim',
           },
           modules: [
             'node_modules',
@@ -126,7 +127,7 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-contrib-jshint');
 
   grunt.registerTask('gm-header', prependFile);
-  // grunt.registerTask('release', ['webpack:devel']);
-  grunt.registerTask('release', ['webpack:devel', 'gm-header']);
+  grunt.registerTask('release', ['webpack:devel']);
+  // grunt.registerTask('release', ['webpack:devel', 'gm-header']);
   grunt.registerTask('default', ['copy', 'webpack:watch' ]);
 };

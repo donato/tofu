@@ -119,8 +119,8 @@ define([
         showInitBox: function () {
             
             if (KoC.Page.getCurrentPage() !== "base") {
-                $("body").first().prepend('<p style="position:absolute">Visit Command Center to login</p>')
-                return;
+              GUI.displayHtml("Visit Command Center to login <button onclick=\"window.location.href='base.php'\">Go to base</button>");
+              return;
             }
 
             function initLogin() {

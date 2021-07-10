@@ -14,11 +14,11 @@ define([
 
     logBaseStats: function () {
       var $militaryTable = Koc.getTableByHeading('Military Effectiveness');
-      var stats = Koc.parseTableColumn($militaryTable, 1);
-      var sa = stats[0];
-      var da = stats[1];
-      var spy = stats[2];
-      var sentry = stats[3];
+      var stats = Koc.parseTableColumnToDict($militaryTable, 0, 1);
+      var sa = stats['Strike'];
+      var da = stats['Defense'];
+      var spy = stats['Spy'];
+      var sentry = stats['Sentry'];
 
       var $overviewTable = Koc.getTableByHeading('Military Overview');
       var dict = Koc.parseTableColumnToDict($overviewTable, 0, 1);
@@ -35,6 +35,8 @@ define([
       var income = dict['Projected Income'];
       income = income.substr(0, income.indexOf(" Gold")).int();
       const exp_per_turn = to_int(dict['Experience Per Turn']);
+      const soldiersPerTurn = to_int(dict['Soldier Per Turn']);
+
       var $armyTable = Koc.getTableByHeading('Personnel');
       var armyDict = Koc.parseTableColumnToDict($armyTable, 0, 1);
       var tff = to_int(armyDict['Total Fighting Force']);
@@ -47,6 +49,7 @@ define([
       var spies = to_int(armyDict['Spies']);
       var sentries = to_int(armyDict['Sentries']);
       var tff = to_int(armyDict['Total Fighting Force']);
+      var hostageTotal = to_int(armyDict['Hostages Taken Total This Era']);
 
       // Other stuff
       var turns = Koc.Page.getPlayerTurns();
@@ -82,7 +85,8 @@ define([
       const otherStats = [
         fortName, siegeName, economy, technologyName, conscription.int(), turns.int(), covertlevel.int(), bonus,
         attackMercs.int(), defenseMercs.int(), untrainedMercs.int(), attackers.int(), defenders.int(),
-        untrained.int(), safe_gold.int(), exp_per_turn.int(), sentrylevel.int(), spies.int(), sentries.int(), experience.int()
+        untrained.int(), safe_gold.int(), exp_per_turn.int(), sentrylevel.int(), spies.int(), sentries.int(), 
+        experience.int(), soldiersPerTurn.int(), hostageTotal.int()
       ];
       Log.logBase(weaponStats.join(';'), otherStats.join(';'), officers);
     }

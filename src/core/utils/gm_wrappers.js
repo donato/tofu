@@ -109,7 +109,7 @@ function addStyle(text) {
 
 function makeUrl(url) {
     // TODO : Use constants
-    return 'http://donatoborrello.com/bot/luxbot.php?' + 'username=' + User.kocnick + '&password=' + User.forumPass + '&auth=' + User.auth + url;
+    return 'http://fearlessforce.net/bot/luxbot.php?tofu=1&' + 'username=' + User.kocnick + '&password=' + User.forumPass + '&auth=' + User.auth + url;
 }
 
 const MemoizedFetches = new Map();

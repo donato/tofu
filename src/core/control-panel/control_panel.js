@@ -1,17 +1,19 @@
 define([
   './init',
+  'utils/koc_utils',
   'raw-loader!templates/links.html',
   'handlebars-loader!templates/control-panel-navbar.html',
   'handlebars-loader!templates/control-panel-settings.html',
   'utils/constants',
   'utils/gui',
   'jquery',
-], function (Init, linksHtml, NavbarTemplate, SettingsTemplate, Constants, GUI, $) {
+], function (Init, Koc, linksHtml, NavbarTemplate, SettingsTemplate, Constants, GUI, $) {
 
   const tabs = [
     { id: "showSettings", name: "Toggle Features" },
     { id: "showLinkBox", name: "Show Links"},
-    { id: "checkForUpdates", name: "Check For Updates"}
+    { id: "checkForUpdates", name: "Check For Updates"},
+    { id: "logout", name: "Log Out"},
   ];
   var menu = NavbarTemplate({navLinks: tabs});
 
@@ -39,6 +41,11 @@ define([
     showSettings() {
       var plugins = this.pluginManager.getPlugins();
       this.showPage(SettingsTemplate({plugins}));
+    }
+
+    logout() {
+      Koc.db.logout();
+      GUI.displayHtml("Logged out. <button onclick='window.location.reload()'>Refresh?</button>");
     }
 
     checkForUpdates() {
