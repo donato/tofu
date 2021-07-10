@@ -17,7 +17,7 @@ define([], function () {
     defaultEnabled: true,
 
     run: function () {
-      var offset = 11; // Seconds after minute until turn arrives.
+      var offset = 3; // Seconds after minute until turn arrives.
 
       // Add the display to the DOM
       $('.menu_cell').find('tr:contains(\'Gold:\')').last()
