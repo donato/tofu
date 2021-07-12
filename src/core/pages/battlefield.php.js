@@ -49,7 +49,7 @@ define([
           'race': $cols.eq(4).text().trim(),
           'gold': gold,
           'rank': to_int($cols.eq(7).text()),
-          'alliance': $.trim($cols.eq(1).text()),
+          'alliance': encodeURIComponent($.trim($cols.eq(1).text())),
           'tff': to_int($cols.eq(3).text())
         };
       });
