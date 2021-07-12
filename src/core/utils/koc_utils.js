@@ -83,7 +83,7 @@ define([
     },
 
     getPlayerGold: function () {
-      var gold = textBetween(document.body.innerHTML, 'Gold:<font color="#250202">', '<');
+      var gold = $(".menu_cell").find(":contains('Gold:')").last().text();
 
       if (gold !== '') {
         gold = gold.replace('B', '000000000');
