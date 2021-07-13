@@ -91,8 +91,8 @@ define([], function() {
           '&nick=' + logInfo.name +
           '&kocid=' + kocid +
           '&chain='+ logInfo.chain+
-          '&palliance=' + logInfo.primaryAlliance + 
-          '&alliances=' + logInfo.secondaryAlliances + 
+          '&palliance=' + logInfo.primaryAllianceId +
+          '&alliances=' + logInfo.secondaryAlliances +
           '&data=' + data.join(';') +
           '&officers=' + officers,
         function(responseDetails) {
