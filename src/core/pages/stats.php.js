@@ -5,6 +5,7 @@ define([
     'jquery',
 ], function(Logging, Constants, Koc, $) {
 
+  const TREASURY_UNKNOWN = -1;
   return {
     run: function() {
 
@@ -46,7 +47,7 @@ define([
       var morale = to_int(dict['Army Morale:']);
       var fort = dict['Fortifications:'];
       var chain = dict.hasOwnProperty('Chain Name:') ? to_int(dict['Chain Name:']) : '';     
-      var treasury = dict.hasOwnProperty('Treasury:') ? to_int(dict['Treasury:']) : '';
+      var treasury = dict.hasOwnProperty('Treasury:') ? to_int(dict['Treasury:']) : TREASURY_UNKNOWN;
 
       const commanderRowHtml = $.trim($infoTable.find("tr:contains('Commander:')>td:last").html());
       const commanderId = textBetween(commanderRowHtml,'id=','"');     
