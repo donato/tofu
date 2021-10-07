@@ -22,6 +22,15 @@ define([
       this.listenForOfficerNavigation(logInfo);
       this.addViewHistoryButton($infoTable, logInfo.name);
     },
+
+    findAllianceElement($infoTable) {
+      return $infoTable
+        .find('td').get()
+        .find(td => { 
+          console.log(td);
+          return td.innerHTML.indexOf('Alliance:') != -1;
+        });
+    },
     
     /** Parses the main info, everything except the officers. */
     parsePage: function($infoTable) {
@@ -36,7 +45,9 @@ define([
         name = name.split('[MAXED]')[0];
       }
       var rank = to_int(dict['Rank:']);
-      const primaryAllianceLink = dict['element']['Alliances:'].find('a').first().attr('href');
+
+      const allianceElement = this.findAllianceElement($infoTable);
+      const primaryAllianceLink = $(allianceElement).find('a').first().attr('href');
       var primaryAllianceId = primaryAllianceLink ? primaryAllianceLink.split('id=')[1] : '';
       // Example race: "Humans | Let's hunt some Orcs!"
       var race = dict['Race:'].split(' | ')[0];
