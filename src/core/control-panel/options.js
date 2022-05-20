@@ -1,5 +1,6 @@
-define(['jquery'], function($) {
-return {
+import $ from 'jquery';
+
+export default {
 
    showUserOptions: function() {
    
@@ -59,4 +60,4 @@ return {
     
     GUI.toggleGUI();
   }
-}});
+};

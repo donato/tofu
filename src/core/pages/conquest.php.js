@@ -1,5 +1,3 @@
-define([], function () {
-  return {
-    run: function () {}
-  }
-});
+export default {
+  run: function () {}
+};

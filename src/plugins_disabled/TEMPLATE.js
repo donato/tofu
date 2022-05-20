@@ -1,18 +1,15 @@
-define([
-    'utils/gui',
-    'utils/koc_utils'
-], function(GUI, Koc) {
+import GUI from 'utils/gui';
+import Koc from 'utils/koc_utils';
 
-    var db = Koc.db;
+var db = Koc.db;
 
-    return {
-        description: "",
+export default {
+    description: "",
 
-        defaultEnabled: true,
+    defaultEnabled: true,
 
-        enabledPages: ['armory'],
+    enabledPages: ['armory'],
 
-        run: function() {
-        }
+    run: function() {
     }
-});
+};

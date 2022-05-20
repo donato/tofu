@@ -1,43 +1,43 @@
-define(['jquery'], function ($) {
-    return {
+import $ from 'jquery';
 
-        init: function () {
-            this.$popup = $('<div>', {'id': 'tofu_popup_box'});
-            $('body').append(this.$popup);
+export default {
 
-            var self = this;
-            this.$popup.click(function (event) {
-                if ($(event.target).is("#tofu_popup_box")) {
-                    self.hide();
-                }
-            });
+    init: function () {
+        this.$popup = $('<div>', {'id': 'tofu_popup_box'});
+        $('body').append(this.$popup);
 
-            $(document).keyup(function (e) {
-                if (e.keyCode === 27) {
-                    self.hide();
-                }
-            });
+        var self = this;
+        this.$popup.click(function (event) {
+            if ($(event.target).is("#tofu_popup_box")) {
+                self.hide();
+            }
+        });
 
-        },
-        
-        displayText: function (tx) {
-            this.displayHtml("<div>" + tx + "</div>");
-        },
+        $(document).keyup(function (e) {
+            if (e.keyCode === 27) {
+                self.hide();
+            }
+        });
 
-        displayHtml: function (html) {
-            this.hide();
-            var $div = $('<div>');
-            $div.append(html);
+    },
+    
+    displayText: function (tx) {
+        this.displayHtml("<div>" + tx + "</div>");
+    },
 
-            this.$popup.append($div);
-            this.$popup.show();
-            return $div;
-        }
+    displayHtml: function (html) {
+        this.hide();
+        var $div = $('<div>');
+        $div.append(html);
 
-        , hide: function () {
-            this.$popup.hide();
-            this.$popup.children().remove();
-        }
-
+        this.$popup.append($div);
+        this.$popup.show();
+        return $div;
     }
-});
+
+    , hide: function () {
+        this.$popup.hide();
+        this.$popup.children().remove();
+    }
+
+};

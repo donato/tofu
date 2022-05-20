@@ -1,7 +1,6 @@
-define([
-  'assets/img/online.gif',
-], function (onlineImage) {
-return {
+import onlineImage from 'assets/img/online.gif';
+
+export default {
   description : "Show whether players are online",
  
   defaultEnabled : false,
@@ -47,4 +46,3 @@ return {
         });
   },
 };
-});

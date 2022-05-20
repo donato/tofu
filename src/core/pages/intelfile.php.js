@@ -1,6 +1,4 @@
-define([], function () {
-  return {
-    // TODO(): Log timestamps for given logids
-    run: function () { }
-  }
-});
+export default {
+  // TODO(): Log timestamps for given logids
+  run: function () { }
+};

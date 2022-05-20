@@ -1,42 +1,40 @@
-define([
-    './armory.php',
-    './attack.php',
-    './attacklog.php',
-    './base.php',
-    './conquest.php',
-    './detail.php',
-    './intelfile.php',
-    './mercs.php',
-    './stats.php',
-    './recruit.php',
-    './training.php',
-    './inteldetail.php',
-    './battlefield.php'
-], function(Armory, Attack, AttackLog, Base, Conquest, Detail, IntelFile, Mercs, Stats, Recruit, Training, IntelDetail, Battlefield) {
-    return {
-      // Verified
-      armory: Armory,
-      attacklog: AttackLog,
-      base: Base,
-      battlefield: Battlefield,
-      conquest: Conquest,
-      inteldetail: IntelDetail,
-      intelfile: IntelFile,
-      mercs: Mercs,
-      recruit: Recruit,
-      stats : Stats,
+import Armory from './armory.php';
+import Attack from './attack.php';
+import AttackLog from './attacklog.php';
+import Base from './base.php';
+import Conquest from './conquest.php';
+import Detail from './detail.php';
+import IntelFile from './intelfile.php';
+import Mercs from './mercs.php';
+import Stats from './stats.php';
+import Recruit from './recruit.php';
+import Training from './training.php';
+import IntelDetail from './inteldetail.php';
+import Battlefield from './battlefield.php';
 
-      // Working, not updated
-      attack: Attack,
-      detail: Detail,
+export default {
+  // Verified
+  armory: Armory,
+  attacklog: AttackLog,
+  base: Base,
+  battlefield: Battlefield,
+  conquest: Conquest,
+  inteldetail: IntelDetail,
+  intelfile: IntelFile,
+  mercs: Mercs,
+  recruit: Recruit,
+  stats : Stats,
 
-      // // Not verified
-      // training : Training,
+  // Working, not updated
+  attack: Attack,
+  detail: Detail,
 
-      // // Not implemented
-      // upgrades: Upgrades,
-      // safe: Safe,
-      // statistics: Statistics,
-      // trade: Trade,
-    };
-});
+  // // Not verified
+  // training : Training,
+
+  // // Not implemented
+  // upgrades: Upgrades,
+  // safe: Safe,
+  // statistics: Statistics,
+  // trade: Trade,
+};
