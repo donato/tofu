@@ -15,13 +15,7 @@
   "readmeFilename": "README.md",
   "sideEffects": false,
   "devDependencies": {
-    "almond": "~0.2.6",
-    "array-flatten": "^2.1.2",
-    "async": "^2.6.3",
     "base64-inline-loader": "^1.1.1",
-    "browserify-zlib": "^0.2.0",
-    "debug": "^2.6.9",
-    "fastparse": "^1.1.2",
     "grunt": "^1.2.0",
     "grunt-contrib-copy": "^1.0.0",
     "grunt-contrib-jshint": "^2.1.0",
@@ -31,9 +25,7 @@
     "jquery-slim": "^3.0.0",
     "js-beautify": "~1.4.2",
     "md5": "^2.3.0",
-    "mime": "^1.6.0",
     "raw-loader": "^0.5.1",
-    "util-deprecate": "^1.0.2",
     "webpack": "^4.43.0",
     "webpack-dev-server": "^3.11.0"
   },
