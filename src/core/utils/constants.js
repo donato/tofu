@@ -1,5 +1,5 @@
-const statsUrl = 'http://donatoborrello.com/stats/';
-const baseUrl = 'http://donatoborrello.com/bot/';
+const statsUrl = 'http://fearlessforce.net/stats/';
+const baseUrl = 'http://fearlessforce.net/bot/';
 
 
 const TOFU_VERSION = "0.10";

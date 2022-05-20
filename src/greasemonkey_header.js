@@ -13,6 +13,7 @@
 // @grant       GM_addStyle
 // @grant       GM_getResourceText
 // @grant       GM_getResourceURL
+// @resource    navbar-targets http://fearlessforce.net/bot/img/targets.gif
 // @match       *://raw.github.com/donato/*
 // ==/UserScript==
 

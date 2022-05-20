@@ -30,7 +30,6 @@ function saveCollapsed() {
 
 export default function(action) {
  
-      
       $(document).on('click', "table.table_lines > tbody > tr > th", onTableClick)
 
       var $tables = $("table").each(function(i,e) {

@@ -69,7 +69,7 @@ var db = {
 };
 
 
-Page = {
+const Page = {
   // This gets extended with each page.
   getCurrentPage: function () {
     return document.URL.substring(document.URL.indexOf('.com') + 5, document.URL.indexOf('.php'));

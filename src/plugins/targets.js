@@ -1,4 +1,4 @@
-import targetsImg from 'assets/img/targets.gif';
+// import targetsImg from 'assets/img/targets.gif';
 import GUI from 'utils/gui';
 import Koc from 'utils/koc_utils';
 import SlaylistTemplate from 'handlebars-loader!templates/slaylist.html';
@@ -120,7 +120,7 @@ export default {
         'onclick': 'return false;',
         'class': 'tofu',
         'id': 'sidebar_sabtargets',
-        'src': targetsImg
+        'src': GM_getResourceURL('navbar-targets')
       }));
 
     $button.click(() => t.getTargets());

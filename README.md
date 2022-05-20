@@ -34,5 +34,6 @@ The build script will test your code for some common mistakes, and then build a 
 4. In the dialog select the folder which the manifest.json file is in
 
 ## Dev tips
+  * Enable "Access local files" from chrome extension tools for Tampermonkey
   * To look at network requests: https://github.com/Tampermonkey/tampermonkey/issues/561
   * For instant debugging run ```grunt``` then install ```bin/tofu-dev.user.js``` as your script. Modify file path as needed
