@@ -67,8 +67,10 @@ export default {
     //logInfo: {"4530059":{"name":"x","race":"y","gold":"z","rank":666,"alliance":"","tff":53445}}
     Grease.postLuxJson('&a=battlefield', logInfo,
         function (r) {
-          var json = $.parseJSON(r.responseText);
-          showGold(json);
+          var json = JSON.parse(r.responseText);
+          if (json != null) {
+            showGold(json);
+          }
     });
   },
 
@@ -80,6 +82,7 @@ export default {
         function (r) {
           // 4538896:678:SHAMELESS;
           var players = r.responseText.split(';');
+          let i;
           for (i = 0; i < players.length; i++) {
             if (players[i] === '') {
               continue;

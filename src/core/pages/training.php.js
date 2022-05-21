@@ -98,7 +98,7 @@ export default {
 
       //   series : [{
       //     name : 'Army Size',
-      //     data : $.parseJSON(a.responseText),
+      //     data : JSON.parse(a.responseText),
       //     tooltip: {
       //       valueDecimals: 0
       //     }

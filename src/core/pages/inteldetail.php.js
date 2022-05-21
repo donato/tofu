@@ -47,7 +47,9 @@ export default {
 
     var enemyNick = textBetween(text, "your spy sneaks into ", "'s camp");
     const $goldTable = Koc.getTableByHeading('Treasury');
-    const treasuryGold = textBetween($goldTable.html(), '<td align="center">',' Gold').replace(/,/g, '').replace(/"/g, '').replace(/<\/?[^>]+(>|$)/g, "");
+    const treasuryGold = 
+      to_int($("td.content").find('tr:contains("Treasury")').eq(1).next().text().trim());
+
     const safeGold = '';
 
     // Order is important here when sending logs to the server

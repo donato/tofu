@@ -43,7 +43,7 @@ export default {
     //         series: [
     //             {
     //                 name: 'Weapon Value',
-    //                 data: $.parseJSON(a.responseText),
+    //                 data: JSON.parse(a.responseText),
     //                 tooltip: {
     //                     valueDecimals: 0
     //                 }
