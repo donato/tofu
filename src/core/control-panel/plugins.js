@@ -31,7 +31,16 @@ function initSettings() {
   return pluginSettings;
 }
 
-var allPlugins = requireAll(require.context("../../plugins/", true, /^\.\/.*\.js$/));
+const allPlugins = [];
+
+function importAll() {
+  const r = require.context("../../plugins/", true, /^\.\/.*\.js$/);
+  r.keys().forEach((key) => {
+    allPlugins.push(r(key).default);
+  });
+}
+
+importAll();
 
 class Plugins {
   constructor() {

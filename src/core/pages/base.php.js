@@ -26,8 +26,9 @@ export default {
     const technologyName = dict['Technology'].substr(0, dict['Technology'].indexOf(' ('));
     const techDetails = Upgrades.technological_development.find((obj) => obj.name == technologyName);
     const techBonus = techDetails.multiplier;
-    var conscription = dict['Conscription'];
-    conscription = to_int(conscription.substr(0, conscription.indexOf(' Soldiers')));
+    // var conscription = dict['Conscription'];
+    // conscription = to_int(conscription.substr(0, conscription.indexOf(' Soldiers')));
+    const conscription = 0;
     var covertlevel = to_int(dict['Covert Level']);
     var sentrylevel = to_int(dict['Sentry Level']);
     var income = dict['Projected Income'];

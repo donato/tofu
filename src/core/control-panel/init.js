@@ -98,7 +98,11 @@ var Init = {
                       var x = r.responseText.split(';');
                       var logself = x.shift();
 
-                      stats = {'tffx':x.shift(), 'dax':x.shift(), 'goldx':x.shift()};
+                      const stats = {
+                        'tffx':x.shift(),
+                        'dax':x.shift(),
+                        'goldx':x.shift()
+                      };
 
                       var temp = document.getElementById('_luxbot_showMessageBox');
                       if (!temp) return;

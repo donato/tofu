@@ -25,8 +25,8 @@ export default {
   //process recons and sabotages
   run: function () {
     $("table.table_lines tr td:first-child").each((a, b) => {
-      $cell = $(b);
-      $value = $cell.next().text();
+      let $cell = $(b);
+      let $value = $cell.next().text();
       map[$.trim($cell.text())] = $value;
     });
     const logid = Koc.Page.getCurrentPageId('report_id');
@@ -65,13 +65,15 @@ export default {
       findInt("Covert Skill:"),
       findInt("Experience:"),
       findInt("Attack Turns:"),
-      findInt("Unit Production:"),
+      /* unit production= */ '',
       treasuryGold,
       findInt("Covert Spies:"),
       findInt("Sentries:"),
       findInt("Sentry Skill:"),
       safeGold,
       findInt("Experience Per Turn:"),
+      findInt("Soldier Per Turn:"),
+      findInt("Hostage Total:"),
     ];
 
     const sanitizedRows = rows.map(r => {
