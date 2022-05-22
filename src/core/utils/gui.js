@@ -27,8 +27,10 @@ export default {
 
     displayHtml: function (html) {
         this.hide();
-        var $div = $('<div>');
-        $div.append(html);
+        const child = document.createElement('div');
+        child.innerHTML = html;
+        var $div = document.createElement('div');
+        $div.appendChild(child);
 
         this.$popup.append($div);
         this.$popup.show();

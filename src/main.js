@@ -1,5 +1,4 @@
 import coloredspan from 'templates/coloredspan';
-import $ from 'jquery';
 import Init from './core/control-panel/init';
 import KoC from './core/utils/koc_utils';
 import GUI from './core/utils/gui';

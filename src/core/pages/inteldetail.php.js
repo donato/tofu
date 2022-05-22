@@ -5,9 +5,6 @@ const map = {};
 
 function findValue(key) {
   return map[key];
-  // const $keyCell = $("table.table_lines td:contains('" + key + "')");
-  // const $valueCell = $keyCell.next();
-  // return $valueCell.text();
 }
 
 function findInt(key) {
@@ -48,7 +45,9 @@ export default {
     var enemyNick = textBetween(text, "your spy sneaks into ", "'s camp");
     const $goldTable = Koc.getTableByHeading('Treasury');
     const treasuryGold = 
-      to_int($("td.content").find('tr:contains("Treasury")').eq(1).next().text().trim());
+      to_int($("td.content").find('tr')
+        .filter((index, tr) => tr.textContent.includes("Treasury"))
+        .eq(1).next().text().trim());
 
     const safeGold = '';
 
@@ -87,7 +86,9 @@ export default {
     const economy = findValue('Economy:');
     const technology = findValue('Technology:');
 
-    const stable = $("table:contains('Weapons')").last();
+    const stable = $("table")
+        .filter((index, tr) => tr.textContent.includes("Weapons"))
+        .last();
     var $weap_rows = $(stable).find("tbody>tr>td").parent();
     var weap_array = $weap_rows.get().map(function(row) {
       let $row = $(row);

@@ -33,7 +33,11 @@ export default {
     }
     function getTroopCount($table, str) {
       return $table
-        .find("tr:contains('" + str + "'):first>td:last")
+        .find("tr")
+        .filter((index, elem) => elem.textContent.includes(`"${str}$"`))
+        .first()
+        .find("td")
+        .last()
         .html().int();
     }
     var $stable = $("table.personnel").last();
@@ -66,7 +70,9 @@ export default {
   },
 
   tffChart: function () {
-    var $stable = $("table:contains('Train Your Troops')").last();
+    var $stable = $("table")
+        .filter((index, elem) => elem.textContent.includes('Train Your Troops'))
+        .last();
     $stable.after($("<table>", { 'id': 'growth', 'class': 'table_lines' })
       .append("<tbody><tr><th colspan=3>Growth Stats</th></tr></tbody>")
     );

@@ -81,7 +81,9 @@ const Page = {
   },
 
   getPlayerGold: function () {
-    var gold = $(".menu_cell").find(":contains('Gold:')").last().text();
+    var gold = $(".menu_cell")
+        .filter((index, elem) => elem.textContent.includes('Gold:'))
+        .last().text();
 
     if (gold !== '') {
       gold = gold.replace('B', '000000000');
@@ -170,7 +172,8 @@ function parseResponse(text, key) {
 }
 
 function getTableByHeading(heading) {
-  var $table = $("table.table_lines > tbody > tr > th:contains('" + heading + "')");
+  var $table = $("table.table_lines > tbody > tr > th")
+      .filter((index, elem) => elem.textContent.includes(heading))
   return $table.last().parents().eq(2);
 }
 
@@ -208,7 +211,10 @@ function parseTableColumnToDict($table, key, val) {
 }
 
 function getRowValues(searchText) {
-  var $cells = $("tr:contains('" + searchText + "'):last > td");
+  var $cells = $("tr")
+      .filter((index, elem) => elem.textContent.includes(searchText))
+      .last()
+      .child("td");
 
   var vals = [];
   $.each($cells, function (index, val) {

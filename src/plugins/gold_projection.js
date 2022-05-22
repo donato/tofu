@@ -19,7 +19,9 @@ export default {
     var offset = 3; // Seconds after minute until turn arrives.
 
     // Add the display to the DOM
-    $('.menu_cell').find('tr:contains(\'Gold:\')').last()
+    $('.menu_cell').find('tr')
+        .filter((idx, elem) => elem.textContent.includes("'Gold:'"))
+        .last()
       .after("<tr><td colspan=2 style='color: BLUE; font-size: 6pt;text-align:center' id='gold_projection'></td></tr>");
 
     var date = new Date();

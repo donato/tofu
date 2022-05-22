@@ -5,7 +5,6 @@ import NavbarTemplate from 'handlebars-loader!templates/control-panel-navbar.htm
 import SettingsTemplate from 'handlebars-loader!templates/control-panel-settings.html';
 import Constants from 'utils/constants';
 import GUI from 'utils/gui';
-import $ from 'jquery';
 
 const tabs = [
   { id: "showSettings", name: "Toggle Features" },
@@ -21,19 +20,20 @@ class ControlPanel {
   }
 
   init() {
-    this.$controlbox = $("<div>", {
-      'id': 'tofu_control_box',
-      'html': 'Open Control Panel<br>Tofu V.' + Constants.TOFU_VERSION
-    });
+    this.$controlbox = document.createElement('div');
+    this.$controlbox.id = 'tofu_control_box';
+    this.$controlbox.innerHTML = 'Open Control Panel\n' +
+        '<br>' +
+        `Tofu v${Constants.TOFU_VERSION}`;
 
-    $('body').append(this.$controlbox);
+    document.body.appendChild(this.$controlbox);
 
-    this.$controlbox.click(this.showSettings.bind(this));
+    this.$controlbox.onclick = this.showSettings.bind(this);
   }
 
   showPage(html) {
     var $div = GUI.displayHtml(menu + html);
-    $div.click(this.onClick.bind(this));
+    $div.onclick = this.onClick.bind(this);
   }
 
   showSettings() {
@@ -65,10 +65,6 @@ class ControlPanel {
     var pluginName = event.target.getAttribute('pluginName');
     this.pluginManager.toggle(pluginName);
     this.showSettings();
-  }
-
-  toggle() {
-    $("_luxbot_darken").toggle();
   }
 
   showLinkBox() {

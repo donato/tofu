@@ -20,10 +20,14 @@ export default {
     var userid = document.URL.split(/[=&?]/)[2];
     getLux('&a=stats_info&u=' + userid,
       function(r) {
-        var stable = $("table:contains('User Stats')").last();
+        var stable = $("table")
+            .filter((index, elem) => elem.textContent.includes("User Stats:"))
+            .last();
         var tx = r.responseText;
         if (parseResponse(tx, "online") !== '') {
-          $(stable).find("tr:contains('Name')").first().find("td:eq(1)").append('&nbsp;<img title="Player is online"  class="_lux_online" src="'+luxOnlineImage+'" />');
+          $(stable).find("tr")
+            .filter((index, elem) => elem.textContent.includes("Name"))
+            .first().find("td:eq(1)").append('&nbsp;<img title="Player is online"  class="_lux_online" src="'+luxOnlineImage+'" />');
         }
       });
   },

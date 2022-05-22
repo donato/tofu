@@ -10,7 +10,9 @@ export default {
 
     this.pageKocid = Koc.Page.getCurrentPageId();
     
-    const $infoTable = $("table:contains('Army Size')").last();
+    const $infoTable = $("table")
+        .filter((index, elem) => elem.textContent.includes("Army Size"))
+        .last();
     const logInfo = this.parsePage($infoTable);
     if (!logInfo) {
       Logging.logStats('', this.pageKocid, '', '','', 'invalid', '');
@@ -59,7 +61,10 @@ export default {
     var chain = dict.hasOwnProperty('Chain Name:') ? to_int(dict['Chain Name:']) : '';     
     var treasury = dict.hasOwnProperty('Treasury:') ? to_int(dict['Treasury:']) : TREASURY_UNKNOWN;
 
-    const commanderRowHtml = $.trim($infoTable.find("tr:contains('Commander:')>td:last").html());
+    var commanderHtml = $infoTable.find("tr")
+      .filter((index, elem) => elem.textContent.includes("Commander:"))
+      .child("td")
+      .last().html();
     const commanderId = textBetween(commanderRowHtml,'id=','"');     
 
     return {
@@ -80,7 +85,9 @@ export default {
   },
   
   addViewHistoryButton: function($infoTable, name) {
-    var $nameTd = $infoTable.find('tr:contains("Name:")').first().find("td").last();
+    var $nameTd = $infoTable.find('tr')
+        .filter((index, elem) => elem.textContent.includes("Name:"))
+        .first().find("td").last();
     const detailsUrl = Constants.statsUrl+'/intel.php?playerSearch='+ name;
     const historyUrl = Constants.statsUrl+'/history.php?playerSearch='+ name;
     $nameTd.append('<a href="'+ detailsUrl +'" target="_blank" class="tofu viewHistory">(Recon)</a>');
