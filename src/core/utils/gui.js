@@ -6,12 +6,11 @@ export default {
         this.$popup = $('<div>', {'id': 'tofu_popup_box'});
         $('body').append(this.$popup);
 
-        var self = this;
-        this.$popup.click(function (event) {
-            if ($(event.target).is("#tofu_popup_box")) {
-                self.hide();
-            }
-        });
+        this.$popup.onclick = (event) => {
+          if ($(event.target).is("#tofu_popup_box")) {
+            this.hide();
+          }
+        };
 
         $(document).keyup(function (e) {
             if (e.keyCode === 27) {

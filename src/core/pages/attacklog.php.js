@@ -5,13 +5,13 @@ import $ from 'jquery';
 const loggedIds = new Set();
 
 function logTable(aggressor, $table) {
-  columnNames = $table.find('th.subh').map((idx, element) => $(element).text()).get();
+  let columnNames = $table.find('th.subh').map((idx, element) => $(element).text()).get();
   const nameToIndex = columnNames.reduce((memo, name, idx) => {
     memo[name] = idx;
     return memo;
   }, {});
 
-  $rows = $table.find('tr').not('.nav').not(':has(th)');
+  let $rows = $table.find('tr').not('.nav').not(':has(th)');
   $rows.map((idx, row) => {
     const $columns = $(row).find('td');
 

@@ -54,6 +54,7 @@ module.exports = function (grunt) {
             libs: path.resolve(__dirname, 'src/assets/libs'),
             templates: path.resolve(__dirname, 'src/templates'),
             plugins: path.resolve(__dirname, 'src/plugins_disabled'),
+            // 'jquery': 'cash-dom',
             'jquery': 'jquery-slim',
           },
           modules: [

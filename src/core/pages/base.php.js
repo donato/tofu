@@ -4,89 +4,97 @@ import Log from 'plugins/luxbot-logging';
 import $ from 'jquery';
 const db = Koc.db;
 
-export default {
 
-  run: function () {
+
+class BasePage {
+  run() {
+    this.defineTables();
     this.logBaseStats();
-  },
+  }
 
-  logBaseStats: function () {
-    var $militaryTable = Koc.getTableByHeading('Military Effectiveness');
-    var stats = Koc.parseTableColumnToDict($militaryTable, 0, 1);
-    var sa = stats['Strike'];
-    var da = stats['Defense'];
-    var spy = stats['Spy'];
-    var sentry = stats['Sentry'];
+  defineTables() {
+    this.$militaryTable = Koc.getTableByHeading('Military Effectiveness');
+    this.$overviewTable = Koc.getTableByHeading('Military Overview');
+    this.$armyTable = Koc.getTableByHeading('Personnel');
+  }
 
-    var $overviewTable = Koc.getTableByHeading('Military Overview');
-    var dict = Koc.parseTableColumnToDict($overviewTable, 0, 1);
-    var fortName = dict['Fortification'].substr(0, dict['Fortification'].indexOf(' ('));
-    var siegeName = dict['Siege'].substr(0, dict['Siege'].indexOf(' ('));
-    var economy = dict['Economy'].substr(0, dict['Economy'].indexOf(' ('));
+  logBaseStats() {
+    const stats = Koc.parseTableColumnToDict(this.$militaryTable, 0, 1);
+    const sa = stats['Strike'];
+    const da = stats['Defense'];
+    const spy = stats['Spy'];
+    const sentry = stats['Sentry'];
+
+    const dict = Koc.parseTableColumnToDict(this.$overviewTable, 0, 1);
+    const fortName = dict['Fortification'].substr(0, dict['Fortification'].indexOf(' ('));
+    const siegeName = dict['Siege'].substr(0, dict['Siege'].indexOf(' ('));
+    const economy = dict['Economy'].substr(0, dict['Economy'].indexOf(' ('));
     const technologyName = dict['Technology'].substr(0, dict['Technology'].indexOf(' ('));
     const techDetails = Upgrades.technological_development.find((obj) => obj.name == technologyName);
     const techBonus = techDetails.multiplier;
-    // var conscription = dict['Conscription'];
+    // Conscription has been disabled in game.
+    // let conscription = dict['Conscription'];
     // conscription = to_int(conscription.substr(0, conscription.indexOf(' Soldiers')));
     const conscription = 0;
-    var covertlevel = to_int(dict['Covert Level']);
-    var sentrylevel = to_int(dict['Sentry Level']);
+    const covertlevel = to_int(dict['Covert Level']);
+    const sentrylevel = to_int(dict['Sentry Level']);
     var income = dict['Projected Income'];
     income = income.substr(0, income.indexOf(" Gold")).int();
     const exp_per_turn = to_int(dict['Experience Per Turn']);
     const soldiersPerTurn = to_int(dict['Soldier Per Turn']);
 
-    var $armyTable = Koc.getTableByHeading('Personnel');
-    var armyDict = Koc.parseTableColumnToDict($armyTable, 0, 1);
-    var tff = to_int(armyDict['Total Fighting Force']);
-    var attackMercs = to_int(armyDict['Trained Attack Mercenaries']);
-    var defenseMercs = to_int(armyDict['Trained Defense Mercenaries']);
-    var attackers = to_int(armyDict['Trained Attack Soldiers']);
-    var defenders = to_int(armyDict['Trained Defense Soldiers']);
-    var untrained = to_int(armyDict['Untrained Soldiers']);
-    var untrainedMercs = to_int(armyDict['Untrained Mercenaries']);
-    var spies = to_int(armyDict['Spies']);
-    var sentries = to_int(armyDict['Sentries']);
-    var tff = to_int(armyDict['Total Fighting Force']);
-    var hostageTotal = to_int(armyDict['Hostages Taken Total This Era']);
+    const armyDict = Koc.parseTableColumnToDict(this.$armyTable, 0, 1);
+    const tff = to_int(armyDict['Total Fighting Force']);
+    const attackMercs = to_int(armyDict['Trained Attack Mercenaries']);
+    const defenseMercs = to_int(armyDict['Trained Defense Mercenaries']);
+    const attackers = to_int(armyDict['Trained Attack Soldiers']);
+    const defenders = to_int(armyDict['Trained Defense Soldiers']);
+    const untrained = to_int(armyDict['Untrained Soldiers']);
+    const untrainedMercs = to_int(armyDict['Untrained Mercenaries']);
+    const spies = to_int(armyDict['Spies']);
+    const sentries = to_int(armyDict['Sentries']);
+    const hostageTotal = to_int(armyDict['Hostages Taken Total This Era']);
 
     // Other stuff
-    var turns = Koc.Page.getPlayerTurns();
-    var safe_gold = Koc.Page.getPlayerSafe();
-    var experience = Koc.Page.getPlayerExperience();
-    var race = textBetween($("head>link").eq(3).attr("href"), "css/", ".css").toLowerCase();
-    // TODO(donato): Fix officer tracking
-    var officers = ''; //this.getOfficers(false);
+    const turns = Koc.Page.getPlayerTurns();
+    const safe_gold = Koc.Page.getPlayerSafe();
+    const experience = Koc.Page.getPlayerExperience();
+    const race = textBetween($("head>link").eq(3).attr("href"), "css/", ".css").toLowerCase();
+    const officers = ''; 
 
-    // offie bonus feature is disabled
-    // var bonus = parseFloat(textBetween($(".officers>tbody>tr:last").text(), "(x ",")")) || 1.0;
-    var bonus = 1;
+    // officer bonus feature is disabled
+    // const bonus = parseFloat(textBetween($(".officers>tbody>tr:last").text(), "(x ",")")) || 1.0;
+    const bonus = 1;
 
-    db.put('sa', sa);
-    db.put('da', da);
-    db.put('spy', spy);
-    db.put('sentry', sentry);
-    db.put('income', income);
-    db.put('technology', techBonus);
-    db.put('tff', tff);
-    db.put('bonus', bonus);
-    db.put('fort', fortName);
-    db.put('siege', siegeName);
-    db.put('covertlevel', covertlevel);
-    db.put('sentrylevel', sentrylevel);
-    db.put('race', race);
+    db.putAll({
+      'sa': sa,
+      'da': da,
+      'spy': spy,
+      'sentry': sentry,
+      'income': income,
+      'technology': techBonus,
+      'tff': tff,
+      'bonus': bonus,
+      'fort': fortName,
+      'siege': siegeName,
+      'covertlevel': covertlevel,
+      'sentrylevel': sentrylevel,
+      'race': race
+    });
 
     // Example inputs:
     //  stats=1037189702;46790709;650248517;111360121
     //  data=Stronghold;Cannons;Hunting;Printing;6400;20000;15;;723;33;0;58080;20475;5090;77975887;3;13;12052;8455;12174
     //  officers=
-    const weaponStats = [sa.int(), da.int(), spy.int(), sentry.int()];
+    const totalStats = [sa.int(), da.int(), spy.int(), sentry.int()];
     const otherStats = [
       fortName, siegeName, economy, technologyName, conscription.int(), turns.int(), covertlevel.int(), bonus,
       attackMercs.int(), defenseMercs.int(), untrainedMercs.int(), attackers.int(), defenders.int(),
       untrained.int(), safe_gold.int(), exp_per_turn.int(), sentrylevel.int(), spies.int(), sentries.int(), 
       experience.int(), soldiersPerTurn.int(), hostageTotal.int()
     ];
-    Log.logBase(weaponStats.join(';'), otherStats.join(';'), officers);
+    Log.logBase(totalStats.join(';'), otherStats.join(';'), officers);
   }
-};
+}
+
+export default new BasePage();

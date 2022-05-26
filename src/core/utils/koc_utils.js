@@ -51,6 +51,11 @@ var db = {
     option += "_" + this.id;
     Grease.gmSetValue(option, val);
   },
+  putAll: function(dict) {
+    for (let key in dict) {
+      this.put(key, dict[key]);
+    }
+  },
   // Time in javascript is always unixtime
   getTime: function (option) {
     var ret = this.get(option, Date.now());
