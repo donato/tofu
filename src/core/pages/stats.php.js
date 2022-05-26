@@ -61,9 +61,9 @@ export default {
     var chain = dict.hasOwnProperty('Chain Name:') ? to_int(dict['Chain Name:']) : '';     
     var treasury = dict.hasOwnProperty('Treasury:') ? to_int(dict['Treasury:']) : TREASURY_UNKNOWN;
 
-    var commanderHtml = $infoTable.find("tr")
+    var commanderRowHtml = $infoTable.find("tr")
       .filter((index, elem) => elem.textContent.includes("Commander:"))
-      .child("td")
+      .children("td")
       .last().html();
     const commanderId = textBetween(commanderRowHtml,'id=','"');     
 

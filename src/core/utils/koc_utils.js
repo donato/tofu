@@ -219,7 +219,7 @@ function getRowValues(searchText) {
   var $cells = $("tr")
       .filter((index, elem) => elem.textContent.includes(searchText))
       .last()
-      .child("td");
+      .children("td");
 
   var vals = [];
   $.each($cells, function (index, val) {
