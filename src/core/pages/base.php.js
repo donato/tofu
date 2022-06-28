@@ -24,6 +24,12 @@ class BasePage {
     const da = stats['Defense'];
     const spy = stats['Spy'];
     const sentry = stats['Sentry'];
+    db.putAll({
+      'sa': sa,
+      'da': da,
+      'spy': spy,
+      'sentry': sentry,
+    });
 
     const dict = Koc.parseTableColumnToDict(this.$overviewTable, 0, 1);
     const fortName = dict['Fortification'].substr(0, dict['Fortification'].indexOf(' ('));
@@ -42,6 +48,14 @@ class BasePage {
     income = income.substr(0, income.indexOf(" Gold")).int();
     const exp_per_turn = to_int(dict['Experience Per Turn']);
     const soldiersPerTurn = to_int(dict['Soldier Per Turn']);
+    db.putAll({
+      'income': income,
+      'technology': techBonus,
+      'fort': fortName,
+      'siege': siegeName,
+      'covertlevel': covertlevel,
+      'sentrylevel': sentrylevel,
+    });
 
     const armyDict = Koc.parseTableColumnToDict(this.$armyTable, 0, 1);
     const tff = to_int(armyDict['Total Fighting Force']);
@@ -54,6 +68,9 @@ class BasePage {
     const spies = to_int(armyDict['Spies']);
     const sentries = to_int(armyDict['Sentries']);
     const hostageTotal = to_int(armyDict['Hostages Taken Total This Era']);
+    db.putAll({
+      'tff': tff,
+    });
 
     // Other stuff
     const turns = Koc.Page.getPlayerTurns();
@@ -61,26 +78,16 @@ class BasePage {
     const experience = Koc.Page.getPlayerExperience();
     const race = textBetween($("head>link").eq(3).attr("href"), "css/", ".css").toLowerCase();
     const officers = ''; 
-
     // officer bonus feature is disabled
     // const bonus = parseFloat(textBetween($(".officers>tbody>tr:last").text(), "(x ",")")) || 1.0;
     const bonus = 1;
-
     db.putAll({
-      'sa': sa,
-      'da': da,
-      'spy': spy,
-      'sentry': sentry,
-      'income': income,
-      'technology': techBonus,
-      'tff': tff,
+      'turns': turns,
+      'experience': experience,
+      'race': race,
       'bonus': bonus,
-      'fort': fortName,
-      'siege': siegeName,
-      'covertlevel': covertlevel,
-      'sentrylevel': sentrylevel,
-      'race': race
     });
+
 
     // Example inputs:
     //  stats=1037189702;46790709;650248517;111360121

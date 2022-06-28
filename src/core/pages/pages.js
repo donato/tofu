@@ -30,7 +30,7 @@ export default {
   detail: Detail,
 
   // // Not verified
-  // training : Training,
+  training : Training,
 
   // // Not implemented
   // upgrades: Upgrades,
